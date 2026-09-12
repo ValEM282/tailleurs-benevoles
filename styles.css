@@ -159,7 +159,7 @@ body {
 
   text-align: center;
 
-  padding: 26px 30px 24px;
+  padding: 18px 30px 18px;
 
   border-bottom: 7px solid var(--red);
 }
@@ -171,7 +171,7 @@ body {
   display: block;
 
   width: 100%;
-  max-width: 390px;
+  max-width: 430px;
 
   height: auto;
 
@@ -182,16 +182,16 @@ body {
 /* PORTAIL BÉNÉVOLES */
 
 .brand p {
-  margin: 18px 0 0;
+  margin: 16px 0 0;
 
   font-family: "Macho", "Titillium Web", sans-serif;
 
-  font-size: 2rem;
-  line-height: 1;
+  font-size: 2.15rem;
+  line-height: 1.05;
 
   font-weight: 700;
 
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
 
   text-transform: uppercase;
 
@@ -235,7 +235,7 @@ body {
    ========================= */
 
 #login-form {
-  padding: 10px 42px 0;
+  padding: 24px 42px 0;
 }
 
 .form-group {
@@ -537,30 +537,30 @@ input:focus-visible {
 
   /* En-tête */
 
-  .brand {
-    padding: 18px 20px 20px;
+.brand {
+  padding: 14px 20px 16px;
 
-    border-bottom-width: 6px;
-  }
+  border-bottom-width: 6px;
+}
 
 
   /* Logo nettement plus grand */
 
-  .brand-logo {
-    max-width: 320px;
-  }
+.brand-logo {
+  max-width: 340px;
+}
 
 
   /* PORTAIL BÉNÉVOLES très visible */
 
-  .brand p {
-    margin-top: 14px;
+.brand p {
+  margin-top: 12px;
 
-    font-size: 1.75rem;
-    line-height: 1;
+  font-size: 1.7rem;
+  line-height: 1.05;
 
-    letter-spacing: 0.05em;
-  }
+  letter-spacing: 0.03em;
+}
 
 
   /* Bienvenue */
@@ -610,18 +610,13 @@ input:focus-visible {
     max-width: 150px;
   }
 
-  .brand {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
+.brand-logo {
+  max-width: 300px;
+}
 
-  .brand-logo {
-    max-width: 285px;
-  }
-
-  .brand p {
-    font-size: 1.55rem;
-  }
+.brand p {
+  font-size: 1.45rem;
+}
 
   #login-form,
   .login-links {
