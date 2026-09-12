@@ -313,15 +313,6 @@ input:focus-visible {
     padding: 20px 22px 16px;
   }
 
-  .brand-top {
-    gap: 18px;
-    max-width: 640px;
-  }
-
-  .brand-character {
-    width: 130px;
-  }
-
   .brand-logo {
     max-width: 430px;
   }
@@ -370,16 +361,6 @@ input:focus-visible {
   .brand {
     padding: 14px 16px 14px;
     border-bottom-width: 6px;
-  }
-
-  .brand-top {
-    gap: 12px;
-    align-items: flex-start;
-  }
-
-  .brand-character {
-    width: 95px;
-    max-width: none;
   }
 
   .brand-logo {
@@ -439,14 +420,6 @@ input:focus-visible {
     padding: 12px 12px 14px;
   }
 
-  .brand-top {
-    gap: 10px;
-  }
-
-  .brand-character {
-    width: 82px;
-  }
-
   .brand p {
     font-size: 1.65rem;
   }
@@ -466,4 +439,11 @@ input:focus-visible {
     margin-right: 18px;
   }
 
+}
+
+/* Correction optique du centrage du logo sur PC */
+@media (min-width: 701px) {
+  .brand-logo {
+    transform: translateX(1.5%);
+  }
 }
