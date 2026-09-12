@@ -106,6 +106,8 @@ body {
 
   height: auto;
   display: block;
+   
+  margin: 0 auto; 
 }
 
 .brand p {
@@ -439,11 +441,4 @@ input:focus-visible {
     margin-right: 18px;
   }
 
-}
-
-/* Correction optique du centrage du logo sur PC */
-@media (min-width: 701px) {
-  .brand-logo {
-    transform: translateX(1.5%);
-  }
 }
