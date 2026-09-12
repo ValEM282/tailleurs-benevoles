@@ -18,6 +18,40 @@ const passwordInput = document.getElementById("password");
 
 const emailError = document.getElementById("email-error");
 
+const togglePasswordButton =
+  document.getElementById("toggle-password");
+
+/* =========================================================
+   AFFICHER / MASQUER LE MOT DE PASSE
+   ========================================================= */
+
+togglePasswordButton.addEventListener("click", () => {
+
+  const passwordIsHidden =
+    passwordInput.type === "password";
+
+  passwordInput.type =
+    passwordIsHidden ? "text" : "password";
+
+  togglePasswordButton.textContent =
+    passwordIsHidden ? "🙈" : "👁️‍🗨️​";
+
+  togglePasswordButton.setAttribute(
+    "aria-label",
+    passwordIsHidden
+      ? "Masquer le mot de passe"
+      : "Afficher le mot de passe"
+  );
+
+  togglePasswordButton.setAttribute(
+    "title",
+    passwordIsHidden
+      ? "Masquer le mot de passe"
+      : "Afficher le mot de passe"
+  );
+
+});
+
 
 /* =========================================================
    CONNEXION
