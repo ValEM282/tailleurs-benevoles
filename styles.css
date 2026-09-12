@@ -100,27 +100,6 @@ body {
   border-bottom: 7px solid var(--red);
 }
 
-.brand-top {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 26px;
-
-  width: 100%;
-  max-width: 760px;
-
-  margin: 0 auto;
-}
-
-.brand-character {
-  width: 160px;
-  max-width: 28%;
-
-  height: auto;
-  display: block;
-  flex-shrink: 0;
-}
-
 .brand-logo {
   width: 100%;
   max-width: 520px;
