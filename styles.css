@@ -288,6 +288,20 @@ button {
   color: var(--purple);
 }
 
+.form-error {
+  margin: 8px 2px 0;
+
+  color: var(--red);
+
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.form-error:empty {
+  display: none;
+}
+
 
 /* =========================
    ACCESSIBILITÉ
