@@ -3,10 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Portail Bénévoles des Tailleurs</title>
 
-  <!-- Police standard -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
@@ -18,23 +16,17 @@
 
   <main class="login-page">
 
-    <section class="portal-layout">
+    <section class="login-card">
 
-      <!-- VISUEL TAILLEURS -->
-      <div class="portal-visual">
+      <div class="brand">
 
-        <img
-          src="assets/T26_Personnage_original.png"
-          alt=""
-          class="portal-character"
-        >
+        <div class="brand-top">
 
-      </div>
-
-      <!-- CONNEXION -->
-      <section class="login-card">
-
-        <div class="brand">
+          <img
+            src="assets/T26_Personnage_original.png"
+            alt=""
+            class="brand-character"
+          >
 
           <img
             src="assets/T26_Logo_2000px_WHITE.png"
@@ -42,87 +34,64 @@
             class="brand-logo"
           >
 
-          <p>🎪 Portail Bénévoles 🎪</p>
-
         </div>
 
-        <form id="login-form">
+        <p>🎪 PORTAIL BÉNÉVOLES 🎪</p>
 
-          <div class="form-group">
+      </div>
 
-            <label for="email">
-              E-mail
-            </label>
+      <form id="login-form">
 
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="prenom.nom@email.be"
-              autocomplete="email"
-              required
-            >
+        <div class="form-group">
+          <label for="email">E-mail</label>
 
-            <p class="field-help">
-              Utilise le même e-mail que celui utilisé lors de ton inscription comme bénévole.
-            </p>
-
-          </div>
-
-          <div class="form-group">
-
-            <label for="password">
-              Mot de passe
-            </label>
-
-            <input
-              type="password"
-              id="password"
-              name="password"
-              placeholder="••••••••"
-              autocomplete="current-password"
-              required
-            >
-
-          </div>
-
-          <button
-            type="submit"
-            class="primary-button"
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="prenom.nom@email.be"
+            autocomplete="email"
+            required
           >
-            Se connecter
-          </button>
 
-        </form>
-
-        <div class="login-links">
-
-          <a
-            href="#"
-            id="forgot-password"
-          >
-            Mot de passe oublié ?
-          </a>
-
-        </div>
-
-        <div class="first-login">
-
-          <p>
-            Première connexion ?
+          <p class="field-help">
+            Utilise le même e-mail que celui utilisé lors de ton inscription comme bénévole
           </p>
-
-          <button
-            type="button"
-            id="create-account"
-            class="secondary-button"
-          >
-            Créer mon accès
-          </button>
-
         </div>
 
-      </section>
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+
+        <button type="submit" class="primary-button">
+          Se connecter
+        </button>
+      </form>
+
+      <div class="login-links">
+        <a href="#" id="forgot-password">Mot de passe oublié ?</a>
+      </div>
+
+      <div class="first-login">
+        <p>Première connexion ?</p>
+
+        <button
+          type="button"
+          id="create-account"
+          class="secondary-button"
+        >
+          Créer mon accès
+        </button>
+      </div>
 
     </section>
 
