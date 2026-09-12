@@ -186,6 +186,54 @@ body {
   color: var(--text-light);
 }
 
+/* =========================
+   AFFICHER / MASQUER MOT DE PASSE
+   ========================= */
+
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  padding-right: 58px;
+}
+
+.password-toggle {
+  position: absolute;
+
+  top: 50%;
+  right: 12px;
+
+  transform: translateY(-50%);
+
+  width: 44px;
+  height: 44px;
+
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+
+  font-size: 1.25rem;
+
+  cursor: pointer;
+}
+
+.password-toggle:hover {
+  background: rgba(28, 46, 171, 0.06);
+  border-radius: 50%;
+}
+
+.password-toggle:focus-visible {
+  outline: 3px solid rgba(228, 2, 48, 0.40);
+  outline-offset: 2px;
+}
+
 
 /* =========================
    BOUTONS
