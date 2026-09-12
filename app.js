@@ -16,6 +16,8 @@ const forgotPasswordLink = document.getElementById("forgot-password");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 
+const emailError = document.getElementById("email-error");
+
 
 /* =========================================================
    CONNEXION
@@ -29,7 +31,7 @@ loginForm.addEventListener("submit", async (event) => {
   const password = passwordInput.value;
 
   if (!email || !password) {
-    alert("Indique ton e-mail et ton mot de passe.");
+    alert("Indique ton e-mail et ton mot de passe");
     return;
   }
 
@@ -43,7 +45,7 @@ loginForm.addEventListener("submit", async (event) => {
     console.error(error);
 
     alert(
-      "Connexion impossible. Vérifie ton e-mail et ton mot de passe."
+      "Connexion impossible ! Vérifie ton e-mail et ton mot de passe ou crée ton accès pour la première fois"
     );
 
     return;
@@ -65,23 +67,27 @@ createAccountButton.addEventListener("click", async () => {
   const email = emailInput.value.trim().toLowerCase();
   const password = passwordInput.value;
 
-  if (!email) {
-    alert(
-      "Indique d'abord l'e-mail utilisé lors de ton inscription comme bénévole."
-    );
-    return;
-  }
+if (!email) {
+  emailError.textContent =
+    "Indique d'abord l'e-mail utilisé lors de ton inscription comme bénévole";
+
+  emailInput.focus();
+
+  return;
+}
+
+emailError.textContent = "";
 
   if (!password) {
     alert(
-      "Choisis également le mot de passe que tu souhaites utiliser."
+      "Choisis également un mot de passe de 8 caractères"
     );
     return;
   }
 
   if (password.length < 8) {
     alert(
-      "Choisis un mot de passe d'au moins 8 caractères."
+      "Choisis un mot de passe d'au moins 8 caractères !"
     );
     return;
   }
@@ -111,13 +117,13 @@ createAccountButton.addEventListener("click", async () => {
   if (data.session) {
 
     alert(
-      "Ton compte a été créé et tu es connecté."
+      "Ton compte a été créé et tu es connecté"
     );
 
   } else {
 
     alert(
-      "Ton compte a été créé. Consulte maintenant ta boîte e-mail pour confirmer ton adresse."
+      "Ton compte a été créé, consulte maintenant ta boîte mail pour confirmer"
     );
 
   }
@@ -138,7 +144,7 @@ forgotPasswordLink.addEventListener("click", async (event) => {
   if (!email) {
 
     alert(
-      "Indique d'abord ton adresse e-mail."
+      "Indique d'abord ton e-mail"
     );
 
     return;
@@ -158,14 +164,14 @@ forgotPasswordLink.addEventListener("click", async (event) => {
     console.error(error);
 
     alert(
-      "Impossible d'envoyer l'e-mail de réinitialisation."
+      "Impossible d'envoyer le mail de réinitialisation"
     );
 
     return;
   }
 
   alert(
-    "Si cette adresse correspond à un compte, un e-mail de réinitialisation vient d'être envoyé."
+    "Si cet e-mail correspond à un compte, un mail de réinitialisation vient d'être envoyé"
   );
 
 });
@@ -191,7 +197,7 @@ supabaseClient.auth.onAuthStateChange(
       if (newPassword.length < 8) {
 
         alert(
-          "Le mot de passe doit contenir au moins 8 caractères."
+          "Le mot de passe doit contenir au moins 8 caractères"
         );
 
         return;
@@ -207,14 +213,14 @@ supabaseClient.auth.onAuthStateChange(
         console.error(error);
 
         alert(
-          "Impossible de modifier le mot de passe."
+          "Impossible de modifier le mot de passe"
         );
 
         return;
       }
 
       alert(
-        "Ton mot de passe a bien été modifié."
+        "Ton mot de passe a bien été modifié"
       );
 
     }
