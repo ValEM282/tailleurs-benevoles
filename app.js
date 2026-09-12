@@ -69,7 +69,7 @@ createAccountButton.addEventListener("click", async () => {
 
 if (!email) {
   emailError.textContent =
-    "Indique d'abord l'e-mail utilisé lors de ton inscription comme bénévole";
+    "Indique d'abord l'e-mail utilisé lors de ton inscription comme bénévole, et ensuite choisis un mot de passe en 8 caractères";
 
   emailInput.focus();
 
