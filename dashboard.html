@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Portail Bénévoles — Les Tailleurs</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="dashboard-page">
+
+  <!-- =========================
+       EN-TÊTE
+       ========================= -->
+
+  <header class="dashboard-header">
+
+    <div class="dashboard-header-inner">
+
+      <img
+        src="assets/T26_Logo_2000px_WHITE.png"
+        alt="Les Tailleurs - Festival insolite et insolent"
+        class="dashboard-logo"
+      >
+
+      <div class="dashboard-title">
+        🎪 PORTAIL BÉNÉVOLES 🎪
+      </div>
+
+      <button
+        type="button"
+        id="logout-button"
+        class="logout-button"
+      >
+        Se déconnecter
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <!-- =========================
+       CONTENU
+       ========================= -->
+
+  <main class="dashboard-main">
+
+    <!-- Accueil personnalisé -->
+
+    <section class="dashboard-welcome">
+
+      <p class="dashboard-eyebrow">
+        Mon espace
+      </p>
+
+      <h1>
+        Bonjour <span id="user-firstname">...</span> 👋
+      </h1>
+
+      <p id="user-role" class="user-role"></p>
+
+    </section>
+
+
+    <!-- =========================
+         PROCHAIN SHIFT
+         ========================= -->
+
+    <section class="next-shift-card">
+
+      <div class="section-heading">
+
+        <div>
+          <p class="section-label">
+            Mon planning
+          </p>
+
+          <h2>
+            Mon prochain shift
+          </h2>
+        </div>
+
+        <span class="shift-icon" aria-hidden="true">
+          🕒
+        </span>
+
+      </div>
+
+
+      <!-- Affichage temporaire en attendant les horaires -->
+
+      <div id="next-shift-content" class="empty-shift">
+
+        <p class="empty-shift-title">
+          Aucun horaire disponible pour le moment
+        </p>
+
+        <p>
+          Ton planning apparaîtra ici dès qu'il sera disponible
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         ACCÈS RAPIDES
+         ========================= -->
+
+    <section class="dashboard-section">
+
+      <div class="section-heading">
+
+        <div>
+          <p class="section-label">
+            Accès rapides
+          </p>
+
+          <h2>
+            Tout ce qu'il te faut
+          </h2>
+        </div>
+
+      </div>
+
+
+      <div class="dashboard-grid">
+
+        <a href="#" class="dashboard-card" id="my-schedule-link">
+
+          <span class="dashboard-card-icon" aria-hidden="true">
+            📅
+          </span>
+
+          <span class="dashboard-card-content">
+            <strong>Mon horaire</strong>
+            <small>Mes shifts et mes postes</small>
+          </span>
+
+        </a>
+
+
+        <a href="#" class="dashboard-card" id="program-link">
+
+          <span class="dashboard-card-icon" aria-hidden="true">
+            🎭
+          </span>
+
+          <span class="dashboard-card-content">
+            <strong>Programme</strong>
+            <small>Horaires des spectacles</small>
+          </span>
+
+        </a>
+
+
+        <a href="#" class="dashboard-card" id="map-link">
+
+          <span class="dashboard-card-icon" aria-hidden="true">
+            🗺️
+          </span>
+
+          <span class="dashboard-card-content">
+            <strong>Carte du festival</strong>
+            <small>Retrouver les lieux facilement</small>
+          </span>
+
+        </a>
+
+
+        <a href="#" class="dashboard-card" id="job-sheets-link">
+
+          <span class="dashboard-card-icon" aria-hidden="true">
+            📋
+          </span>
+
+          <span class="dashboard-card-content">
+            <strong>Fiches de poste</strong>
+            <small>Tout savoir pour assurer ton job</small>
+          </span>
+
+        </a>
+
+
+        <a href="#" class="dashboard-card" id="practical-info-link">
+
+          <span class="dashboard-card-icon" aria-hidden="true">
+            ℹ️
+          </span>
+
+          <span class="dashboard-card-content">
+            <strong>Infos pratiques</strong>
+            <small>Accès, repas, consignes...</small>
+          </span>
+
+        </a>
+
+
+        <a href="#" class="dashboard-card" id="contacts-link">
+
+          <span class="dashboard-card-icon" aria-hidden="true">
+            📞
+          </span>
+
+          <span class="dashboard-card-content">
+            <strong>Contacts utiles</strong>
+            <small>Responsables et numéros importants</small>
+          </span>
+
+        </a>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         ZONE RESPONSABLE
+         ========================= -->
+
+    <section
+      id="responsable-section"
+      class="dashboard-section role-section"
+      hidden
+    >
+
+      <div class="role-banner responsable-banner">
+
+        <div>
+
+          <p class="section-label">
+            Responsable
+          </p>
+
+          <h2>
+            Mon équipe
+          </h2>
+
+          <p>
+            Consulte les horaires et les coordonnées des bénévoles de ton secteur
+          </p>
+
+        </div>
+
+        <span aria-hidden="true">
+          👥
+        </span>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         ZONE ADMIN
+         ========================= -->
+
+    <section
+      id="admin-section"
+      class="dashboard-section role-section"
+      hidden
+    >
+
+      <div class="role-banner admin-banner">
+
+        <div>
+
+          <p class="section-label">
+            Administration
+          </p>
+
+          <h2>
+            Coordination bénévoles
+          </h2>
+
+          <p>
+            Accède à la gestion générale du portail et des bénévoles
+          </p>
+
+        </div>
+
+        <span aria-hidden="true">
+          ⚙️
+        </span>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =========================
+       SUPABASE
+       ========================= -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="dashboard.js"></script>
+
+</body>
+</html>
