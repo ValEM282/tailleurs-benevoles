@@ -85,9 +85,7 @@ loginForm.addEventListener("submit", async (event) => {
     return;
   }
 
-  alert("Connexion réussie !");
-
-  console.log("Utilisateur connecté :", data.user);
+window.location.href = "dashboard.html";
 
 });
 
