@@ -34,7 +34,7 @@ togglePasswordButton.addEventListener("click", () => {
     passwordIsHidden ? "text" : "password";
 
   togglePasswordButton.textContent =
-    passwordIsHidden ? "🙈" : "👁️‍🗨️​";
+    passwordIsHidden ? "🙈" : "👀​​​";
 
   togglePasswordButton.setAttribute(
     "aria-label",
