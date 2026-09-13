@@ -124,6 +124,23 @@ body {
   color: var(--white);
 }
 
+/* =========================
+   ACTIONS DE CONNEXION
+   ========================= */
+
+.login-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+
+  margin-top: 6px;
+}
+
+.login-actions .primary-button,
+.login-actions .secondary-button {
+  margin: 0;
+}
+
 
 /* =========================
    FORMULAIRE
@@ -319,23 +336,6 @@ button {
    PREMIÈRE CONNEXION
    ========================= */
 
-.first-login {
-  margin: 26px 44px 34px;
-  padding-top: 22px;
-
-  border-top: 2px solid #EEF0F7;
-  text-align: center;
-}
-
-.first-login p {
-  margin: 0 0 12px;
-
-  font-size: 1rem;
-  font-weight: 700;
-
-  color: var(--purple);
-}
-
 .form-error {
   margin: 8px 2px 0;
 
@@ -393,12 +393,6 @@ input:focus-visible {
   .login-links {
     padding: 18px 30px 0;
   }
-
-  .first-login {
-    margin-left: 30px;
-    margin-right: 30px;
-  }
-
 }
 
 
@@ -466,11 +460,6 @@ input:focus-visible {
   .login-links {
     padding: 16px 24px 0;
   }
-
-  .first-login {
-    margin: 24px 24px 30px;
-  }
-
 }
 
 
@@ -497,10 +486,4 @@ input:focus-visible {
     padding-left: 18px;
     padding-right: 18px;
   }
-
-  .first-login {
-    margin-left: 18px;
-    margin-right: 18px;
-  }
-
 }
