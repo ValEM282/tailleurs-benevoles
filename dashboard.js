@@ -250,21 +250,16 @@ async function loadDashboard() {
   }
 
 
-  const role =
-    participation.role;
-
-  const edition =
-    participation.editions?.annee;
+ const role =
+  participation.role;
 
 
-  /*
-     Affichage du rôle.
-  */
+/*
+   Affichage du rôle.
+*/
 
-  roleElement.textContent =
-    edition
-      ? `${getRoleLabel(role)} · Édition ${edition}`
-      : getRoleLabel(role);
+roleElement.textContent =
+  getRoleLabel(role);
 
 
   /*
