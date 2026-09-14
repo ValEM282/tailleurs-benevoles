@@ -1,1 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Plan — Portail Bénévoles des Tailleurs</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="dashboard-page">
+
+  <!-- =========================
+       EN-TÊTE
+       ========================= -->
+
+  <header class="dashboard-header">
+
+    <div class="subpage-header-inner">
+
+      <a
+        href="dashboard.html"
+        class="back-button"
+      >
+        ← Accueil
+      </a>
+
+      <div class="dashboard-title">
+        🎪 PORTAIL BÉNÉVOLES 🎪
+      </div>
+
+      <button
+        type="button"
+        id="logout-button"
+        class="logout-button"
+      >
+        Se déconnecter
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <!-- =========================
+       CONTENU
+       ========================= -->
+
+  <main class="subpage-main">
+
+    <section class="subpage-heading">
+
+      <h1>🗺️ Plan</h1>
+
+    </section>
+
+
+    <section class="map-card">
+
+      <iframe
+        src="https://www.google.com/maps/d/embed?mid=1umhmkY-Fel2QJ52PJlr7oi1PzbrWnUQ"
+        class="festival-map"
+        loading="lazy"
+        title="Plan du festival Les Tailleurs"
+      ></iframe>
+
+    </section>
+
+  </main>
+
+
+  <!-- =========================
+       SUPABASE
+       ========================= -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="portal-auth.js"></script>
+
+  <script>
+    async function initPage() {
+
+      const user = await PortalAuth.requireAuth();
+
+      if (!user) {
+        return;
+      }
+
+      const logoutButton =
+        document.getElementById("logout-button");
+
+      logoutButton.addEventListener(
+        "click",
+        async () => {
+
+          logoutButton.disabled = true;
+          logoutButton.textContent = "Déconnexion...";
+
+          const success =
+            await PortalAuth.logout();
+
+          if (!success) {
+            logoutButton.disabled = false;
+            logoutButton.textContent = "Se déconnecter";
+          }
+
+        }
+      );
+
+    }
+
+    initPage();
+  </script>
+
+</body>
+</html>
