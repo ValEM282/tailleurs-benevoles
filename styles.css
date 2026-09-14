@@ -1031,3 +1031,168 @@ input:focus-visible {
   }
 
 }
+
+/* =========================================================
+   PAGES INTÉRIEURES DU PORTAIL
+   ========================================================= */
+
+.subpage-header-inner {
+  width: 100%;
+  max-width: 1180px;
+
+  margin: 0 auto;
+
+  padding: 16px 24px;
+
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+
+  gap: 24px;
+}
+
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 44px;
+
+  padding: 9px 15px;
+
+  border: 2px solid var(--white);
+  border-radius: 10px;
+
+  color: var(--white);
+
+  font-size: 0.95rem;
+  font-weight: 700;
+
+  text-decoration: none;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+
+.back-button:hover {
+  background: var(--white);
+  color: var(--blue);
+}
+
+
+/* =========================
+   CONTENU DES SOUS-PAGES
+   ========================= */
+
+.subpage-main {
+  width: 100%;
+  max-width: 1180px;
+
+  margin: 0 auto;
+
+  padding: 30px 24px 50px;
+}
+
+
+.subpage-heading {
+  margin-bottom: 20px;
+}
+
+
+.subpage-heading h1 {
+  margin: 0;
+
+  font-family: "Macho", "Titillium Web", sans-serif;
+
+  font-size: 2.1rem;
+
+  color: var(--blue);
+}
+
+
+/* =========================
+   PLAN
+   ========================= */
+
+.map-card {
+  width: 100%;
+
+  overflow: hidden;
+
+  background: var(--white);
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 10px 28px rgba(20, 28, 80, 0.10);
+}
+
+
+.festival-map {
+  display: block;
+
+  width: 100%;
+  height: 650px;
+
+  border: 0;
+}
+
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width: 700px) {
+
+  .subpage-header-inner {
+    grid-template-columns: auto auto;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    padding: 12px 14px;
+  }
+
+
+  .subpage-header-inner .dashboard-title {
+    grid-column: 1 / -1;
+    grid-row: 1;
+
+    width: 100%;
+
+    margin-bottom: 4px;
+  }
+
+
+  .back-button {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+
+  .subpage-header-inner .logout-button {
+    grid-column: 2;
+    grid-row: 2;
+
+    margin: 0;
+  }
+
+
+  .subpage-main {
+    padding: 24px 14px 36px;
+  }
+
+
+  .subpage-heading h1 {
+    font-size: 1.8rem;
+  }
+
+
+  .festival-map {
+    height: 560px;
+  }
+
+}
