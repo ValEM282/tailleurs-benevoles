@@ -120,3 +120,20 @@
   }
 
 }
+
+.emergency-contact-line {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.emergency-contact-line h2 {
+  margin: 0;
+  color: var(--blue);
+}
+
+.emergency-phone {
+  font-size: 1.05rem;
+  white-space: nowrap;
+}
