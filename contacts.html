@@ -1,1 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Contacts utiles — Portail Bénévoles</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="dashboard-page">
+
+  <header class="dashboard-header">
+    <div class="subpage-header-inner">
+
+      <a
+        href="dashboard.html"
+        class="back-button"
+      >
+        ← Accueil
+      </a>
+
+      <div class="dashboard-title">
+        🎪 PORTAIL BÉNÉVOLES 🎪
+      </div>
+
+      <button
+        type="button"
+        id="logout-button"
+        class="logout-button"
+      >
+        Se déconnecter
+      </button>
+
+    </div>
+  </header>
+
+
+  <main class="subpage-main">
+
+    <section class="subpage-heading">
+      <h1>Contacts utiles</h1>
+    </section>
+
+
+    <section class="contacts-section">
+
+      <div
+        id="contacts-loading"
+        class="contacts-message"
+      >
+        Chargement des contacts...
+      </div>
+
+
+      <div
+        id="contacts-empty"
+        class="contacts-message"
+        hidden
+      >
+        Aucun contact disponible pour le moment.
+      </div>
+
+
+      <div
+        id="contacts-error"
+        class="contacts-message contacts-error"
+        hidden
+      >
+        Impossible de charger les contacts.
+      </div>
+
+
+      <div
+        id="contacts-list"
+        class="contacts-grid"
+      ></div>
+
+    </section>
+
+  </main>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="portal-auth.js"></script>
+  <script src="contacts.js"></script>
+
+</body>
+</html>
