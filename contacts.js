@@ -1,139 +1,278 @@
 /* =========================================================
    CONTACTS UTILES
+   Portail Bénévoles - Les Tailleurs
    ========================================================= */
 
-.contacts-section {
-  margin-top: 10px;
-}
+async function initContactsPage() {
+
+  const user =
+    await PortalAuth.requireAuth();
+
+  if (!user) {
+    return;
+  }
 
 
-.contacts-grid {
-  display: grid;
+  const logoutButton =
+    document.getElementById("logout-button");
 
-  grid-template-columns:
-    repeat(
-      auto-fit,
-      minmax(250px, 1fr)
+  const loadingElement =
+    document.getElementById("contacts-loading");
+
+  const emptyElement =
+    document.getElementById("contacts-empty");
+
+  const errorElement =
+    document.getElementById("contacts-error");
+
+  const contactsList =
+    document.getElementById("contacts-list");
+
+
+  /* =========================================================
+     DÉCONNEXION
+     ========================================================= */
+
+  logoutButton.addEventListener(
+    "click",
+    async () => {
+
+      logoutButton.disabled = true;
+
+      logoutButton.textContent =
+        "Déconnexion...";
+
+
+      const success =
+        await PortalAuth.logout();
+
+
+      if (!success) {
+
+        logoutButton.disabled = false;
+
+        logoutButton.textContent =
+          "Se déconnecter";
+
+      }
+
+    }
+  );
+
+
+  /* =========================================================
+     CHARGEMENT DES CONTACTS
+     ========================================================= */
+
+  try {
+
+    const {
+      data: contacts,
+      error: contactsError
+    } = await PortalAuth.client
+      .rpc("get_contacts_portail");
+
+
+    if (contactsError) {
+      throw contactsError;
+    }
+
+
+    /*
+       Aucun contact enregistré.
+    */
+
+    if (
+      !contacts ||
+      contacts.length === 0
+    ) {
+
+      loadingElement.hidden = true;
+      emptyElement.hidden = false;
+
+      return;
+    }
+
+
+    /*
+       Regroupement des personnes
+       qui ont le même sujet.
+    */
+
+    const groupedContacts =
+      new Map();
+
+
+    contacts.forEach(
+      contact => {
+
+        if (
+          !groupedContacts.has(
+            contact.sujet
+          )
+        ) {
+
+          groupedContacts.set(
+            contact.sujet,
+            []
+          );
+
+        }
+
+
+        groupedContacts
+          .get(contact.sujet)
+          .push(contact);
+
+      }
     );
 
-  gap: 16px;
-}
+
+    /*
+       Construction des cartes.
+    */
+
+    contactsList.innerHTML = "";
 
 
-.contact-card {
-  padding: 20px;
+    groupedContacts.forEach(
+      (people, subject) => {
 
-  background: var(--white);
-
-  border-radius: 16px;
-
-  border-left:
-    5px solid var(--blue);
-
-  box-shadow:
-    0 8px 24px
-    rgba(20, 28, 80, 0.08);
-}
+        const card =
+          document.createElement(
+            "article"
+          );
 
 
-.contact-role {
-  margin: 0 0 14px;
-
-  color: var(--red);
-
-  font-size: 1rem;
-  font-weight: 700;
-}
+        card.className =
+          "contact-card";
 
 
-.contact-person {
-  padding-top: 10px;
-}
+        const subjectElement =
+          document.createElement(
+            "p"
+          );
 
 
-.contact-person + .contact-person {
-  margin-top: 12px;
+        subjectElement.className =
+          "contact-role";
 
-  border-top:
-    1px solid rgba(
-      28,
-      46,
-      171,
-      0.12
+
+        subjectElement.textContent =
+          subject;
+
+
+        card.appendChild(
+          subjectElement
+        );
+
+
+        people.forEach(
+          person => {
+
+            const contactPerson =
+              document.createElement(
+                "div"
+              );
+
+
+            contactPerson.className =
+              "contact-person";
+
+
+            const name =
+              document.createElement(
+                "h3"
+              );
+
+
+            name.textContent =
+              `${person.prenom} ${person.nom}`;
+
+
+            contactPerson.appendChild(
+              name
+            );
+
+
+            if (person.telephone) {
+
+              const phone =
+                document.createElement(
+                  "a"
+                );
+
+
+              phone.className =
+                "contact-phone";
+
+
+              phone.href =
+                `tel:${formatPhoneForLink(
+                  person.telephone
+                )}`;
+
+
+              phone.textContent =
+                person.telephone;
+
+
+              contactPerson.appendChild(
+                phone
+              );
+
+            }
+
+
+            card.appendChild(
+              contactPerson
+            );
+
+          }
+        );
+
+
+        contactsList.appendChild(
+          card
+        );
+
+      }
     );
-}
 
 
-.contact-person h3 {
-  margin: 0 0 7px;
+    loadingElement.hidden = true;
 
-  color: var(--blue);
+  }
 
-  font-size: 1.15rem;
-}
+  catch (error) {
 
-
-.contact-phone {
-  display: inline-flex;
-
-  align-items: center;
-
-  gap: 6px;
-
-  color: var(--blue);
-
-  font-weight: 700;
-
-  text-decoration: none;
-}
+    console.error(
+      "Erreur contacts :",
+      error
+    );
 
 
-.contact-phone:hover {
-  text-decoration: underline;
-}
+    loadingElement.hidden = true;
 
+    errorElement.hidden = false;
 
-.contacts-message {
-  padding: 20px;
-
-  background: var(--white);
-
-  border-radius: 14px;
-
-  color: #4c5265;
-
-  text-align: center;
-}
-
-
-.contacts-error {
-  color: var(--red);
-
-  font-weight: 700;
-}
-
-
-@media (max-width: 700px) {
-
-  .contacts-grid {
-    grid-template-columns: 1fr;
   }
 
 }
 
-.emergency-contact-line {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
+
+/* =========================================================
+   FORMAT DU NUMÉRO POUR TEL:
+   ========================================================= */
+
+function formatPhoneForLink(phone) {
+
+  return phone.replace(
+    /[^0-9+]/g,
+    ""
+  );
+
 }
 
-.emergency-contact-line h2 {
-  margin: 0;
-  color: var(--blue);
-}
 
-.emergency-phone {
-  font-size: 1.05rem;
-  white-space: nowrap;
-}
+initContactsPage();
