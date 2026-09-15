@@ -1196,3 +1196,18 @@ input:focus-visible {
   }
 
 }
+
+.emergency-contact-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.emergency-contact-line h2 {
+  margin: 0;
+}
+
+.emergency-phone {
+  white-space: nowrap;
+}
