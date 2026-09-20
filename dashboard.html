@@ -15,18 +15,13 @@
   >
 
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="presence.css?v=20260920-1">
 </head>
 
 <body class="dashboard-page">
 
-  <!-- =========================
-       EN-TÊTE
-       ========================= -->
-
   <header class="dashboard-header">
-
     <div class="dashboard-header-inner">
-
       <div class="dashboard-title">
         🎪 PORTAIL BÉNÉVOLES 🎪
       </div>
@@ -38,142 +33,64 @@
       >
         Se déconnecter
       </button>
-
     </div>
-
   </header>
-
-
-  <!-- =========================
-       CONTENU
-       ========================= -->
 
   <main class="dashboard-main">
 
-    <!-- Accueil personnalisé -->
-
     <section class="dashboard-welcome">
-
       <h1>
         Bonjour <span id="user-firstname">...</span>
       </h1>
-
       <p id="user-role" class="user-role"></p>
-
     </section>
 
-
-    <!-- =========================
-         PROCHAIN POSTE
-         ========================= -->
-
     <section class="next-shift-card">
-
       <div class="section-heading">
-
         <div>
-          <h2>
-            Mon prochain poste
-          </h2>
+          <h2>Mon prochain poste</h2>
         </div>
-
-        <span class="shift-icon" aria-hidden="true">
-          🕒
-        </span>
-
+        <span class="shift-icon" aria-hidden="true">🕒</span>
       </div>
 
-
       <div id="next-shift-content" class="empty-shift">
-
         <p class="empty-shift-title">
           Aucun horaire disponible pour le moment
         </p>
-
         <p>
           Ton planning apparaîtra ici dès qu'il sera disponible.
         </p>
-
       </div>
-
     </section>
 
-
-    <!-- =========================
-         ACCÈS RAPIDES
-         ========================= -->
-
     <section class="dashboard-section">
-
       <div class="section-heading">
-
         <div>
-          <p class="section-label">
-            Accès rapides
-          </p>
+          <p class="section-label">Accès rapides</p>
         </div>
-
       </div>
 
-
       <div class="dashboard-grid">
-
-        <a
-          href="horaires.html"
-          class="dashboard-card"
-          id="my-schedule-link"
-        >
-
-          <span
-            class="dashboard-card-icon"
-            aria-hidden="true"
-          >
-            📅
-          </span>
-
+        <a href="horaires.html" class="dashboard-card" id="my-schedule-link">
+          <span class="dashboard-card-icon" aria-hidden="true">📅</span>
           <span class="dashboard-card-content">
             <strong>Mes horaires de bénévole</strong>
           </span>
-
         </a>
 
-        <a
-          href="fiches-poste.html"
-          class="dashboard-card"
-          id="job-sheets-link"
-        >
-
-          <span
-            class="dashboard-card-icon"
-            aria-hidden="true"
-          >
-            📋
-          </span>
-
+        <a href="fiches-poste.html" class="dashboard-card" id="job-sheets-link">
+          <span class="dashboard-card-icon" aria-hidden="true">📋</span>
           <span class="dashboard-card-content">
             <strong>Fiches de poste</strong>
           </span>
-
         </a>
 
-        <a
-          href="plan.html"
-          class="dashboard-card"
-          id="map-link"
-        >
-
-          <span
-            class="dashboard-card-icon"
-            aria-hidden="true"
-          >
-            📍​
-          </span>
-
+        <a href="plan.html" class="dashboard-card" id="map-link">
+          <span class="dashboard-card-icon" aria-hidden="true">📍​</span>
           <span class="dashboard-card-content">
             <strong>Plan</strong>
           </span>
-
-        </a>        
+        </a>
 
         <a
           href="https://www.lestailleurs.be/horaires/"
@@ -182,142 +99,61 @@
           class="dashboard-card"
           id="program-link"
         >
-
-          <span
-            class="dashboard-card-icon"
-            aria-hidden="true"
-          >
-            ​🤡​
-          </span>
-
+          <span class="dashboard-card-icon" aria-hidden="true">​🤡​</span>
           <span class="dashboard-card-content">
             <strong>Programme des spectacles</strong>
           </span>
-
         </a>
 
-        <a
-          href="infos-pratiques.html"
-          class="dashboard-card"
-          id="practical-info-link"
-        >
-
-          <span
-            class="dashboard-card-icon"
-            aria-hidden="true"
-          >
-            ℹ️
-          </span>
-
+        <a href="infos-pratiques.html" class="dashboard-card" id="practical-info-link">
+          <span class="dashboard-card-icon" aria-hidden="true">ℹ️</span>
           <span class="dashboard-card-content">
             <strong>Infos pratiques</strong>
           </span>
-
         </a>
 
-
-        <a
-          href="contacts.html"
-          class="dashboard-card"
-          id="contacts-link"
-        >
-
-          <span
-            class="dashboard-card-icon"
-            aria-hidden="true"
-          >
-            📞
-          </span>
-
+        <a href="contacts.html" class="dashboard-card" id="contacts-link">
+          <span class="dashboard-card-icon" aria-hidden="true">📞</span>
           <span class="dashboard-card-content">
             <strong>Contacts utiles</strong>
           </span>
-
         </a>
-
       </div>
-
     </section>
-
-
-    <!-- =========================
-         ZONE RESPONSABLE
-         ========================= -->
 
     <section
       id="responsable-section"
       class="dashboard-section role-section"
       hidden
     >
-
       <div class="role-banner responsable-banner">
-
         <div>
-
-          <p class="section-label">
-            Responsable
-          </p>
-
-          <h2>
-            Mon équipe
-          </h2>
-
-          <p>
-            Consulte le planning de tes bénévoles.
-          </p>
-
+          <p class="section-label">Responsable</p>
+          <h2>Mon équipe</h2>
+          <p>Consulte le planning de tes bénévoles.</p>
         </div>
-
-        <span aria-hidden="true">
-          
-        </span>
-
+        <span aria-hidden="true"></span>
       </div>
-
     </section>
-
-
-    <!-- =========================
-         ZONE ADMIN
-         ========================= -->
 
     <section
       id="admin-section"
       class="dashboard-section role-section"
       hidden
     >
-
       <div class="role-banner admin-banner">
-
         <div>
-
-          <p class="section-label">
-            Administration
-          </p>
-
-          <h2>
-            Coordination bénévoles
-          </h2>
-
+          <p class="section-label">Administration</p>
+          <h2>Coordination bénévoles</h2>
         </div>
-
-        <span aria-hidden="true">
-          
-        </span>
-
+        <span aria-hidden="true"></span>
       </div>
-
     </section>
 
   </main>
 
-
-  <!-- =========================
-       SUPABASE
-       ========================= -->
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="dashboard.js?v=20260920-2"></script>
+  <script src="dashboard.js?v=20260920-3"></script>
 
 </body>
 </html>
