@@ -1,0 +1,183 @@
+/* Statuts de présence et disponibilités */
+
+.next-shift-responsible {
+  margin: 10px 0 0;
+}
+
+.responsible-phone,
+.available-phone {
+  color: var(--blue);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.responsible-phone:hover,
+.available-phone:hover {
+  color: var(--red);
+  text-decoration: underline;
+}
+
+.presence-area {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(28, 46, 171, 0.12);
+}
+
+.presence-title {
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.presence-badge {
+  display: inline-block;
+  padding: 7px 11px;
+  border-radius: 999px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.presence-green {
+  color: #176b35;
+  background: rgba(39, 174, 96, 0.14);
+}
+
+.presence-orange {
+  color: #9b5a00;
+  background: rgba(243, 156, 18, 0.16);
+}
+
+.presence-red {
+  color: #a90022;
+  background: rgba(228, 2, 48, 0.12);
+}
+
+.presence-gray {
+  color: #62666f;
+  background: rgba(98, 102, 111, 0.13);
+}
+
+.presence-blue {
+  color: var(--blue);
+  background: rgba(28, 46, 171, 0.12);
+}
+
+.presence-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.presence-action,
+.delay-select {
+  min-height: 38px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-family: "Titillium Web", Arial, sans-serif;
+  font-size: 0.95rem;
+}
+
+.presence-action {
+  padding: 8px 12px;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--white);
+}
+
+.presence-action-green {
+  color: #176b35;
+  border-color: rgba(39, 174, 96, 0.45);
+}
+
+.presence-action-blue {
+  color: var(--blue);
+  border-color: rgba(28, 46, 171, 0.45);
+}
+
+.presence-action-orange {
+  color: #9b5a00;
+  border-color: rgba(243, 156, 18, 0.55);
+}
+
+.presence-action-red {
+  color: #a90022;
+  border-color: rgba(228, 2, 48, 0.4);
+}
+
+.delay-control {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.delay-select {
+  padding: 6px 8px;
+  border-color: var(--border);
+  background: var(--white);
+}
+
+.available-volunteers-box {
+  margin-top: 18px;
+  padding: 18px 20px;
+  background: var(--white);
+  border-radius: 14px;
+  box-shadow: 0 8px 22px rgba(20, 28, 80, 0.08);
+}
+
+.available-volunteers-box h3 {
+  margin: 0 0 12px;
+  color: var(--blue);
+}
+
+.available-volunteers-box p {
+  margin: 0;
+}
+
+.available-list {
+  display: grid;
+  gap: 10px;
+}
+
+.available-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(28, 46, 171, 0.1);
+}
+
+.available-row:first-child {
+  border-top: 0;
+}
+
+.available-row > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.available-row small {
+  color: var(--text-light);
+}
+
+@media (max-width: 700px) {
+  .presence-actions,
+  .delay-control {
+    width: 100%;
+  }
+
+  .presence-action {
+    flex: 1 1 auto;
+  }
+
+  .delay-control .presence-action {
+    flex: 1 1 auto;
+  }
+
+  .available-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
