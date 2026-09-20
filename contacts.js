@@ -107,8 +107,19 @@ async function initContactsPage() {
     const tbody =
       document.createElement("tbody");
 
-    groupedContacts.forEach(
-      (people, subject) => {
+    const sortedGroups =
+      Array.from(groupedContacts.entries())
+        .sort(
+          ([subjectA], [subjectB]) =>
+            subjectA.localeCompare(
+              subjectB,
+              "fr",
+              { sensitivity: "base" }
+            )
+        );
+
+    sortedGroups.forEach(
+      ([subject, people]) => {
 
         const row =
           document.createElement("tr");
