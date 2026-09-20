@@ -93,7 +93,7 @@ function getDisplayedStatus(shift) {
   }
 
   if (shift.statut === "present") {
-    return { key: "present", label: "Je suis là", color: "green" };
+    return { key: "present", label: "Je suis à mon poste", color: "green" };
   }
 
   if (now < start) {
@@ -151,7 +151,7 @@ function buildPresenceArea(shift) {
   const presentButton = document.createElement("button");
   presentButton.type = "button";
   presentButton.className = "presence-action presence-action-green";
-  presentButton.textContent = "Je suis là";
+  presentButton.textContent = "Je suis à mon poste";
   presentButton.addEventListener("click", async () => {
     if (await savePresenceStatus(shift, "present", null, false)) loadNextShift();
   });
@@ -261,7 +261,7 @@ async function loadNextShift() {
     responsible.appendChild(name);
 
     if (shift.responsable_telephone) {
-      responsible.append(" — ");
+      responsible.append(" · ");
       const phone = document.createElement("a");
       phone.href = `tel:${formatPhoneForLink(shift.responsable_telephone)}`;
       phone.textContent = shift.responsable_telephone;
