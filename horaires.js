@@ -39,7 +39,7 @@ async function initSchedulePage() {
     const grouped = groupByDay(shifts);
     scheduleList.innerHTML = "";
 
-    grouped.forEach((dayShifts, dayKey) => {
+    grouped.forEach((dayShifts) => {
       const daySection = document.createElement("section");
       daySection.className = "schedule-day";
 
@@ -51,8 +51,10 @@ async function initSchedulePage() {
       const cards = document.createElement("div");
       cards.className = "schedule-day-cards";
 
-      dayShifts.forEach(shift => {
-        cards.appendChild(createShiftCard(shift));
+      const groupedByPost = groupDayShiftsByPost(dayShifts);
+
+      groupedByPost.forEach(group => {
+        cards.appendChild(createShiftCard(group));
       });
 
       daySection.appendChild(cards);
@@ -88,6 +90,48 @@ function groupByDay(shifts) {
   return grouped;
 }
 
+function getLocationName(shift) {
+  let locationName = shift.lieu || "";
+
+  if (
+    !locationName &&
+    shift.note &&
+    shift.note.toLowerCase().includes("hall polyvalent / site")
+  ) {
+    locationName = "Hall polyvalent / Site festival";
+  }
+
+  return locationName;
+}
+
+function groupDayShiftsByPost(dayShifts) {
+  const grouped = new Map();
+
+  dayShifts.forEach(shift => {
+    const poste = shift.poste || "Poste à confirmer";
+    const location = getLocationName(shift);
+    const key = `${poste}|||${location}`;
+
+    if (!grouped.has(key)) {
+      grouped.set(key, {
+        poste,
+        location,
+        shifts: []
+      });
+    }
+
+    grouped.get(key).shifts.push(shift);
+  });
+
+  grouped.forEach(group => {
+    group.shifts.sort(
+      (a, b) => new Date(a.debut) - new Date(b.debut)
+    );
+  });
+
+  return grouped;
+}
+
 function formatDayTitle(value) {
   return capitalizeFirst(
     new Intl.DateTimeFormat("fr-BE", {
@@ -99,16 +143,27 @@ function formatDayTitle(value) {
   );
 }
 
-function formatTime(value) {
-  return new Intl.DateTimeFormat("fr-BE", {
+function formatCompactTime(value) {
+  const parts = new Intl.DateTimeFormat("fr-BE", {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
     timeZone: "Europe/Brussels"
-  }).format(new Date(value)).replace(":", "h");
+  }).formatToParts(new Date(value));
+
+  const hour = Number(
+    parts.find(part => part.type === "hour")?.value || "0"
+  );
+
+  const minute =
+    parts.find(part => part.type === "minute")?.value || "00";
+
+  return minute === "00"
+    ? `${hour}h`
+    : `${hour}h${minute}`;
 }
 
-function createShiftCard(shift) {
+function createShiftCard(group) {
   const card = document.createElement("article");
   card.className = "schedule-shift-card";
 
@@ -116,23 +171,23 @@ function createShiftCard(shift) {
   content.className = "schedule-shift-content";
 
   const poste = document.createElement("h3");
-  poste.textContent = shift.poste || "Poste à confirmer";
+  poste.textContent = group.poste;
   content.appendChild(poste);
 
   const time = document.createElement("div");
   time.className = "schedule-shift-time";
-  time.textContent = `${formatTime(shift.debut)} – ${formatTime(shift.fin)}`;
+  time.textContent = group.shifts
+    .map(
+      shift =>
+        `${formatCompactTime(shift.debut)}-${formatCompactTime(shift.fin)}`
+    )
+    .join(" | ");
   content.appendChild(time);
 
-  let locationName = shift.lieu || "";
-  if (!locationName && shift.note && shift.note.toLowerCase().includes("hall polyvalent / site")) {
-    locationName = "Hall polyvalent / Site festival";
-  }
-
-  if (locationName) {
+  if (group.location) {
     const location = document.createElement("p");
     location.className = "schedule-shift-location";
-    location.textContent = `📍 ${locationName}`;
+    location.textContent = `📍 ${group.location}`;
     content.appendChild(location);
   }
 
