@@ -2,19 +2,16 @@
    PORTAIL BÉNÉVOLES — TABLEAU DE BORD
    ========================================================= */
 
-
 const SUPABASE_URL =
   "https://ftfhtyohyjezoibmumum.supabase.co";
 
 const SUPABASE_KEY =
   "sb_publishable_oQOnxMDMyvx6ukcuJHgWuQ_Gu-utQe3";
 
-
 const supabaseClient = supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
-
 
 /* =========================================================
    ÉLÉMENTS DE LA PAGE
@@ -38,13 +35,14 @@ const adminSection =
 const dashboardMain =
   document.querySelector(".dashboard-main");
 
+const nextShiftContent =
+  document.getElementById("next-shift-content");
 
 /* =========================================================
    PETIT MESSAGE DANS LA PAGE
    ========================================================= */
 
 function showDashboardMessage(message, type = "info") {
-
   const oldMessage =
     document.querySelector(".dashboard-message");
 
@@ -62,18 +60,14 @@ function showDashboardMessage(message, type = "info") {
     message;
 
   dashboardMain.prepend(messageElement);
-
 }
-
 
 /* =========================================================
    NOM DU RÔLE
    ========================================================= */
 
 function getRoleLabel(role) {
-
   switch (role) {
-
     case "admin":
       return "Administration · Coordination bénévoles";
 
@@ -85,76 +79,190 @@ function getRoleLabel(role) {
 
     default:
       return "Bénévole";
-
   }
-
 }
 
+/* =========================================================
+   FORMATAGE DATE / HEURE
+   ========================================================= */
+
+function formatShiftDate(dateValue) {
+  return new Intl.DateTimeFormat(
+    "fr-BE",
+    {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      timeZone: "Europe/Brussels"
+    }
+  ).format(new Date(dateValue));
+}
+
+function formatShiftTime(dateValue) {
+  return new Intl.DateTimeFormat(
+    "fr-BE",
+    {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+      timeZone: "Europe/Brussels"
+    }
+  )
+    .format(new Date(dateValue))
+    .replace(":", "h");
+}
+
+/* =========================================================
+   PROCHAIN POSTE
+   ========================================================= */
+
+async function loadNextShift(benevoleId) {
+  if (!nextShiftContent) {
+    return;
+  }
+
+  const nowIso =
+    new Date().toISOString();
+
+  const {
+    data: shifts,
+    error: shiftError
+  } = await supabaseClient
+    .from("affectations_horaires")
+    .select(`
+      debut,
+      fin,
+      note,
+      postes (
+        nom
+      ),
+      lieux (
+        nom
+      )
+    `)
+    .eq("personne_id", benevoleId)
+    .eq("actif", true)
+    .gte("fin", nowIso)
+    .order("debut", { ascending: true })
+    .limit(1);
+
+  if (shiftError) {
+    console.error(
+      "Impossible de charger le prochain poste :",
+      shiftError
+    );
+    return;
+  }
+
+  if (!shifts || shifts.length === 0) {
+    return;
+  }
+
+  const shift = shifts[0];
+  const posteName =
+    shift.postes?.nom || "Poste à confirmer";
+
+  let locationName =
+    shift.lieux?.nom || "";
+
+  if (!locationName && shift.note) {
+    if (
+      shift.note.toLowerCase().includes("hall polyvalent / site")
+    ) {
+      locationName =
+        "Hall polyvalent / Site festival";
+    }
+  }
+
+  const dateLabel =
+    formatShiftDate(shift.debut);
+
+  const startTime =
+    formatShiftTime(shift.debut);
+
+  const endTime =
+    formatShiftTime(shift.fin);
+
+  nextShiftContent.className =
+    "next-shift-content";
+
+  nextShiftContent.innerHTML = "";
+
+  const poste =
+    document.createElement("p");
+
+  poste.className =
+    "next-shift-poste";
+
+  poste.textContent =
+    posteName;
+
+  const schedule =
+    document.createElement("p");
+
+  schedule.className =
+    "next-shift-schedule";
+
+  schedule.textContent =
+    `${dateLabel} · ${startTime} – ${endTime}`;
+
+  nextShiftContent.appendChild(poste);
+  nextShiftContent.appendChild(schedule);
+
+  if (locationName) {
+    const location =
+      document.createElement("p");
+
+    location.className =
+      "next-shift-location";
+
+    location.textContent =
+      `📍 ${locationName}`;
+
+    nextShiftContent.appendChild(location);
+  }
+}
 
 /* =========================================================
    CHARGEMENT DU PORTAIL
    ========================================================= */
 
 async function loadDashboard() {
-
-  /*
-     On vérifie d'abord que la personne
-     possède réellement une session Supabase.
-  */
-
   const {
     data: userData,
     error: userError
-  } =
-    await supabaseClient.auth.getUser();
-
+  } = await supabaseClient.auth.getUser();
 
   if (
     userError ||
     !userData ||
     !userData.user
   ) {
-
     window.location.replace("index.html");
-
     return;
   }
-
 
   const user =
     userData.user;
 
-
-  /*
-     On recherche maintenant la fiche bénévole
-     reliée à l'utilisateur connecté.
-  */
-
   const {
     data: benevole,
     error: benevoleError
-  } =
-    await supabaseClient
-
-      .from("benevoles")
-
-      .select(
-        "id, prenom, nom, email"
-      )
-
-      .eq(
-        "user_id",
-        user.id
-      )
-
-      .maybeSingle();
-
+  } = await supabaseClient
+    .from("benevoles")
+    .select(
+      "id, prenom, nom, email"
+    )
+    .eq(
+      "user_id",
+      user.id
+    )
+    .maybeSingle();
 
   if (
     benevoleError ||
     !benevole
   ) {
-
     console.error(
       "Fiche bénévole introuvable :",
       benevoleError
@@ -164,75 +272,53 @@ async function loadDashboard() {
       "Bénévole";
 
     showDashboardMessage(
-      "Ton compte est connecté mais ta fiche bénévole n'a pas pu être retrouvée. Contacte le reponsable Bénévoles.",
+      "Ton compte est connecté mais ta fiche bénévole n'a pas pu être retrouvée. Contacte le responsable Bénévoles.",
       "error"
     );
 
     return;
   }
 
-
-  /*
-     On affiche le prénom.
-  */
-
   firstnameElement.textContent =
     benevole.prenom;
-
-
-  /*
-     On recherche la participation
-     correspondant à l'édition active.
-  */
 
   const {
     data: participation,
     error: participationError
-  } =
-    await supabaseClient
-
-      .from("participations")
-
-      .select(`
-        role,
-        editions!inner (
-          annee,
-          active
-        )
-      `)
-
-      .eq(
-        "benevole_id",
-        benevole.id
+  } = await supabaseClient
+    .from("participations")
+    .select(`
+      role,
+      editions!inner (
+        annee,
+        active
       )
-
-      .eq(
-        "actif",
-        true
-      )
-
-      .eq(
-        "editions.active",
-        true
-      )
-
-      .order(
-        "created_at",
-        {
-          ascending: false
-        }
-      )
-
-      .limit(1)
-
-      .maybeSingle();
-
+    `)
+    .eq(
+      "benevole_id",
+      benevole.id
+    )
+    .eq(
+      "actif",
+      true
+    )
+    .eq(
+      "editions.active",
+      true
+    )
+    .order(
+      "created_at",
+      {
+        ascending: false
+      }
+    )
+    .limit(1)
+    .maybeSingle();
 
   if (
     participationError ||
     !participation
   ) {
-
     console.error(
       "Participation introuvable :",
       participationError
@@ -249,43 +335,29 @@ async function loadDashboard() {
     return;
   }
 
+  const role =
+    participation.role;
 
- const role =
-  participation.role;
+  roleElement.textContent =
+    getRoleLabel(role);
 
-
-/*
-   Affichage du rôle.
-*/
-
-roleElement.textContent =
-  getRoleLabel(role);
-
-
-  /*
-     Zones visibles selon le rôle.
-  */
+  await loadNextShift(
+    benevole.id
+  );
 
   if (
     role === "responsable" ||
     role === "admin"
   ) {
-
     responsableSection.hidden =
       false;
-
   }
-
 
   if (role === "admin") {
-
     adminSection.hidden =
       false;
-
   }
-
 }
-
 
 /* =========================================================
    DÉCONNEXION
@@ -294,20 +366,16 @@ roleElement.textContent =
 logoutButton.addEventListener(
   "click",
   async () => {
-
     logoutButton.disabled =
       true;
 
     logoutButton.textContent =
       "Déconnexion...";
 
-
     const { error } =
       await supabaseClient.auth.signOut();
 
-
     if (error) {
-
       console.error(
         "Erreur de déconnexion :",
         error
@@ -327,14 +395,11 @@ logoutButton.addEventListener(
       return;
     }
 
-
     window.location.replace(
       "index.html"
     );
-
   }
 );
-
 
 /* =========================================================
    RUBRIQUES PAS ENCORE ACTIVES
@@ -345,13 +410,10 @@ const futureLinks =
     '.dashboard-card[href="#"]'
   );
 
-
 futureLinks.forEach((link) => {
-
   link.addEventListener(
     "click",
     (event) => {
-
       event.preventDefault();
 
       showDashboardMessage(
@@ -362,12 +424,9 @@ futureLinks.forEach((link) => {
         top: 0,
         behavior: "smooth"
       });
-
     }
   );
-
 });
-
 
 /* =========================================================
    DÉMARRAGE
