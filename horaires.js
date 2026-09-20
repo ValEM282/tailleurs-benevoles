@@ -112,16 +112,17 @@ function createShiftCard(shift) {
   const card = document.createElement("article");
   card.className = "schedule-shift-card";
 
-  const time = document.createElement("div");
-  time.className = "schedule-shift-time";
-  time.textContent = `${formatTime(shift.debut)} – ${formatTime(shift.fin)}`;
-
   const content = document.createElement("div");
   content.className = "schedule-shift-content";
 
   const poste = document.createElement("h3");
   poste.textContent = shift.poste || "Poste à confirmer";
   content.appendChild(poste);
+
+  const time = document.createElement("div");
+  time.className = "schedule-shift-time";
+  time.textContent = `${formatTime(shift.debut)} – ${formatTime(shift.fin)}`;
+  content.appendChild(time);
 
   let locationName = shift.lieu || "";
   if (!locationName && shift.note && shift.note.toLowerCase().includes("hall polyvalent / site")) {
@@ -135,7 +136,6 @@ function createShiftCard(shift) {
     content.appendChild(location);
   }
 
-  card.appendChild(time);
   card.appendChild(content);
 
   return card;
