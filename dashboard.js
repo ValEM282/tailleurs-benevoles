@@ -200,7 +200,7 @@ async function loadNextShift() {
     "next-shift-schedule";
 
   schedule.textContent =
-    `${dateLabel} · ${startTime} – ${endTime}`;
+    `${dateLabel} · ${startTime}-${endTime}`;
 
   nextShiftContent.appendChild(poste);
   nextShiftContent.appendChild(schedule);
