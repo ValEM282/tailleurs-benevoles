@@ -1,1 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Mes horaires de bénévole — Portail Bénévoles</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dashboard-page">
+
+  <header class="dashboard-header">
+    <div class="subpage-header-inner">
+      <a href="dashboard.html" class="back-button">← Accueil</a>
+
+      <div class="dashboard-title">
+        🎪 PORTAIL BÉNÉVOLES 🎪
+      </div>
+
+      <button
+        type="button"
+        id="logout-button"
+        class="logout-button"
+      >
+        Se déconnecter
+      </button>
+    </div>
+  </header>
+
+  <main class="subpage-main">
+    <section class="subpage-heading">
+      <h1>Mes horaires de bénévole</h1>
+      <p class="subpage-intro">
+        Retrouve ici tous tes postes, jour par jour.
+      </p>
+    </section>
+
+    <section class="schedule-section">
+      <div id="schedule-loading" class="contacts-message">
+        Chargement de ton planning...
+      </div>
+
+      <div id="schedule-empty" class="contacts-message" hidden>
+        Aucun horaire disponible pour le moment.
+      </div>
+
+      <div id="schedule-error" class="contacts-message contacts-error" hidden>
+        Impossible de charger ton planning.
+      </div>
+
+      <div id="schedule-list"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="portal-auth.js"></script>
+  <script src="horaires.js"></script>
+</body>
+</html>
