@@ -116,41 +116,27 @@ function formatShiftTime(dateValue) {
    PROCHAIN POSTE
    ========================================================= */
 
-async function loadNextShift(benevoleId) {
+async function loadNextShift() {
   if (!nextShiftContent) {
     return;
   }
-
-  const nowIso =
-    new Date().toISOString();
 
   const {
     data: shifts,
     error: shiftError
   } = await supabaseClient
-    .from("affectations_horaires")
-    .select(`
-      debut,
-      fin,
-      note,
-      postes (
-        nom
-      ),
-      lieux (
-        nom
-      )
-    `)
-    .eq("personne_id", benevoleId)
-    .eq("actif", true)
-    .gte("fin", nowIso)
-    .order("debut", { ascending: true })
-    .limit(1);
+    .rpc("get_my_next_shift");
 
   if (shiftError) {
     console.error(
       "Impossible de charger le prochain poste :",
       shiftError
     );
+
+    nextShiftContent.innerHTML = `
+      <p class="empty-shift-title">Impossible de charger ton horaire</p>
+      <p>Réessaie dans un instant.</p>
+    `;
     return;
   }
 
@@ -159,11 +145,12 @@ async function loadNextShift(benevoleId) {
   }
 
   const shift = shifts[0];
+
   const posteName =
-    shift.postes?.nom || "Poste à confirmer";
+    shift.poste_nom || "Poste à confirmer";
 
   let locationName =
-    shift.lieux?.nom || "";
+    shift.lieu_nom || "";
 
   if (!locationName && shift.note) {
     if (
@@ -341,9 +328,7 @@ async function loadDashboard() {
   roleElement.textContent =
     getRoleLabel(role);
 
-  await loadNextShift(
-    benevole.id
-  );
+  await loadNextShift();
 
   if (
     role === "responsable" ||
