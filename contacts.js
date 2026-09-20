@@ -12,7 +12,6 @@ async function initContactsPage() {
     return;
   }
 
-
   const logoutButton =
     document.getElementById("logout-button");
 
@@ -28,7 +27,6 @@ async function initContactsPage() {
   const contactsList =
     document.getElementById("contacts-list");
 
-
   /* =========================================================
      DÉCONNEXION
      ========================================================= */
@@ -38,27 +36,19 @@ async function initContactsPage() {
     async () => {
 
       logoutButton.disabled = true;
-
       logoutButton.textContent =
         "Déconnexion...";
-
 
       const success =
         await PortalAuth.logout();
 
-
       if (!success) {
-
         logoutButton.disabled = false;
-
         logoutButton.textContent =
           "Se déconnecter";
-
       }
-
     }
   );
-
 
   /* =========================================================
      CHARGEMENT DES CONTACTS
@@ -72,36 +62,26 @@ async function initContactsPage() {
     } = await PortalAuth.client
       .rpc("get_contacts_portail");
 
-
     if (contactsError) {
       throw contactsError;
     }
-
-
-    /*
-       Aucun contact enregistré.
-    */
 
     if (
       !contacts ||
       contacts.length === 0
     ) {
-
       loadingElement.hidden = true;
       emptyElement.hidden = false;
-
       return;
     }
 
-
     /*
        Regroupement des personnes
-       qui ont le même sujet.
+       ayant la même responsabilité.
     */
 
     const groupedContacts =
       new Map();
-
 
     contacts.forEach(
       contact => {
@@ -111,137 +91,110 @@ async function initContactsPage() {
             contact.sujet
           )
         ) {
-
           groupedContacts.set(
             contact.sujet,
             []
           );
-
         }
-
 
         groupedContacts
           .get(contact.sujet)
           .push(contact);
-
       }
     );
 
-
     /*
-       Construction des cartes.
+       Tableau compact à deux colonnes :
+       responsabilité / responsable(s).
     */
 
-    contactsList.innerHTML = "";
+    const table =
+      document.createElement("table");
 
+    table.className =
+      "contacts-table";
+
+    const tbody =
+      document.createElement("tbody");
 
     groupedContacts.forEach(
       (people, subject) => {
 
-        const card =
-          document.createElement(
-            "article"
-          );
+        const row =
+          document.createElement("tr");
 
+        const subjectCell =
+          document.createElement("th");
 
-        card.className =
-          "contact-card";
-
-
-        const subjectElement =
-          document.createElement(
-            "p"
-          );
-
-
-        subjectElement.className =
-          "contact-role";
-
-
-        subjectElement.textContent =
+        subjectCell.scope = "row";
+        subjectCell.className =
+          "contacts-subject";
+        subjectCell.textContent =
           subject;
 
+        const peopleCell =
+          document.createElement("td");
 
-        card.appendChild(
-          subjectElement
-        );
-
+        peopleCell.className =
+          "contacts-people";
 
         people.forEach(
           person => {
 
             const contactPerson =
-              document.createElement(
-                "div"
-              );
-
+              document.createElement("div");
 
             contactPerson.className =
-              "contact-person";
-
+              "contact-person-row";
 
             const name =
-              document.createElement(
-                "h3"
-              );
+              document.createElement("strong");
 
+            name.className =
+              "contact-person-name";
 
             name.textContent =
               `${person.prenom} ${person.nom}`;
 
-
-            contactPerson.appendChild(
-              name
-            );
-
+            contactPerson.appendChild(name);
 
             if (person.telephone) {
 
               const phone =
-                document.createElement(
-                  "a"
-                );
-
+                document.createElement("a");
 
               phone.className =
                 "contact-phone";
-
 
               phone.href =
                 `tel:${formatPhoneForLink(
                   person.telephone
                 )}`;
 
-
               phone.textContent =
                 person.telephone;
 
-
-              contactPerson.appendChild(
-                phone
-              );
-
+              contactPerson.appendChild(phone);
             }
 
-
-            card.appendChild(
+            peopleCell.appendChild(
               contactPerson
             );
-
           }
         );
 
-
-        contactsList.appendChild(
-          card
-        );
-
+        row.appendChild(subjectCell);
+        row.appendChild(peopleCell);
+        tbody.appendChild(row);
       }
     );
 
+    table.appendChild(tbody);
+
+    contactsList.innerHTML = "";
+    contactsList.appendChild(table);
 
     loadingElement.hidden = true;
-
   }
 
   catch (error) {
@@ -251,28 +204,20 @@ async function initContactsPage() {
       error
     );
 
-
     loadingElement.hidden = true;
-
     errorElement.hidden = false;
-
   }
-
 }
-
 
 /* =========================================================
    FORMAT DU NUMÉRO POUR TEL:
    ========================================================= */
 
 function formatPhoneForLink(phone) {
-
   return phone.replace(
     /[^0-9+]/g,
     ""
   );
-
 }
-
 
 initContactsPage();
