@@ -73,7 +73,7 @@ function getDisplayedStatus(shift) {
   }
 
   if (shift.statut === "absent") {
-    return { key: "absent", label: "Absent(e)", color: "red" };
+    return { key: "absent", label: "Absent·e", color: "red" };
   }
 
   if (shift.statut === "hors_poste") {
@@ -89,7 +89,7 @@ function getDisplayedStatus(shift) {
   }
 
   if (shift.statut === "present" && shift.disponible) {
-    return { key: "disponible", label: "Je suis disponible pour autre chose", color: "blue" };
+    return { key: "disponible", label: "Je suis disponible pour un autre poste", color: "blue" };
   }
 
   if (shift.statut === "present") {
@@ -160,7 +160,7 @@ function buildPresenceArea(shift) {
   const availableButton = document.createElement("button");
   availableButton.type = "button";
   availableButton.className = "presence-action presence-action-blue";
-  availableButton.textContent = "Je suis disponible";
+  availableButton.textContent = "Je suis disponible pour un autre poste";
   availableButton.addEventListener("click", async () => {
     if (await savePresenceStatus(shift, "present", null, true)) loadNextShift();
   });
@@ -196,7 +196,7 @@ function buildPresenceArea(shift) {
   const absentButton = document.createElement("button");
   absentButton.type = "button";
   absentButton.className = "presence-action presence-action-red";
-  absentButton.textContent = now < start ? "Je serai absent(e)" : "Je ne suis pas à mon poste";
+  absentButton.textContent = now < start ? "Je serai absent·e" : "Je ne suis pas à mon poste";
   absentButton.addEventListener("click", async () => {
     const status = now < start ? "absent" : "hors_poste";
     if (await savePresenceStatus(shift, status, null, false)) loadNextShift();
