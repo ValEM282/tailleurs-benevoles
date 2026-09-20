@@ -143,8 +143,13 @@ async function initContactsPage() {
             name.className =
               "contact-person-name";
 
+            const lastNameInitial =
+              person.nom && person.nom.trim()
+                ? `${person.nom.trim().charAt(0).toUpperCase()}.`
+                : "";
+
             name.textContent =
-              `${person.prenom} ${person.nom}`;
+              `${person.prenom} ${lastNameInitial}`.trim();
 
             if (person.mention) {
               const mention =
