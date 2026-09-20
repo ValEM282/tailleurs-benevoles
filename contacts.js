@@ -75,11 +75,6 @@ async function initContactsPage() {
       return;
     }
 
-    /*
-       Regroupement des personnes
-       ayant la même responsabilité.
-    */
-
     const groupedContacts =
       new Map();
 
@@ -102,11 +97,6 @@ async function initContactsPage() {
           .push(contact);
       }
     );
-
-    /*
-       Tableau compact à deux colonnes :
-       responsabilité / responsable(s).
-    */
 
     const table =
       document.createElement("table");
@@ -155,6 +145,19 @@ async function initContactsPage() {
 
             name.textContent =
               `${person.prenom} ${person.nom}`;
+
+            if (person.mention) {
+              const mention =
+                document.createElement("span");
+
+              mention.className =
+                "contact-person-mention";
+
+              mention.textContent =
+                ` (${person.mention})`;
+
+              name.appendChild(mention);
+            }
 
             contactPerson.appendChild(name);
 
@@ -208,10 +211,6 @@ async function initContactsPage() {
     errorElement.hidden = false;
   }
 }
-
-/* =========================================================
-   FORMAT DU NUMÉRO POUR TEL:
-   ========================================================= */
 
 function formatPhoneForLink(phone) {
   return phone.replace(
