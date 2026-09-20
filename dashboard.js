@@ -99,7 +99,7 @@ function formatShiftDate(dateValue) {
 }
 
 function formatShiftTime(dateValue) {
-  return new Intl.DateTimeFormat(
+  const parts = new Intl.DateTimeFormat(
     "fr-BE",
     {
       hour: "2-digit",
@@ -107,9 +107,18 @@ function formatShiftTime(dateValue) {
       hour12: false,
       timeZone: "Europe/Brussels"
     }
-  )
-    .format(new Date(dateValue))
-    .replace(":", "h");
+  ).formatToParts(new Date(dateValue));
+
+  const hour = Number(
+    parts.find(part => part.type === "hour")?.value || "0"
+  );
+
+  const minute =
+    parts.find(part => part.type === "minute")?.value || "00";
+
+  return minute === "00"
+    ? `${hour}h`
+    : `${hour}h${minute}`;
 }
 
 /* =========================================================
