@@ -233,6 +233,8 @@
   left: -4px;
   width: 190px;
   padding: 6px;
+  display: flex;
+  flex-direction: column;
   background: var(--white);
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -252,6 +254,12 @@
   text-align: left;
   cursor: pointer;
 }
+
+.status-menu button:has(.status-present) { order: 1; }
+.status-menu button:has(.status-en_pause) { order: 2; }
+.status-menu button:has(.status-disponible) { order: 3; }
+.status-menu button:has(.status-absent) { order: 4; }
+.status-menu button:has(.status-inconnu) { order: 5; }
 
 .status-menu button:hover {
   background: rgba(28, 46, 171, 0.06);
