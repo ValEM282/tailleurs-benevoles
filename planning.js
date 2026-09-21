@@ -16,6 +16,12 @@ let filterRows = [];
 let selectedPostIds = new Set();
 let selectedPlaceIds = new Set();
 
+const alphaCollator = new Intl.Collator("fr", {
+  sensitivity: "base",
+  ignorePunctuation: true,
+  numeric: true
+});
+
 function formatPhoneForLink(value) {
   return (value || "").replace(/[^+\d]/g, "");
 }
@@ -64,11 +70,8 @@ function currentBrusselsParts() {
   };
 }
 
-function selectedMomentIso() {
-  const selectedDay = dayFilter.value;
-  const now = currentBrusselsParts();
-  // En septembre/octobre 2026, Bruxelles est encore en UTC+02:00.
-  return `${selectedDay}T${now.hour}:${now.minute}:${now.second}+02:00`;
+function currentMomentIso() {
+  return new Date().toISOString();
 }
 
 function showMessage(text, type = "info") {
@@ -94,9 +97,9 @@ function visibleRowsForDay() {
 function renderFilterOptions() {
   const rows = visibleRowsForDay();
   const posts = uniqueBy(rows, row => String(row.poste_id))
-    .sort((a, b) => a.poste_nom.localeCompare(b.poste_nom, "fr"));
+    .sort((a, b) => alphaCollator.compare(a.poste_nom, b.poste_nom));
   const places = uniqueBy(rows.filter(row => row.lieu_id !== null), row => String(row.lieu_id))
-    .sort((a, b) => a.lieu_nom.localeCompare(b.lieu_nom, "fr"));
+    .sort((a, b) => alphaCollator.compare(a.lieu_nom, b.lieu_nom));
 
   selectedPostIds = new Set([...selectedPostIds].filter(id => posts.some(p => String(p.poste_id) === id)));
   selectedPlaceIds = new Set([...selectedPlaceIds].filter(id => places.some(p => String(p.lieu_id) === id)));
@@ -198,7 +201,8 @@ function buildStatusControl(row) {
     ["present", "Présent·e"],
     ["absent", "Absent·e"],
     ["disponible", "Disponible"],
-    ["en_pause", "En pause"]
+    ["en_pause", "En pause"],
+    ["inconnu", "Inconnu"]
   ].forEach(([key, label]) => {
     const button = document.createElement("button");
     button.type = "button";
@@ -244,78 +248,85 @@ function renderGroups(rows) {
     groups.get(key).rows.push(row);
   });
 
-  groups.forEach(group => {
-    const section = document.createElement("section");
-    section.className = "now-group";
-    const title = document.createElement("h3");
-    title.className = "now-group-title";
-    title.textContent = `${group.poste} · ${group.lieu}`;
-    section.appendChild(title);
+  [...groups.values()]
+    .sort((a, b) => alphaCollator.compare(a.poste, b.poste) || alphaCollator.compare(a.lieu || "", b.lieu || ""))
+    .forEach(group => {
+      const section = document.createElement("section");
+      section.className = "now-group";
+      const title = document.createElement("h3");
+      title.className = "now-group-title";
+      title.textContent = `${group.poste} · ${group.lieu}`;
+      section.appendChild(title);
 
-    const list = document.createElement("div");
-    list.className = "volunteer-list";
+      const list = document.createElement("div");
+      list.className = "volunteer-list";
 
-    group.rows.forEach(row => {
-      const item = document.createElement("div");
-      item.className = "volunteer-row";
-      item.appendChild(buildStatusControl(row));
+      group.rows.forEach(row => {
+        const item = document.createElement("div");
+        item.className = "volunteer-row";
+        item.appendChild(buildStatusControl(row));
 
-      const identity = document.createElement("div");
-      identity.className = "volunteer-name";
-      const first = document.createElement("span");
-      first.className = "volunteer-firstname";
-      first.textContent = row.prenom;
-      identity.appendChild(first);
+        const identity = document.createElement("div");
+        identity.className = "volunteer-name";
+        const first = document.createElement("span");
+        first.className = "volunteer-firstname";
+        first.textContent = row.prenom;
+        identity.appendChild(first);
 
-      const meta = document.createElement("div");
-      meta.className = "volunteer-meta";
-      const surname = document.createElement("span");
-      surname.className = "volunteer-surname";
-      surname.textContent = (row.nom || "").toUpperCase();
-      meta.appendChild(surname);
+        const meta = document.createElement("div");
+        meta.className = "volunteer-meta";
+        const surname = document.createElement("span");
+        surname.className = "volunteer-surname";
+        surname.textContent = (row.nom || "").toUpperCase();
+        meta.appendChild(surname);
 
-      if (row.telephone) {
-        const phone = document.createElement("a");
-        phone.className = "volunteer-phone";
-        phone.href = `tel:${formatPhoneForLink(row.telephone)}`;
-        phone.textContent = `📞 ${row.telephone}`;
-        meta.appendChild(phone);
-      }
-      identity.appendChild(meta);
+        if (row.telephone) {
+          const phone = document.createElement("a");
+          phone.className = "volunteer-phone";
+          phone.href = `tel:${formatPhoneForLink(row.telephone)}`;
+          phone.textContent = `📞 ${row.telephone}`;
+          meta.appendChild(phone);
+        }
+        identity.appendChild(meta);
 
-      const status = statusInfo(row);
-      if (row.statut === "retard") {
-        const delay = document.createElement("span");
-        delay.className = "delay-label";
-        delay.textContent = status.label;
-        identity.appendChild(delay);
-      }
+        const status = statusInfo(row);
+        if (row.statut === "retard") {
+          const delay = document.createElement("span");
+          delay.className = "delay-label";
+          delay.textContent = status.label;
+          identity.appendChild(delay);
+        }
 
-      item.appendChild(identity);
+        item.appendChild(identity);
 
-      const end = document.createElement("div");
-      end.className = "volunteer-end";
-      end.textContent = `→ ${formatTime(row.fin)}`;
-      item.appendChild(end);
-      list.appendChild(item);
+        const end = document.createElement("div");
+        end.className = "volunteer-end";
+        end.textContent = `→ ${formatTime(row.fin)}`;
+        item.appendChild(end);
+        list.appendChild(item);
+      });
+
+      section.appendChild(list);
+      nowGroups.appendChild(section);
     });
-
-    section.appendChild(list);
-    nowGroups.appendChild(section);
-  });
 }
 
 async function loadNow() {
   hideMessage();
+  const now = currentBrusselsParts();
+  momentLabel.textContent = `${formatDayLabel(now.date)} · ${now.hour}h${now.minute}`;
+
+  if (dayFilter.value !== now.date) {
+    renderGroups([]);
+    return;
+  }
+
   nowGroups.innerHTML = `<div class="empty-now">Chargement…</div>`;
-  const moment = selectedMomentIso();
   const postIds = selectedPostIds.size ? [...selectedPostIds].map(Number) : null;
   const placeIds = selectedPlaceIds.size ? [...selectedPlaceIds].map(Number) : null;
 
-  momentLabel.textContent = `${formatDayLabel(dayFilter.value)} · ${currentBrusselsParts().hour}h${currentBrusselsParts().minute}`;
-
   const { data, error } = await supabaseClient.rpc("get_planning_now", {
-    p_moment: moment,
+    p_moment: currentMomentIso(),
     p_poste_ids: postIds,
     p_lieu_ids: placeIds
   });
@@ -344,7 +355,8 @@ async function init() {
   }
 
   filterRows = data || [];
-  const days = [...new Set(filterRows.map(row => row.jour))].sort();
+  const days = [...new Set(filterRows.map(row => row.jour))]
+    .sort((a, b) => a.localeCompare(b));
   dayFilter.innerHTML = "";
   days.forEach(day => {
     const option = document.createElement("option");
