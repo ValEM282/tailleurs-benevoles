@@ -77,6 +77,11 @@ function formatTimeUntil(value) {
   return parts.join(" ");
 }
 
+function isReinforcementShift(shift) {
+  const note = (shift.note || "").toLowerCase();
+  return note.startsWith("renfort") || note.startsWith("affectation depuis la liste des bénévoles disponibles");
+}
+
 function getDisplayedStatus(shift) {
   const now = Date.now();
   const start = new Date(shift.debut).getTime();
@@ -188,6 +193,26 @@ function buildPresenceArea(shift) {
   });
   actions.appendChild(availableButton);
 
+  if (now >= start) {
+    const pauseButton = document.createElement("button");
+    pauseButton.type = "button";
+    pauseButton.className = "presence-action presence-action-purple";
+    pauseButton.textContent = "Je suis en pause";
+    pauseButton.addEventListener("click", async () => {
+      if (await savePresenceStatus(shift, "en_pause", null, false)) loadNextShift();
+    });
+    actions.appendChild(pauseButton);
+
+    const unknownButton = document.createElement("button");
+    unknownButton.type = "button";
+    unknownButton.className = "presence-action presence-action-gray";
+    unknownButton.textContent = "Je passe en statut Inconnu";
+    unknownButton.addEventListener("click", async () => {
+      if (await savePresenceStatus(shift, "inconnu", null, false)) loadNextShift();
+    });
+    actions.appendChild(unknownButton);
+  }
+
   if (now < start) {
     const delayWrap = document.createElement("div");
     delayWrap.className = "delay-control";
@@ -263,7 +288,9 @@ async function loadNextShift() {
 
   const schedule = document.createElement("p");
   schedule.className = "next-shift-schedule";
-  schedule.textContent = `${formatShiftDate(shift.debut)} · ${formatShiftTime(shift.debut)}-${formatShiftTime(shift.fin)}`;
+  schedule.textContent = isReinforcementShift(shift)
+    ? `${formatShiftDate(shift.debut)} · ${formatShiftTime(shift.debut)} - renfort`
+    : `${formatShiftDate(shift.debut)} · ${formatShiftTime(shift.debut)}-${formatShiftTime(shift.fin)}`;
   nextShiftContent.appendChild(schedule);
 
   if (locationName) {
