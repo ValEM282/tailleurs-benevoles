@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planning responsable — Les Tailleurs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="planning.css?v=20260921-1">
+</head>
+<body class="dashboard-page planning-page">
+  <header class="dashboard-header">
+    <div class="dashboard-header-inner">
+      <a class="planning-back" href="dashboard.html" aria-label="Retour au portail">← Retour</a>
+      <div class="dashboard-title">🎪 PORTAIL BÉNÉVOLES 🎪</div>
+      <button type="button" id="logout-button" class="logout-button">Se déconnecter</button>
+    </div>
+  </header>
+
+  <main class="dashboard-main planning-main">
+    <section class="planning-intro">
+      <h1>Planning</h1>
+    </section>
+
+    <section class="planning-filters" aria-label="Filtres du planning">
+      <div class="filter-block filter-day">
+        <label for="day-filter">Jour</label>
+        <select id="day-filter"></select>
+      </div>
+
+      <div class="filter-block">
+        <span class="filter-label">Poste(s)</span>
+        <details class="multi-filter" id="post-filter">
+          <summary>Tous les postes</summary>
+          <div class="multi-filter-options" id="post-options"></div>
+        </details>
+      </div>
+
+      <div class="filter-block">
+        <span class="filter-label">Lieu(x)</span>
+        <details class="multi-filter" id="place-filter">
+          <summary>Tous les lieux</summary>
+          <div class="multi-filter-options" id="place-options"></div>
+        </details>
+      </div>
+    </section>
+
+    <section class="now-section">
+      <div class="now-heading">
+        <div>
+          <p class="section-label">Vue terrain</p>
+          <h2>POUR L'INSTANT</h2>
+        </div>
+        <div id="moment-label" class="moment-label"></div>
+      </div>
+
+      <div id="planning-message" class="planning-message" hidden></div>
+      <div id="now-groups" class="now-groups" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="planning.js?v=20260921-1"></script>
+</body>
+</html>
