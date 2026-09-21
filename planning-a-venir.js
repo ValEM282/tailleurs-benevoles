@@ -306,10 +306,20 @@ function renderGroups(rows) {
           ...entry,
           rows: entry.rows.sort((a, b) => new Date(a.debut) - new Date(b.debut))
         }))
-        .sort((a, b) =>
-          alphaCollator.compare(a.nom || "", b.nom || "") ||
-          alphaCollator.compare(a.prenom || "", b.prenom || "")
-        );
+        .sort((a, b) => {
+          const firstStartA = new Date(a.rows[0].debut);
+          const firstStartB = new Date(b.rows[0].debut);
+          const startDiff = firstStartA - firstStartB;
+          if (startDiff) return startDiff;
+
+          const lastEndA = new Date(Math.max(...a.rows.map(row => new Date(row.fin).getTime())));
+          const lastEndB = new Date(Math.max(...b.rows.map(row => new Date(row.fin).getTime())));
+          const endDiff = lastEndA - lastEndB;
+          if (endDiff) return endDiff;
+
+          return alphaCollator.compare(a.nom || "", b.nom || "") ||
+            alphaCollator.compare(a.prenom || "", b.prenom || "");
+        });
 
       const list = document.createElement("div");
       list.className = "volunteer-list";
