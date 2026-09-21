@@ -78,22 +78,33 @@
   min-width: 0;
 }
 
-.dispo-name {
+.dispo-firstname {
+  display: block;
   font-size: 1.08rem;
-  line-height: 1.15;
+  font-weight: 700;
+  line-height: 1.12;
 }
 
-.dispo-name span {
+.dispo-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 3px;
+  color: var(--text-light);
+}
+
+.dispo-surname {
+  font-size: 0.86rem;
   font-weight: 600;
   letter-spacing: 0.035em;
 }
 
 .dispo-phone {
-  display: inline-block;
-  margin-top: 3px;
   color: var(--blue);
   font-weight: 700;
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .dispo-phone:hover {
@@ -106,6 +117,52 @@
   color: var(--blue);
   font-weight: 700;
   white-space: nowrap;
+}
+
+.dispo-assign {
+  grid-column: 2 / 4;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 9px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.dispo-assign-select {
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--white);
+  color: var(--text);
+  font-family: "Titillium Web", Arial, sans-serif;
+  font-size: 0.98rem;
+}
+
+.dispo-assign-select:disabled {
+  background: #f4f5f8;
+  color: var(--text-light);
+}
+
+.dispo-assign-button {
+  min-height: 42px;
+  padding: 8px 15px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--blue);
+  color: var(--white);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dispo-assign-button:hover:not(:disabled) {
+  background: #14248c;
+}
+
+.dispo-assign-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .dispo-message,
@@ -143,7 +200,22 @@
 
   .dispo-since {
     grid-column: 2;
-    padding-top: 5px;
+    padding-top: 2px;
     white-space: normal;
+  }
+
+  .dispo-assign {
+    grid-column: 2;
+    grid-template-columns: 1fr;
+  }
+
+  .dispo-meta {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .dispo-assign-button {
+    width: 100%;
   }
 }
