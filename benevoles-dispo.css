@@ -1,0 +1,149 @@
+.dispo-main {
+  max-width: 1080px;
+}
+
+.dispo-filter-card {
+  display: grid;
+  grid-template-columns: minmax(220px, 360px);
+  gap: 14px;
+  margin-bottom: 26px;
+  padding: 18px;
+  background: var(--white);
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(20, 28, 80, 0.08);
+}
+
+.dispo-filter-block label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 700;
+  color: var(--blue);
+}
+
+.dispo-filter-block select {
+  width: 100%;
+  min-height: 44px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--white);
+  font-family: "Titillium Web", Arial, sans-serif;
+  font-size: 1rem;
+}
+
+.dispo-section {
+  padding: 22px;
+  background: var(--white);
+  border-radius: 18px;
+  box-shadow: 0 8px 22px rgba(20, 28, 80, 0.08);
+}
+
+.dispo-heading h1 {
+  margin: 0 0 18px;
+  color: var(--blue);
+  font-family: "Macho", "Titillium Web", sans-serif;
+  font-size: 1.6rem;
+}
+
+.dispo-list {
+  border: 1px solid rgba(28, 46, 171, 0.12);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.dispo-row {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px;
+  padding: 15px 16px;
+  border-top: 1px solid rgba(28, 46, 171, 0.12);
+}
+
+.dispo-row:first-child {
+  border-top: 0;
+}
+
+.dispo-dot {
+  width: 18px;
+  height: 18px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: var(--blue);
+  border: 2px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 0 0 3px var(--white);
+}
+
+.dispo-identity {
+  min-width: 0;
+}
+
+.dispo-name {
+  font-size: 1.08rem;
+  line-height: 1.15;
+}
+
+.dispo-name span {
+  font-weight: 600;
+  letter-spacing: 0.035em;
+}
+
+.dispo-phone {
+  display: inline-block;
+  margin-top: 3px;
+  color: var(--blue);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.dispo-phone:hover {
+  color: var(--red);
+  text-decoration: underline;
+}
+
+.dispo-since {
+  padding-top: 1px;
+  color: var(--blue);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.dispo-message,
+.dispo-empty {
+  padding: 18px;
+  border-radius: 12px;
+  background: rgba(28, 46, 171, 0.06);
+  color: var(--text-light);
+  text-align: center;
+}
+
+.dispo-message {
+  margin-bottom: 16px;
+}
+
+.dispo-message.error {
+  color: #a90022;
+  background: rgba(228, 2, 48, 0.08);
+}
+
+@media (max-width: 700px) {
+  .dispo-filter-card {
+    grid-template-columns: 1fr;
+  }
+
+  .dispo-section {
+    padding: 16px;
+  }
+
+  .dispo-row {
+    grid-template-columns: 22px minmax(0, 1fr);
+    gap: 8px;
+    padding: 14px 12px;
+  }
+
+  .dispo-since {
+    grid-column: 2;
+    padding-top: 5px;
+    white-space: normal;
+  }
+}
