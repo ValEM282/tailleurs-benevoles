@@ -34,12 +34,14 @@ function getRoleLabel(role) {
 }
 
 function formatShiftDate(dateValue) {
-  return new Intl.DateTimeFormat("fr-BE", {
+  const label = new Intl.DateTimeFormat("fr-BE", {
     weekday: "long",
     day: "numeric",
     month: "long",
     timeZone: "Europe/Brussels"
   }).format(new Date(dateValue));
+
+  return label.charAt(0).toUpperCase() + label.slice(1);
 }
 
 function formatShiftTime(dateValue) {
