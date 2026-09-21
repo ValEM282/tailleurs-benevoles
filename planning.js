@@ -302,7 +302,9 @@ function renderGroups(rows) {
 
         const end = document.createElement("div");
         end.className = "volunteer-end";
-        end.textContent = `→ ${formatTime(row.fin)}`;
+        end.textContent = row.renfort
+          ? `→ ${formatTime(row.debut)} - renfort`
+          : `→ ${formatTime(row.fin)}`;
         item.appendChild(end);
         list.appendChild(item);
       });
