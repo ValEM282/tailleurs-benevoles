@@ -114,7 +114,7 @@ function buildPresenceArea(shift) {
 
   const title = document.createElement("div");
   title.className = "presence-title";
-  title.textContent = "Mon statut";
+  title.textContent = "Mon statut actuel";
   wrapper.appendChild(title);
 
   const current = getDisplayedStatus(shift);
