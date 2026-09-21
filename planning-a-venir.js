@@ -157,11 +157,20 @@ function statusInfo(row) {
   return { key: row.statut || "inconnu", label: labels[row.statut] || "Inconnu" };
 }
 
-async function changeStatus(affectationId, status) {
-  const { error } = await supabaseClient.rpc("set_managed_presence_status", {
-    p_affectation_id: affectationId,
-    p_statut: status
-  });
+function mergedStatus(rows) {
+  const first = statusInfo(rows[0]);
+  const same = rows.every(row => statusInfo(row).key === first.key && statusInfo(row).label === first.label);
+  return same ? first : { key: "inconnu", label: "Inconnu" };
+}
+
+async function changeStatus(affectationIds, status) {
+  const results = await Promise.all(
+    affectationIds.map(affectationId => supabaseClient.rpc("set_managed_presence_status", {
+      p_affectation_id: affectationId,
+      p_statut: status
+    }))
+  );
+  const error = results.find(result => result.error)?.error;
   if (error) {
     console.error(error);
     showMessage("Impossible de modifier ce statut.", "error");
@@ -170,8 +179,8 @@ async function changeStatus(affectationId, status) {
   await loadUpcoming();
 }
 
-function buildStatusControl(row) {
-  const status = statusInfo(row);
+function buildStatusControl(entry) {
+  const status = mergedStatus(entry.rows);
   const wrapper = document.createElement("div");
   wrapper.className = "status-control";
 
@@ -202,7 +211,7 @@ function buildStatusControl(row) {
     button.addEventListener("click", async event => {
       event.stopPropagation();
       menu.hidden = true;
-      await changeStatus(row.affectation_id, key);
+      await changeStatus(entry.rows.map(row => row.affectation_id), key);
     });
     menu.appendChild(button);
   });
@@ -247,20 +256,45 @@ function renderGroups(rows) {
       title.textContent = `${group.poste} · ${group.lieu}`;
       section.appendChild(title);
 
+      const byPerson = new Map();
+      group.rows.forEach(row => {
+        const key = String(row.personne_id);
+        if (!byPerson.has(key)) {
+          byPerson.set(key, {
+            prenom: row.prenom,
+            nom: row.nom,
+            telephone: row.telephone,
+            rows: []
+          });
+        }
+        byPerson.get(key).rows.push(row);
+      });
+
+      const entries = [...byPerson.values()]
+        .map(entry => ({
+          ...entry,
+          rows: entry.rows.sort((a, b) => new Date(a.debut) - new Date(b.debut))
+        }))
+        .sort((a, b) => {
+          const firstA = new Date(a.rows[0].debut);
+          const firstB = new Date(b.rows[0].debut);
+          return firstA - firstB || alphaCollator.compare(a.prenom, b.prenom) || alphaCollator.compare(a.nom || "", b.nom || "");
+        });
+
       const list = document.createElement("div");
       list.className = "volunteer-list";
 
-      group.rows.forEach(row => {
+      entries.forEach(entry => {
         const item = document.createElement("div");
         item.className = "volunteer-row";
-        item.appendChild(buildStatusControl(row));
+        item.appendChild(buildStatusControl(entry));
 
         const identity = document.createElement("div");
         identity.className = "volunteer-name";
 
         const first = document.createElement("span");
         first.className = "volunteer-firstname";
-        first.textContent = row.prenom;
+        first.textContent = entry.prenom;
         identity.appendChild(first);
 
         const meta = document.createElement("div");
@@ -268,23 +302,25 @@ function renderGroups(rows) {
 
         const surname = document.createElement("span");
         surname.className = "volunteer-surname";
-        surname.textContent = (row.nom || "").toUpperCase();
+        surname.textContent = (entry.nom || "").toUpperCase();
         meta.appendChild(surname);
 
-        if (row.telephone) {
+        if (entry.telephone) {
           const phone = document.createElement("a");
           phone.className = "volunteer-phone";
-          phone.href = `tel:${formatPhoneForLink(row.telephone)}`;
-          phone.textContent = `📞 ${row.telephone}`;
+          phone.href = `tel:${formatPhoneForLink(entry.telephone)}`;
+          phone.textContent = `📞 ${entry.telephone}`;
           meta.appendChild(phone);
         }
         identity.appendChild(meta);
 
-        const status = statusInfo(row);
-        if (row.statut === "retard") {
+        const delays = entry.rows
+          .filter(row => row.statut === "retard")
+          .map(row => `En retard de ${row.retard_minutes || 0} min`);
+        if (delays.length) {
           const delay = document.createElement("span");
           delay.className = "delay-label";
-          delay.textContent = status.label;
+          delay.textContent = [...new Set(delays)].join(" · ");
           identity.appendChild(delay);
         }
 
@@ -292,7 +328,9 @@ function renderGroups(rows) {
 
         const range = document.createElement("div");
         range.className = "volunteer-end";
-        range.textContent = `→ ${formatTime(row.debut)}-${formatTime(row.fin)}`;
+        range.textContent = entry.rows
+          .map(row => `→ ${formatTime(row.debut)}-${formatTime(row.fin)}`)
+          .join(" | ");
         item.appendChild(range);
         list.appendChild(item);
       });
