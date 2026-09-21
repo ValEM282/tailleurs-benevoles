@@ -38,6 +38,123 @@
   color: var(--text);
 }
 
+.volunteer-status-control {
+  position: relative;
+  display: inline-block;
+}
+
+.volunteer-status-button {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--text);
+  font-family: "Titillium Web", Arial, sans-serif;
+  font-size: 0.98rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.volunteer-status-button:hover {
+  border-color: rgba(28, 46, 171, 0.35);
+  box-shadow: 0 6px 16px rgba(20, 28, 80, 0.08);
+}
+
+.volunteer-status-dot,
+.volunteer-status-swatch {
+  flex: 0 0 auto;
+  border-radius: 50%;
+}
+
+.volunteer-status-dot {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 0 0 3px var(--white);
+}
+
+.volunteer-status-swatch {
+  width: 12px;
+  height: 12px;
+}
+
+.volunteer-status-present { background: #176b35; }
+.volunteer-status-disponible { background: var(--blue); }
+.volunteer-status-en_pause { background: var(--purple, #891E82); }
+.volunteer-status-retard { background: #f39c12; }
+.volunteer-status-absent,
+.volunteer-status-hors_poste { background: var(--red); }
+.volunteer-status-inconnu,
+.volunteer-status-a_venir,
+.volunteer-status-termine { background: #8a8f99; }
+
+.volunteer-status-chevron {
+  margin-left: 2px;
+  color: var(--blue);
+}
+
+.volunteer-status-menu {
+  position: absolute;
+  z-index: 120;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 220px;
+  padding: 6px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  box-shadow: 0 12px 30px rgba(20, 28, 80, 0.18);
+}
+
+.volunteer-status-option,
+.volunteer-delay-choice {
+  font-family: "Titillium Web", Arial, sans-serif;
+  cursor: pointer;
+}
+
+.volunteer-status-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.96rem;
+  text-align: left;
+}
+
+.volunteer-status-option:hover {
+  background: rgba(28, 46, 171, 0.06);
+}
+
+.volunteer-delay-choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 4px 8px 9px 31px;
+}
+
+.volunteer-delay-choice {
+  min-height: 34px;
+  padding: 5px 7px;
+  border: 1px solid rgba(243, 156, 18, 0.45);
+  border-radius: 8px;
+  background: var(--white);
+  color: #9b5a00;
+  font-weight: 700;
+}
+
+.volunteer-delay-choice:hover {
+  background: rgba(243, 156, 18, 0.09);
+}
+
 .presence-badge {
   display: inline-block;
   padding: 7px 11px;
@@ -259,6 +376,15 @@
 
   .delay-control .presence-action {
     flex: 1 1 auto;
+  }
+
+  .volunteer-status-control,
+  .volunteer-status-button {
+    width: 100%;
+  }
+
+  .volunteer-status-menu {
+    width: min(100%, 260px);
   }
 
   .team-menu-grid {
