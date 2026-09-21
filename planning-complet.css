@@ -1,0 +1,134 @@
+/* Planning complet responsable/admin */
+
+.complete-filters select {
+  width: 100%;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--white);
+  font-family: "Titillium Web", Arial, sans-serif;
+  font-size: 1rem;
+}
+
+.complete-title-card {
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 18px;
+  background: rgba(28, 46, 171, 0.06);
+  color: var(--blue);
+  border: 1px solid rgba(28, 46, 171, 0.12);
+  border-radius: 14px;
+}
+
+.complete-title-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.complete-title-post {
+  font-size: 1.18rem;
+  font-weight: 700;
+}
+
+.complete-title-place {
+  margin-top: 2px;
+  font-size: 0.92rem;
+  font-weight: 400;
+}
+
+.complete-title-day {
+  flex: 0 0 auto;
+  align-self: flex-end;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.complete-grid-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid rgba(28, 46, 171, 0.12);
+  border-radius: 14px;
+  background: var(--white);
+}
+
+.complete-grid {
+  width: 100%;
+  min-width: max-content;
+  border-collapse: collapse;
+}
+
+.complete-grid th,
+.complete-grid td {
+  min-width: 130px;
+  padding: 12px 14px;
+  border-right: 1px solid rgba(28, 46, 171, 0.12);
+  vertical-align: top;
+  text-align: center;
+}
+
+.complete-grid th:last-child,
+.complete-grid td:last-child {
+  border-right: 0;
+}
+
+.complete-grid thead th {
+  background: rgba(28, 46, 171, 0.06);
+  color: var(--blue);
+  font-size: 0.98rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.complete-grid tbody td {
+  border-top: 1px solid rgba(28, 46, 171, 0.12);
+}
+
+.complete-cell-names {
+  display: grid;
+  gap: 6px;
+}
+
+.complete-volunteer-name {
+  font-size: 0.96rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.complete-empty-cell {
+  color: var(--text-light);
+}
+
+@media (max-width: 760px) {
+  .complete-title-card {
+    gap: 12px;
+    padding: 11px 13px;
+  }
+
+  .complete-title-post {
+    font-size: 1.08rem;
+  }
+
+  .complete-title-place {
+    font-size: 0.82rem;
+  }
+
+  .complete-title-day {
+    font-size: 0.82rem;
+  }
+
+  .complete-grid th,
+  .complete-grid td {
+    min-width: 112px;
+    padding: 10px 11px;
+  }
+}
