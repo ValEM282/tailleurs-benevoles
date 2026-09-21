@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bénévoles disponibles — Les Tailleurs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20260921-2">
+  <link rel="stylesheet" href="benevoles-dispo.css?v=20260921-1">
+</head>
+<body class="dashboard-page">
+  <header class="dashboard-header">
+    <div class="subpage-header-inner">
+      <a href="dashboard.html" class="back-button">← Accueil</a>
+      <div class="dashboard-title">🎪 PORTAIL BÉNÉVOLES 🎪</div>
+      <button type="button" id="logout-button" class="logout-button">Se déconnecter</button>
+    </div>
+  </header>
+
+  <main class="dashboard-main dispo-main">
+    <section class="dispo-filter-card" aria-label="Filtre du jour">
+      <div class="dispo-filter-block">
+        <label for="day-filter">Jour</label>
+        <select id="day-filter"></select>
+      </div>
+    </section>
+
+    <section class="dispo-section">
+      <div class="dispo-heading">
+        <h1>Bénévoles disponibles</h1>
+      </div>
+
+      <div id="dispo-message" class="dispo-message" hidden></div>
+      <div id="dispo-list" class="dispo-list" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="benevoles-dispo.js?v=20260921-1"></script>
+</body>
+</html>
