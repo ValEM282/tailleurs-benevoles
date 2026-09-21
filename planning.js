@@ -262,7 +262,18 @@ function renderGroups(rows) {
       const list = document.createElement("div");
       list.className = "volunteer-list";
 
-      group.rows.forEach(row => {
+      const sortedRows = [...group.rows].sort((a, b) => {
+        const startDiff = new Date(a.debut) - new Date(b.debut);
+        if (startDiff) return startDiff;
+
+        const endDiff = new Date(a.fin) - new Date(b.fin);
+        if (endDiff) return endDiff;
+
+        return alphaCollator.compare(a.nom || "", b.nom || "") ||
+          alphaCollator.compare(a.prenom || "", b.prenom || "");
+      });
+
+      sortedRows.forEach(row => {
         const item = document.createElement("div");
         item.className = "volunteer-row";
         item.appendChild(buildStatusControl(row));
