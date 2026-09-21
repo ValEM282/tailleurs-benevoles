@@ -236,7 +236,7 @@ function renderGroups(rows) {
   if (!rows.length) {
     const empty = document.createElement("div");
     empty.className = "empty-now";
-    empty.textContent = "Aucun bénévole n'est prévu à ce moment-là avec les filtres sélectionnés.";
+    empty.textContent = "Aucun planning horaire actuellement en cours";
     nowGroups.appendChild(empty);
     return;
   }
