@@ -95,8 +95,14 @@
 }
 
 .presence-action-green {
-  color: #176b35;
-  border-color: rgba(39, 174, 96, 0.45);
+  color: var(--white);
+  background: #176b35;
+  border-color: #176b35;
+}
+
+.presence-action-green:hover {
+  background: #12592c;
+  border-color: #12592c;
 }
 
 .presence-action-blue {
@@ -110,8 +116,14 @@
 }
 
 .presence-action-red {
-  color: #a90022;
-  border-color: rgba(228, 2, 48, 0.4);
+  color: var(--white);
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.presence-action-red:hover {
+  background: #c80029;
+  border-color: #c80029;
 }
 
 .delay-control {
