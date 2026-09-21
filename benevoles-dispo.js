@@ -70,7 +70,7 @@ async function assignVolunteer(person, select, button) {
     showMessage(error.message || "Impossible d'affecter ce bénévole.", "error");
     button.disabled = false;
     select.disabled = false;
-    button.textContent = "Affecter";
+    button.textContent = "Valider";
     return;
   }
 
@@ -154,7 +154,7 @@ function renderVolunteers(rows) {
       const button = document.createElement("button");
       button.type = "button";
       button.className = "dispo-assign-button";
-      button.textContent = "Affecter";
+      button.textContent = "Valider";
       button.disabled = true;
 
       select.disabled = !activeTargets.length;
