@@ -49,6 +49,16 @@ function formatDayLabel(isoDate) {
   return label.charAt(0).toUpperCase() + label.slice(1);
 }
 
+function formatWeekdayUpper(isoDate) {
+  if (!isoDate) return "";
+  const [year, month, day] = isoDate.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day, 12));
+  return new Intl.DateTimeFormat("fr-BE", {
+    weekday: "long",
+    timeZone: "Europe/Brussels"
+  }).format(date).toUpperCase();
+}
+
 function currentBrusselsDate() {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Europe/Brussels",
@@ -252,8 +262,29 @@ function renderGroups(rows) {
       section.className = "now-group";
 
       const title = document.createElement("h3");
-      title.className = "now-group-title";
-      title.textContent = `${group.poste} · ${group.lieu}`;
+      title.className = "now-group-title upcoming-group-title";
+
+      const titleMain = document.createElement("span");
+      titleMain.className = "upcoming-title-main";
+
+      const postName = document.createElement("span");
+      postName.className = "upcoming-title-post";
+      postName.textContent = group.poste;
+      titleMain.appendChild(postName);
+
+      const separator = document.createTextNode(" · ");
+      titleMain.appendChild(separator);
+
+      const placeName = document.createElement("span");
+      placeName.className = "upcoming-title-place";
+      placeName.textContent = group.lieu || "Lieu à confirmer";
+      titleMain.appendChild(placeName);
+
+      const weekday = document.createElement("span");
+      weekday.className = "upcoming-title-day";
+      weekday.textContent = formatWeekdayUpper(dayFilter.value);
+
+      title.append(titleMain, weekday);
       section.appendChild(title);
 
       const byPerson = new Map();
@@ -275,11 +306,10 @@ function renderGroups(rows) {
           ...entry,
           rows: entry.rows.sort((a, b) => new Date(a.debut) - new Date(b.debut))
         }))
-        .sort((a, b) => {
-          const firstA = new Date(a.rows[0].debut);
-          const firstB = new Date(b.rows[0].debut);
-          return firstA - firstB || alphaCollator.compare(a.prenom, b.prenom) || alphaCollator.compare(a.nom || "", b.nom || "");
-        });
+        .sort((a, b) =>
+          alphaCollator.compare(a.nom || "", b.nom || "") ||
+          alphaCollator.compare(a.prenom || "", b.prenom || "")
+        );
 
       const list = document.createElement("div");
       list.className = "volunteer-list";
