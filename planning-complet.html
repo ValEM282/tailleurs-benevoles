@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planning complet — Les Tailleurs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20260921-1">
+  <link rel="stylesheet" href="planning.css?v=20260922-2">
+  <link rel="stylesheet" href="planning-complet.css?v=20260922-1">
+</head>
+<body class="dashboard-page planning-page">
+  <header class="dashboard-header">
+    <div class="subpage-header-inner">
+      <a href="dashboard.html" class="back-button">← Accueil</a>
+      <div class="dashboard-title">🎪 PORTAIL BÉNÉVOLES 🎪</div>
+      <button type="button" id="logout-button" class="logout-button">Se déconnecter</button>
+    </div>
+  </header>
+
+  <main class="dashboard-main planning-main">
+    <section class="planning-filters complete-filters" aria-label="Filtres du planning complet">
+      <div class="filter-block">
+        <label for="day-filter">Jour</label>
+        <select id="day-filter"></select>
+      </div>
+      <div class="filter-block">
+        <label for="post-filter">Poste</label>
+        <select id="post-filter"></select>
+      </div>
+      <div class="filter-block">
+        <label for="place-filter">Lieu</label>
+        <select id="place-filter"></select>
+      </div>
+    </section>
+
+    <section class="now-section">
+      <div class="now-heading">
+        <div><h2>PLANNING COMPLET</h2></div>
+      </div>
+
+      <div id="planning-message" class="planning-message" hidden></div>
+      <div id="complete-result" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="planning-complet.js?v=20260922-1"></script>
+</body>
+</html>
