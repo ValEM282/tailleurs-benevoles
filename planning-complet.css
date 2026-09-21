@@ -88,6 +88,18 @@
   white-space: nowrap;
 }
 
+.complete-column-range {
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.complete-column-count {
+  margin-top: 3px;
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
 .complete-grid tbody td {
   border-top: 1px solid rgba(28, 46, 171, 0.12);
 }
@@ -104,7 +116,12 @@
   white-space: nowrap;
 }
 
+.complete-grid td.complete-empty-td {
+  vertical-align: middle;
+}
+
 .complete-empty-cell {
+  display: inline-block;
   color: var(--text-light);
 }
 
@@ -130,5 +147,9 @@
   .complete-grid td {
     min-width: 112px;
     padding: 10px 11px;
+  }
+
+  .complete-column-count {
+    font-size: 0.74rem;
   }
 }
