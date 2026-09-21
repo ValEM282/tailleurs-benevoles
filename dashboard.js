@@ -94,6 +94,10 @@ function getDisplayedStatus(shift) {
     return { key: "hors_poste", label: "Je ne suis pas à mon poste", color: "red" };
   }
 
+  if (shift.statut === "en_pause") {
+    return { key: "en_pause", label: "En pause", color: "purple" };
+  }
+
   if (shift.statut === "retard") {
     return {
       key: "retard",
