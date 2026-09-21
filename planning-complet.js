@@ -70,8 +70,20 @@ function rowsForSelectedDay() {
   return filterRows.filter(row => row.jour === dayFilter.value);
 }
 
+function selectedPostInfo() {
+  const value = postFilter.value || "";
+  const [kind, rawId] = value.split(":");
+  const id = Number(rawId);
+  return { kind, id };
+}
+
 function rowsForSelectedPost() {
-  return rowsForSelectedDay().filter(row => String(row.poste_id) === postFilter.value);
+  const selected = selectedPostInfo();
+  const rows = rowsForSelectedDay();
+  if (selected.kind === "parent") {
+    return rows.filter(row => Number(row.parent_poste_id) === selected.id);
+  }
+  return rows.filter(row => Number(row.poste_id) === selected.id);
 }
 
 function renderDays() {
@@ -86,19 +98,43 @@ function renderDays() {
 }
 
 function renderPosts() {
-  const posts = uniqueBy(rowsForSelectedDay(), row => String(row.poste_id))
-    .sort((a, b) => alphaCollator.compare(a.poste_nom, b.poste_nom));
-
+  const dayRows = rowsForSelectedDay();
   const previous = postFilter.value;
   postFilter.innerHTML = "";
-  posts.forEach(post => {
+
+  const parents = uniqueBy(
+    dayRows.filter(row => row.parent_poste_id !== null),
+    row => String(row.parent_poste_id)
+  ).sort((a, b) => alphaCollator.compare(a.parent_poste_nom || "", b.parent_poste_nom || ""));
+
+  const posts = uniqueBy(dayRows, row => String(row.poste_id))
+    .sort((a, b) => alphaCollator.compare(a.poste_nom, b.poste_nom));
+
+  const options = [
+    ...parents.map(parent => ({
+      value: `parent:${parent.parent_poste_id}`,
+      label: parent.parent_poste_nom,
+      isParent: true
+    })),
+    ...posts.map(post => ({
+      value: `post:${post.poste_id}`,
+      label: post.poste_nom,
+      isParent: false
+    }))
+  ].sort((a, b) => {
+    const nameDiff = alphaCollator.compare(a.label, b.label);
+    if (nameDiff) return nameDiff;
+    return Number(b.isParent) - Number(a.isParent);
+  });
+
+  options.forEach(item => {
     const option = document.createElement("option");
-    option.value = String(post.poste_id);
-    option.textContent = post.poste_nom;
+    option.value = item.value;
+    option.textContent = item.isParent ? item.label : item.label;
     postFilter.appendChild(option);
   });
 
-  if (posts.some(post => String(post.poste_id) === previous)) postFilter.value = previous;
+  if (options.some(option => option.value === previous)) postFilter.value = previous;
 }
 
 function placeKey(row) {
@@ -106,11 +142,21 @@ function placeKey(row) {
 }
 
 function renderPlaces() {
-  const places = uniqueBy(rowsForSelectedPost(), row => placeKey(row))
+  const rows = rowsForSelectedPost();
+  const selected = selectedPostInfo();
+  const places = uniqueBy(rows, row => placeKey(row))
     .sort((a, b) => alphaCollator.compare(a.lieu_nom || "Lieu à confirmer", b.lieu_nom || "Lieu à confirmer"));
 
   const previous = placeFilter.value;
   placeFilter.innerHTML = "";
+
+  if (selected.kind === "parent") {
+    const allOption = document.createElement("option");
+    allOption.value = "all";
+    allOption.textContent = "Tous les lieux";
+    placeFilter.appendChild(allOption);
+  }
+
   places.forEach(place => {
     const option = document.createElement("option");
     option.value = placeKey(place);
@@ -118,7 +164,12 @@ function renderPlaces() {
     placeFilter.appendChild(option);
   });
 
-  if (places.some(place => placeKey(place) === previous)) placeFilter.value = previous;
+  const allowedValues = [...placeFilter.options].map(option => option.value);
+  if (allowedValues.includes(previous)) {
+    placeFilter.value = previous;
+  } else if (selected.kind === "parent") {
+    placeFilter.value = "all";
+  }
 }
 
 function dayStartMomentIso(isoDate) {
@@ -156,15 +207,11 @@ function peopleForSegment(rows, segment) {
   return uniqueBy(presentRows, row => String(row.personne_id));
 }
 
-function renderComplete(rows) {
-  completeResult.innerHTML = "";
-
-  if (!rows.length) {
-    completeResult.innerHTML = '<div class="empty-now">Aucun planning horaire pour cette sélection</div>';
-    return;
-  }
-
+function renderOneCompleteTable(rows) {
   const first = rows[0];
+
+  const block = document.createElement("div");
+  block.className = "complete-result-block";
 
   const title = document.createElement("div");
   title.className = "complete-title-card";
@@ -187,10 +234,10 @@ function renderComplete(rows) {
   day.textContent = formatWeekdayUpper(dayFilter.value);
 
   title.append(main, day);
-  completeResult.appendChild(title);
+  block.appendChild(title);
 
   const segments = buildSegments(rows);
-  if (!segments.length) return;
+  if (!segments.length) return block;
 
   const segmentPeople = segments.map(segment => peopleForSegment(rows, segment));
 
@@ -205,15 +252,19 @@ function renderComplete(rows) {
   segments.forEach((segment, index) => {
     const th = document.createElement("th");
 
-    const range = document.createElement("div");
-    range.className = "complete-column-range";
-    range.textContent = `${formatTime(segment.start)}-${formatTime(segment.end)}`;
+    const time = document.createElement("div");
+    time.className = "complete-column-time";
+    time.textContent = `${formatTime(segment.start)}-${formatTime(segment.end)}`;
+    th.appendChild(time);
 
-    const count = document.createElement("div");
-    count.className = "complete-column-count";
-    count.textContent = `${segmentPeople[index].length} bén.`;
+    const count = segmentPeople[index].length;
+    if (count > 0) {
+      const subtitle = document.createElement("div");
+      subtitle.className = "complete-column-count";
+      subtitle.textContent = `${count} bén.`;
+      th.appendChild(subtitle);
+    }
 
-    th.append(range, count);
     headRow.appendChild(th);
   });
   thead.appendChild(headRow);
@@ -221,9 +272,8 @@ function renderComplete(rows) {
   const tbody = document.createElement("tbody");
   const bodyRow = document.createElement("tr");
 
-  segments.forEach((segment, index) => {
+  segmentPeople.forEach(uniquePeople => {
     const td = document.createElement("td");
-    const uniquePeople = segmentPeople[index];
 
     if (!uniquePeople.length) {
       td.classList.add("complete-empty-td");
@@ -249,7 +299,32 @@ function renderComplete(rows) {
   tbody.appendChild(bodyRow);
   table.append(thead, tbody);
   wrap.appendChild(table);
-  completeResult.appendChild(wrap);
+  block.appendChild(wrap);
+
+  return block;
+}
+
+function renderComplete(rows) {
+  completeResult.innerHTML = "";
+
+  if (!rows.length) {
+    completeResult.innerHTML = '<div class="empty-now">Aucun planning horaire pour cette sélection</div>';
+    return;
+  }
+
+  const groups = new Map();
+  rows.forEach(row => {
+    const key = `${row.poste_id}|${row.lieu_id ?? "none"}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(row);
+  });
+
+  [...groups.values()]
+    .sort((a, b) =>
+      alphaCollator.compare(a[0].poste_nom || "", b[0].poste_nom || "") ||
+      alphaCollator.compare(a[0].lieu_nom || "", b[0].lieu_nom || "")
+    )
+    .forEach(groupRows => completeResult.appendChild(renderOneCompleteTable(groupRows)));
 }
 
 async function loadComplete() {
@@ -262,10 +337,13 @@ async function loadComplete() {
 
   completeResult.innerHTML = '<div class="empty-now">Chargement…</div>';
 
+  const selectedRows = rowsForSelectedPost();
+  const postIds = [...new Set(selectedRows.map(row => Number(row.poste_id)))];
+
   const { data, error } = await supabaseClient.rpc("get_planning_upcoming", {
     p_day: dayFilter.value,
     p_moment: dayStartMomentIso(dayFilter.value),
-    p_poste_ids: [Number(postFilter.value)],
+    p_poste_ids: postIds,
     p_lieu_ids: null
   });
 
@@ -277,7 +355,10 @@ async function loadComplete() {
   }
 
   const selectedPlace = placeFilter.value;
-  const rows = (data || []).filter(row => placeKey(row) === selectedPlace);
+  const rows = selectedPlace === "all"
+    ? (data || [])
+    : (data || []).filter(row => placeKey(row) === selectedPlace);
+
   renderComplete(rows);
 }
 
@@ -288,7 +369,7 @@ async function init() {
     return;
   }
 
-  const { data, error } = await supabaseClient.rpc("get_planning_filter_options");
+  const { data, error } = await supabaseClient.rpc("get_planning_complete_filter_options");
   if (error) {
     console.error(error);
     showMessage("Cette page est réservée aux responsables et aux admins.", "error");
