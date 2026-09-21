@@ -153,7 +153,7 @@ function buildPresenceArea(shift) {
   const presentButton = document.createElement("button");
   presentButton.type = "button";
   presentButton.className = "presence-action presence-action-green";
-  presentButton.textContent = "Je suis à mon poste";
+  presentButton.textContent = "Je suis à ce poste";
   presentButton.addEventListener("click", async () => {
     if (await savePresenceStatus(shift, "present", null, false)) loadNextShift();
   });
@@ -162,7 +162,7 @@ function buildPresenceArea(shift) {
   const availableButton = document.createElement("button");
   availableButton.type = "button";
   availableButton.className = "presence-action presence-action-blue";
-  availableButton.textContent = "Je suis disponible pour un autre poste";
+  availableButton.textContent = "Je suis libéré·e et disponible pour un autre poste";
   availableButton.addEventListener("click", async () => {
     if (await savePresenceStatus(shift, "present", null, true)) loadNextShift();
   });
