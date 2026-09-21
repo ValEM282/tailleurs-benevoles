@@ -25,6 +25,10 @@
   border-radius: 14px;
 }
 
+.complete-grid-wrap + .complete-title-card {
+  margin-top: 28px;
+}
+
 .complete-title-main {
   min-width: 0;
   display: flex;
@@ -129,6 +133,10 @@
   .complete-title-card {
     gap: 12px;
     padding: 11px 13px;
+  }
+
+  .complete-grid-wrap + .complete-title-card {
+    margin-top: 22px;
   }
 
   .complete-title-post {
