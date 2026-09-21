@@ -778,7 +778,7 @@ input:focus-visible {
   }
 
   .dashboard-header-inner {
-    grid-template-columns: 210px 1fr auto;
+    grid-template-columns: 1fr auto;
     gap: 15px;
   }
 
@@ -896,122 +896,5 @@ input:focus-visible {
 
   .dashboard-card {
     padding: 17px;
-  }
-
-  .subpage-header-inner {
-    grid-template-columns: auto auto;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 12px 14px;
-  }
-
-  .subpage-header-inner .dashboard-title {
-    grid-column: 1 / -1;
-    grid-row: 1;
-    width: 100%;
-    margin-bottom: 4px;
-  }
-
-  .back-button {
-    grid-column: 1;
-    grid-row: 2;
-  }
-
-  .subpage-header-inner .logout-button {
-    grid-column: 2;
-    grid-row: 2;
-    margin: 0;
-  }
-
-  .subpage-main {
-    padding: 24px 14px 36px;
-  }
-
-  .subpage-heading h1 {
-    font-size: 1.8rem;
-  }
-
-  .festival-map {
-    height: 560px;
-  }
-
-  .contacts-subject {
-    width: 36%;
-    padding-right: 14px;
-    font-size: 0.95rem;
-  }
-
-  .contacts-people {
-    width: 64%;
-  }
-
-  .contact-person-name {
-    font-size: 0.98rem;
-  }
-
-  .contact-phone {
-    font-size: 0.95rem;
-  }
-
-  .contacts-table tr + tr th,
-  .contacts-table tr + tr td {
-    padding-top: 16px;
-  }
-
-  .job-cards-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .job-card {
-    align-items: flex-start;
-  }
-}
-
-@media (max-width: 420px) {
-  .brand {
-    padding: 12px 12px 14px;
-  }
-
-  .brand p {
-    font-size: 1.65rem;
-  }
-
-  #login-form {
-    padding-left: 18px;
-    padding-right: 18px;
-  }
-
-  .login-links {
-    padding-left: 18px;
-    padding-right: 18px;
-  }
-}
-
-@media (max-width: 390px) {
-  .dashboard-main {
-    padding-left: 14px;
-    padding-right: 14px;
-  }
-
-  .dashboard-logo {
-    max-width: 220px;
-  }
-
-  .dashboard-title {
-    font-size: 1.3rem;
-  }
-
-  .dashboard-welcome h1 {
-    font-size: 1.8rem;
-  }
-
-  .contacts-subject {
-    width: 38%;
-    padding-right: 10px;
-    font-size: 0.9rem;
-  }
-
-  .contacts-people {
-    width: 62%;
   }
 }
