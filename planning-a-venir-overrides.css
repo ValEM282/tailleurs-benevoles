@@ -1,0 +1,53 @@
+.upcoming-group-title {
+  align-items: stretch;
+}
+
+.upcoming-title-main {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 0;
+  line-height: 1.12;
+}
+
+.upcoming-title-post {
+  display: block;
+  font-size: 1.18rem;
+  font-weight: 700;
+}
+
+.upcoming-title-place {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+.upcoming-title-day {
+  align-self: flex-end;
+  margin-bottom: 1px;
+}
+
+@media (max-width: 760px) {
+  .upcoming-group-title {
+    align-items: stretch;
+  }
+
+  .upcoming-title-main {
+    line-height: 1.12;
+  }
+
+  .upcoming-title-post {
+    font-size: 1.08rem;
+  }
+
+  .upcoming-title-place {
+    font-size: 0.82rem;
+  }
+
+  .upcoming-title-day {
+    align-self: flex-end;
+    font-size: 0.82rem;
+  }
+}
