@@ -85,17 +85,17 @@ function getDisplayedStatus(shift) {
   if (shift.statut === "retard") {
     return {
       key: "retard",
-      label: `Je serai en retard de ${shift.retard_minutes || 0} min`,
+      label: `En retard de ${shift.retard_minutes || 0} min`,
       color: "orange"
     };
   }
 
   if (shift.statut === "present" && shift.disponible) {
-    return { key: "disponible", label: "Je suis disponible pour un autre poste", color: "blue" };
+    return { key: "disponible", label: "Disponible", color: "blue" };
   }
 
   if (shift.statut === "present") {
-    return { key: "present", label: "Je suis à mon poste", color: "green" };
+    return { key: "present", label: "Présent·e", color: "green" };
   }
 
   if (now < start) {
