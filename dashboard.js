@@ -14,6 +14,8 @@ const adminSection = document.getElementById("admin-section");
 const dashboardMain = document.querySelector(".dashboard-main");
 const nextShiftContent = document.getElementById("next-shift-content");
 
+const PRESENCE_AVAILABLE_FROM = Date.parse("2026-09-30T07:00:00Z");
+
 function showDashboardMessage(message, type = "info") {
   const oldMessage = document.querySelector(".dashboard-message");
   if (oldMessage) oldMessage.remove();
@@ -61,8 +63,18 @@ function formatPhoneForLink(value) {
   return (value || "").replace(/[^+\d]/g, "");
 }
 
-function minutesUntil(value) {
-  return Math.max(0, Math.ceil((new Date(value).getTime() - Date.now()) / 60000));
+function formatTimeUntil(value) {
+  const totalMinutes = Math.max(0, Math.ceil((new Date(value).getTime() - Date.now()) / 60000));
+  const days = Math.floor(totalMinutes / 1440);
+  const hours = Math.floor((totalMinutes % 1440) / 60);
+  const minutes = totalMinutes % 60;
+  const parts = [];
+
+  if (days > 0) parts.push(`${days} j`);
+  if (hours > 0) parts.push(`${hours} h`);
+  if (minutes > 0 || parts.length === 0) parts.push(`${minutes} min`);
+
+  return parts.join(" ");
 }
 
 function getDisplayedStatus(shift) {
@@ -101,7 +113,7 @@ function getDisplayedStatus(shift) {
   if (now < start) {
     return {
       key: "a_venir",
-      label: `À venir dans ${minutesUntil(shift.debut)} min`,
+      label: `À venir dans ${formatTimeUntil(shift.debut)}`,
       color: "orange"
     };
   }
@@ -127,6 +139,14 @@ async function savePresenceStatus(shift, status, retardMinutes = null, disponibl
 }
 
 function buildPresenceArea(shift) {
+  const now = Date.now();
+  const start = new Date(shift.debut).getTime();
+  const end = new Date(shift.fin).getTime();
+
+  if (now < PRESENCE_AVAILABLE_FROM && now < start) {
+    return null;
+  }
+
   const wrapper = document.createElement("div");
   wrapper.className = "presence-area";
 
@@ -140,10 +160,6 @@ function buildPresenceArea(shift) {
   badge.className = `presence-badge presence-${current.color}`;
   badge.textContent = current.label;
   wrapper.appendChild(badge);
-
-  const now = Date.now();
-  const start = new Date(shift.debut).getTime();
-  const end = new Date(shift.fin).getTime();
 
   if (now >= end) return wrapper;
 
@@ -274,7 +290,8 @@ async function loadNextShift() {
     nextShiftContent.appendChild(responsible);
   }
 
-  nextShiftContent.appendChild(buildPresenceArea(shift));
+  const presenceArea = buildPresenceArea(shift);
+  if (presenceArea) nextShiftContent.appendChild(presenceArea);
 }
 
 async function loadAvailableVolunteers(role) {
