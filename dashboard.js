@@ -68,26 +68,26 @@ function isReinforcementShift(shift) {
 
 function getDisplayedStatus(shift) {
   if (shift.statut === "retard") {
-    return { key: "retard", label: `En retard de ${shift.retard_minutes || 0} min` };
+    return { key: "retard", label: `En retard de ${shift.retard_minutes || 0} min (à ce poste)` };
   }
 
   if (shift.statut === "present" && shift.disponible) {
-    return { key: "disponible", label: "Disponible" };
+    return { key: "disponible", label: "Disponible (pour un autre poste)" };
   }
 
   const labels = {
-    present: "Présent·e",
-    absent: "Absent·e",
-    hors_poste: "Absent·e",
+    present: "Présent·e (à mon poste)",
+    absent: "Absent·e (de ce poste)",
+    hors_poste: "Absent·e (de ce poste)",
     en_pause: "En pause",
     termine: "Terminé",
-    a_venir: "Inconnu",
-    inconnu: "Inconnu"
+    a_venir: "Inconnu (je ne suis plus là)",
+    inconnu: "Inconnu (je ne suis plus là)"
   };
 
   return {
     key: shift.statut && labels[shift.statut] ? shift.statut : "inconnu",
-    label: labels[shift.statut] || "Inconnu"
+    label: labels[shift.statut] || "Inconnu (je ne suis plus là)"
   };
 }
 
@@ -147,12 +147,12 @@ function buildPresenceArea(shift) {
   menu.hidden = true;
 
   const choices = [
-    ["present", "Présent·e"],
-    ["disponible", "Disponible"],
+    ["present", "Présent·e (à mon poste)"],
     ["en_pause", "En pause"],
-    ["retard", "En retard"],
-    ["absent", "Absent·e"],
-    ["inconnu", "Inconnu"]
+    ["disponible", "Disponible (pour un autre poste)"],
+    ["retard", "En retard (à ce poste)"],
+    ["absent", "Absent·e (de ce poste)"],
+    ["inconnu", "Inconnu (je ne suis plus là)"]
   ];
 
   choices.forEach(([key, label]) => {
@@ -167,7 +167,7 @@ function buildPresenceArea(shift) {
       const swatch = document.createElement("span");
       swatch.className = "volunteer-status-swatch volunteer-status-retard";
       const text = document.createElement("span");
-      text.textContent = "En retard";
+      text.textContent = label;
       delayHeader.append(swatch, text);
 
       const delayChoices = document.createElement("div");
