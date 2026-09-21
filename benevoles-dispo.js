@@ -45,7 +45,7 @@ function targetValue(target) {
 }
 
 function targetLabel(target) {
-  return `${target.poste_nom} · ${target.lieu_nom} · jusqu'à ${formatTime(target.fin)}`;
+  return `${target.poste_nom} · ${target.lieu_nom}`;
 }
 
 async function assignVolunteer(person, select, button) {
@@ -141,7 +141,7 @@ function renderVolunteers(rows) {
 
       const placeholder = document.createElement("option");
       placeholder.value = "";
-      placeholder.textContent = activeTargets.length ? "Choisir un poste en cours" : "Aucun poste en cours disponible";
+      placeholder.textContent = activeTargets.length ? "Choisir un poste + lieu en cours" : "Aucun poste en cours disponible";
       select.appendChild(placeholder);
 
       activeTargets.forEach(target => {
