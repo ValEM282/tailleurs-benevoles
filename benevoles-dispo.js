@@ -2,7 +2,6 @@ const SUPABASE_URL = "https://ftfhtyohyjezoibmumum.supabase.co";
 const SUPABASE_KEY = "sb_publishable_oQOnxMDMyvx6ukcuJHgWuQ_Gu-utQe3";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const dayFilter = document.getElementById("day-filter");
 const dispoList = document.getElementById("dispo-list");
 const messageBox = document.getElementById("dispo-message");
 const logoutButton = document.getElementById("logout-button");
@@ -12,29 +11,6 @@ const alphaCollator = new Intl.Collator("fr", {
   ignorePunctuation: true,
   numeric: true
 });
-
-function currentBrusselsDate() {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Europe/Brussels",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit"
-  }).formatToParts(new Date());
-  const get = type => parts.find(p => p.type === type)?.value;
-  return `${get("year")}-${get("month")}-${get("day")}`;
-}
-
-function formatDayLabel(isoDate) {
-  const [year, month, day] = isoDate.split("-").map(Number);
-  const date = new Date(Date.UTC(year, month - 1, day, 12));
-  const label = new Intl.DateTimeFormat("fr-BE", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    timeZone: "Europe/Brussels"
-  }).format(date);
-  return label.charAt(0).toUpperCase() + label.slice(1);
-}
 
 function formatTime(dateValue) {
   const parts = new Intl.DateTimeFormat("fr-BE", {
@@ -68,7 +44,7 @@ function renderVolunteers(rows) {
   if (!rows.length) {
     const empty = document.createElement("div");
     empty.className = "dispo-empty";
-    empty.textContent = "Aucun bénévole n'est actuellement disponible pour ce jour";
+    empty.textContent = "Aucun bénévole n'est actuellement disponible";
     dispoList.appendChild(empty);
     return;
   }
@@ -119,9 +95,7 @@ async function loadVolunteers() {
   hideMessage();
   dispoList.innerHTML = `<div class="dispo-empty">Chargement…</div>`;
 
-  const { data, error } = await supabaseClient.rpc("get_available_volunteers_by_day", {
-    p_day: dayFilter.value
-  });
+  const { data, error } = await supabaseClient.rpc("get_available_volunteers_all");
 
   if (error) {
     console.error(error);
@@ -139,33 +113,6 @@ async function init() {
     window.location.replace("index.html");
     return;
   }
-
-  const { data, error } = await supabaseClient.rpc("get_available_volunteer_days");
-  if (error) {
-    console.error(error);
-    showMessage("Cette page est réservée aux responsables et aux admins.", "error");
-    return;
-  }
-
-  const days = (data || []).map(row => row.jour).sort((a, b) => a.localeCompare(b));
-  dayFilter.innerHTML = "";
-
-  days.forEach(day => {
-    const option = document.createElement("option");
-    option.value = day;
-    option.textContent = formatDayLabel(day);
-    dayFilter.appendChild(option);
-  });
-
-  if (!days.length) {
-    showMessage("Aucun jour de planning n'est disponible.");
-    dispoList.innerHTML = "";
-    return;
-  }
-
-  const today = currentBrusselsDate();
-  dayFilter.value = days.includes(today) ? today : days[0];
-  dayFilter.addEventListener("change", loadVolunteers);
 
   await loadVolunteers();
 }
