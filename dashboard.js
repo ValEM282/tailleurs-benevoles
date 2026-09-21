@@ -147,12 +147,12 @@ function buildPresenceArea(shift) {
   menu.hidden = true;
 
   const choices = [
-    ["present", "Présent·e (à mon poste)"],
+    ["present", "Présent·e (à ce poste)"],
     ["en_pause", "En pause"],
     ["disponible", "Disponible (pour un autre poste)"],
     ["retard", "En retard (à ce poste)"],
-    ["absent", "Absent·e (du festival)"],
-    ["inconnu", "Inconnu (je ne suis plus là)"]
+    ["absent", "Absent·e (à ce poste)"],
+    ["inconnu", "Inconnu (hors festival)"]
   ];
 
   choices.forEach(([key, label]) => {
