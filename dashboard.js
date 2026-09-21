@@ -9,10 +9,10 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const firstnameElement = document.getElementById("user-firstname");
 const roleElement = document.getElementById("user-role");
 const logoutButton = document.getElementById("logout-button");
-const responsableSection = document.getElementById("responsable-section");
-const adminSection = document.getElementById("admin-section");
 const dashboardMain = document.querySelector(".dashboard-main");
 const nextShiftContent = document.getElementById("next-shift-content");
+const volunteerNextShiftSection = document.getElementById("volunteer-next-shift-section");
+const teamMenuSection = document.getElementById("team-menu-section");
 
 const PRESENCE_AVAILABLE_FROM = Date.parse("2026-09-30T07:00:00Z");
 
@@ -298,66 +298,6 @@ async function loadNextShift() {
   if (presenceArea) nextShiftContent.appendChild(presenceArea);
 }
 
-async function loadAvailableVolunteers(role) {
-  if (!(role === "responsable" || role === "admin") || !responsableSection) return;
-
-  let box = document.getElementById("available-volunteers-box");
-  if (!box) {
-    box = document.createElement("div");
-    box.id = "available-volunteers-box";
-    box.className = "available-volunteers-box";
-    responsableSection.appendChild(box);
-  }
-
-  box.innerHTML = `<h3>Bénévoles disponibles sur site</h3><p class="available-loading">Chargement...</p>`;
-
-  const { data, error } = await supabaseClient.rpc("get_available_volunteers");
-  if (error) {
-    console.error("Impossible de charger les bénévoles disponibles :", error);
-    box.innerHTML = `<h3>Bénévoles disponibles sur site</h3><p>Aucun aperçu disponible pour le moment.</p>`;
-    return;
-  }
-
-  if (!data || data.length === 0) {
-    box.innerHTML = `<h3>Bénévoles disponibles sur site</h3><p>Aucun bénévole ne s'est déclaré disponible.</p>`;
-    return;
-  }
-
-  box.innerHTML = `<h3>Bénévoles disponibles sur site</h3>`;
-  const list = document.createElement("div");
-  list.className = "available-list";
-
-  data.forEach(person => {
-    const row = document.createElement("div");
-    row.className = "available-row";
-
-    const info = document.createElement("div");
-    const strong = document.createElement("strong");
-    strong.textContent = `${person.prenom} ${person.nom_initiale}`;
-    info.appendChild(strong);
-
-    if (person.prochain_debut) {
-      const next = document.createElement("small");
-      next.textContent = `Prochain poste : ${person.prochain_poste || "à confirmer"} à ${formatShiftTime(person.prochain_debut)}`;
-      info.appendChild(next);
-    }
-
-    row.appendChild(info);
-
-    if (person.telephone) {
-      const phone = document.createElement("a");
-      phone.className = "available-phone";
-      phone.href = `tel:${formatPhoneForLink(person.telephone)}`;
-      phone.textContent = person.telephone;
-      row.appendChild(phone);
-    }
-
-    list.appendChild(row);
-  });
-
-  box.appendChild(list);
-}
-
 async function loadDashboard() {
   const { data: userData, error: userError } = await supabaseClient.auth.getUser();
 
@@ -403,14 +343,14 @@ async function loadDashboard() {
   const role = participation.role;
   roleElement.textContent = getRoleLabel(role);
 
-  await loadNextShift();
-
-  if (role === "responsable" || role === "admin") {
-    responsableSection.hidden = false;
-    await loadAvailableVolunteers(role);
+  if (role === "benevole") {
+    volunteerNextShiftSection.hidden = false;
+    teamMenuSection.hidden = true;
+    await loadNextShift();
+  } else if (role === "responsable" || role === "admin") {
+    volunteerNextShiftSection.hidden = true;
+    teamMenuSection.hidden = false;
   }
-
-  if (role === "admin") adminSection.hidden = false;
 }
 
 logoutButton.addEventListener("click", async () => {
@@ -429,8 +369,7 @@ logoutButton.addEventListener("click", async () => {
   window.location.replace("index.html");
 });
 
-const futureLinks = document.querySelectorAll('.dashboard-card[href="#"]');
-futureLinks.forEach(link => {
+document.querySelectorAll('.dashboard-card[href="#"], .team-menu-future[href="#"]').forEach(link => {
   link.addEventListener("click", event => {
     event.preventDefault();
     showDashboardMessage("Prochainement disponible");
