@@ -120,6 +120,16 @@
   border-color: rgba(243, 156, 18, 0.55);
 }
 
+.presence-action-purple {
+  color: var(--purple, #891E82);
+  border-color: rgba(137, 30, 130, 0.45);
+}
+
+.presence-action-gray {
+  color: #62666f;
+  border-color: rgba(98, 102, 111, 0.42);
+}
+
 .presence-action-red {
   color: var(--white);
   background: var(--red);
