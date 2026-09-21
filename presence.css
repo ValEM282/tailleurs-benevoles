@@ -82,8 +82,8 @@
   height: 12px;
 }
 
-.volunteer-status-present { background: #176b35; }
-.volunteer-status-disponible { background: var(--blue); }
+.volunteer-status-present { background: #35B86B; }
+.volunteer-status-disponible { background: #4A83E3; }
 .volunteer-status-en_pause { background: var(--purple, #891E82); }
 .volunteer-status-retard { background: #f39c12; }
 .volunteer-status-absent,
