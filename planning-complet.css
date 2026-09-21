@@ -17,12 +17,12 @@
 }
 
 .complete-title-card {
-  margin-bottom: 16px;
-  padding: 12px 16px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
   display: flex;
   align-items: stretch;
   justify-content: space-between;
-  gap: 18px;
+  gap: 14px;
   background: rgba(28, 46, 171, 0.06);
   color: var(--blue);
   border: 1px solid rgba(28, 46, 171, 0.12);
@@ -33,24 +33,24 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  line-height: 1.2;
+  line-height: 1.12;
 }
 
 .complete-title-post {
-  font-size: 1.18rem;
+  font-size: 1.08rem;
   font-weight: 700;
 }
 
 .complete-title-place {
-  margin-top: 2px;
-  font-size: 0.92rem;
+  margin-top: 1px;
+  font-size: 0.82rem;
   font-weight: 400;
 }
 
 .complete-title-day {
   flex: 0 0 auto;
   align-self: flex-end;
-  font-size: 0.95rem;
+  font-size: 0.86rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   white-space: nowrap;
@@ -73,7 +73,7 @@
 .complete-grid th,
 .complete-grid td {
   min-width: 130px;
-  padding: 12px 14px;
+  padding: 10px 12px;
   border-right: 1px solid rgba(28, 46, 171, 0.12);
   vertical-align: top;
   text-align: center;
@@ -87,21 +87,22 @@
 .complete-grid thead th {
   background: rgba(28, 46, 171, 0.06);
   color: var(--blue);
-  font-size: 0.98rem;
+  font-size: 0.94rem;
   font-weight: 700;
   white-space: nowrap;
 }
 
-.complete-column-range {
+.complete-column-range,
+.complete-column-time {
   font-weight: 700;
-  line-height: 1.15;
+  line-height: 1.1;
 }
 
 .complete-column-count {
-  margin-top: 3px;
-  font-size: 0.78rem;
+  margin-top: 2px;
+  font-size: 0.72rem;
   font-weight: 400;
-  line-height: 1.1;
+  line-height: 1.05;
 }
 
 .complete-grid tbody td {
@@ -135,29 +136,33 @@
   }
 
   .complete-title-card {
-    gap: 12px;
-    padding: 11px 13px;
+    gap: 10px;
+    padding: 7px 10px;
   }
 
   .complete-title-post {
-    font-size: 1.08rem;
+    font-size: 1rem;
   }
 
   .complete-title-place {
-    font-size: 0.82rem;
+    font-size: 0.76rem;
   }
 
   .complete-title-day {
-    font-size: 0.82rem;
+    font-size: 0.76rem;
   }
 
   .complete-grid th,
   .complete-grid td {
     min-width: 112px;
-    padding: 10px 11px;
+    padding: 8px 10px;
+  }
+
+  .complete-grid thead th {
+    font-size: 0.9rem;
   }
 
   .complete-column-count {
-    font-size: 0.74rem;
+    font-size: 0.68rem;
   }
 }
