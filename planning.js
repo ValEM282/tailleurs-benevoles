@@ -231,15 +231,16 @@ function buildStatusControl(row) {
   return wrapper;
 }
 
+function renderEmpty(text) {
+  nowGroups.innerHTML = "";
+  const empty = document.createElement("div");
+  empty.className = "empty-now";
+  empty.textContent = text;
+  nowGroups.appendChild(empty);
+}
+
 function renderGroups(rows) {
   nowGroups.innerHTML = "";
-  if (!rows.length) {
-    const empty = document.createElement("div");
-    empty.className = "empty-now";
-    empty.textContent = "Aucun planning horaire actuellement en cours";
-    nowGroups.appendChild(empty);
-    return;
-  }
 
   const groups = new Map();
   rows.forEach(row => {
@@ -317,7 +318,7 @@ async function loadNow() {
   momentLabel.textContent = `${formatDayLabel(now.date)} · ${now.hour}h${now.minute}`;
 
   if (dayFilter.value !== now.date) {
-    renderGroups([]);
+    renderEmpty("Aucun planning horaire actuellement en cours");
     return;
   }
 
@@ -337,7 +338,36 @@ async function loadNow() {
     showMessage("Impossible de charger le planning. Vérifie que ton compte possède bien un rôle responsable ou admin.", "error");
     return;
   }
-  renderGroups(data || []);
+
+  if (data && data.length) {
+    renderGroups(data);
+    return;
+  }
+
+  const filtersActive = postIds !== null || placeIds !== null;
+  if (!filtersActive) {
+    renderEmpty("Aucun planning horaire actuellement en cours");
+    return;
+  }
+
+  const { data: allCurrentRows, error: allCurrentError } = await supabaseClient.rpc("get_planning_now", {
+    p_moment: currentMomentIso(),
+    p_poste_ids: null,
+    p_lieu_ids: null
+  });
+
+  if (allCurrentError) {
+    console.error(allCurrentError);
+    nowGroups.innerHTML = "";
+    showMessage("Impossible de charger le planning. Vérifie que ton compte possède bien un rôle responsable ou admin.", "error");
+    return;
+  }
+
+  if (allCurrentRows && allCurrentRows.length) {
+    renderEmpty("Aucun résultat - Pour voir tous les planning horaire, consultez la vue A VENIR");
+  } else {
+    renderEmpty("Aucun planning horaire actuellement en cours");
+  }
 }
 
 async function init() {
