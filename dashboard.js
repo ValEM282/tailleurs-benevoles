@@ -14,8 +14,6 @@ const nextShiftContent = document.getElementById("next-shift-content");
 const volunteerNextShiftSection = document.getElementById("volunteer-next-shift-section");
 const teamMenuSection = document.getElementById("team-menu-section");
 
-const PRESENCE_AVAILABLE_FROM = Date.parse("2026-09-30T07:00:00Z");
-
 function showDashboardMessage(message, type = "info") {
   const oldMessage = document.querySelector(".dashboard-message");
   if (oldMessage) oldMessage.remove();
@@ -63,79 +61,42 @@ function formatPhoneForLink(value) {
   return (value || "").replace(/[^+\d]/g, "");
 }
 
-function formatTimeUntil(value) {
-  const totalMinutes = Math.max(0, Math.ceil((new Date(value).getTime() - Date.now()) / 60000));
-  const days = Math.floor(totalMinutes / 1440);
-  const hours = Math.floor((totalMinutes % 1440) / 60);
-  const minutes = totalMinutes % 60;
-  const parts = [];
-
-  if (days > 0) parts.push(`${days} j`);
-  if (hours > 0) parts.push(`${hours} h`);
-  if (minutes > 0 || parts.length === 0) parts.push(`${minutes} min`);
-
-  return parts.join(" ");
-}
-
 function isReinforcementShift(shift) {
   const note = (shift.note || "").toLowerCase();
   return note.startsWith("renfort") || note.startsWith("affectation depuis la liste des bénévoles disponibles");
 }
 
 function getDisplayedStatus(shift) {
-  const now = Date.now();
-  const start = new Date(shift.debut).getTime();
-  const end = new Date(shift.fin).getTime();
-
-  if (now >= end) {
-    return { key: "termine", label: "Poste terminé", color: "gray" };
-  }
-
-  if (shift.statut === "absent") {
-    return { key: "absent", label: "Absent·e", color: "red" };
-  }
-
-  if (shift.statut === "hors_poste") {
-    return { key: "hors_poste", label: "Je ne suis pas à mon poste", color: "red" };
-  }
-
-  if (shift.statut === "en_pause") {
-    return { key: "en_pause", label: "En pause", color: "purple" };
-  }
-
   if (shift.statut === "retard") {
-    return {
-      key: "retard",
-      label: `En retard de ${shift.retard_minutes || 0} min`,
-      color: "orange"
-    };
+    return { key: "retard", label: `En retard de ${shift.retard_minutes || 0} min` };
   }
 
   if (shift.statut === "present" && shift.disponible) {
-    return { key: "disponible", label: "Disponible", color: "blue" };
+    return { key: "disponible", label: "Disponible" };
   }
 
-  if (shift.statut === "present") {
-    return { key: "present", label: "Présent·e", color: "green" };
-  }
+  const labels = {
+    present: "Présent·e",
+    absent: "Absent·e",
+    hors_poste: "Absent·e",
+    en_pause: "En pause",
+    termine: "Terminé",
+    a_venir: "Inconnu",
+    inconnu: "Inconnu"
+  };
 
-  if (now < start) {
-    return {
-      key: "a_venir",
-      label: `À venir dans ${formatTimeUntil(shift.debut)}`,
-      color: "orange"
-    };
-  }
-
-  return { key: "a_confirmer", label: "Poste en cours · confirme ton arrivée", color: "orange" };
+  return {
+    key: shift.statut && labels[shift.statut] ? shift.statut : "inconnu",
+    label: labels[shift.statut] || "Inconnu"
+  };
 }
 
-async function savePresenceStatus(shift, status, retardMinutes = null, disponible = false) {
+async function savePresenceStatus(shift, status, retardMinutes = null) {
   const { error } = await supabaseClient.rpc("set_my_presence_status", {
     p_affectation_id: shift.affectation_id,
     p_statut: status,
     p_retard_minutes: retardMinutes,
-    p_disponible: disponible
+    p_disponible: status === "disponible"
   });
 
   if (error) {
@@ -148,14 +109,6 @@ async function savePresenceStatus(shift, status, retardMinutes = null, disponibl
 }
 
 function buildPresenceArea(shift) {
-  const now = Date.now();
-  const start = new Date(shift.debut).getTime();
-  const end = new Date(shift.fin).getTime();
-
-  if (now < PRESENCE_AVAILABLE_FROM && now < start) {
-    return null;
-  }
-
   const wrapper = document.createElement("div");
   wrapper.className = "presence-area";
 
@@ -165,92 +118,121 @@ function buildPresenceArea(shift) {
   wrapper.appendChild(title);
 
   const current = getDisplayedStatus(shift);
-  const badge = document.createElement("div");
-  badge.className = `presence-badge presence-${current.color}`;
-  badge.textContent = current.label;
-  wrapper.appendChild(badge);
+  const statusControl = document.createElement("div");
+  statusControl.className = "volunteer-status-control";
 
-  if (now >= end) return wrapper;
+  const statusButton = document.createElement("button");
+  statusButton.type = "button";
+  statusButton.className = "volunteer-status-button";
+  statusButton.setAttribute("aria-label", `${current.label}. Cliquer pour modifier le statut.`);
+  statusButton.setAttribute("aria-expanded", "false");
 
-  const actions = document.createElement("div");
-  actions.className = "presence-actions";
+  const dot = document.createElement("span");
+  dot.className = `volunteer-status-dot volunteer-status-${current.key}`;
+  dot.setAttribute("aria-hidden", "true");
 
-  const presentButton = document.createElement("button");
-  presentButton.type = "button";
-  presentButton.className = "presence-action presence-action-green";
-  presentButton.textContent = "Je suis à ce poste";
-  presentButton.addEventListener("click", async () => {
-    if (await savePresenceStatus(shift, "present", null, false)) loadNextShift();
+  const statusLabel = document.createElement("span");
+  statusLabel.className = "volunteer-status-label";
+  statusLabel.textContent = current.label;
+
+  const chevron = document.createElement("span");
+  chevron.className = "volunteer-status-chevron";
+  chevron.textContent = "▾";
+  chevron.setAttribute("aria-hidden", "true");
+
+  statusButton.append(dot, statusLabel, chevron);
+
+  const menu = document.createElement("div");
+  menu.className = "volunteer-status-menu";
+  menu.hidden = true;
+
+  const choices = [
+    ["present", "Présent·e"],
+    ["disponible", "Disponible"],
+    ["en_pause", "En pause"],
+    ["retard", "En retard"],
+    ["absent", "Absent·e"],
+    ["inconnu", "Inconnu"]
+  ];
+
+  choices.forEach(([key, label]) => {
+    if (key === "retard") {
+      const delayBlock = document.createElement("div");
+      delayBlock.className = "volunteer-delay-block";
+
+      const delayHeader = document.createElement("button");
+      delayHeader.type = "button";
+      delayHeader.className = "volunteer-status-option volunteer-delay-toggle";
+
+      const swatch = document.createElement("span");
+      swatch.className = "volunteer-status-swatch volunteer-status-retard";
+      const text = document.createElement("span");
+      text.textContent = "En retard";
+      delayHeader.append(swatch, text);
+
+      const delayChoices = document.createElement("div");
+      delayChoices.className = "volunteer-delay-choices";
+      delayChoices.hidden = true;
+
+      [5, 10, 15, 20, 30, 45, 60].forEach(minutes => {
+        const delayButton = document.createElement("button");
+        delayButton.type = "button";
+        delayButton.className = "volunteer-delay-choice";
+        delayButton.textContent = `${minutes} min`;
+        delayButton.addEventListener("click", async event => {
+          event.stopPropagation();
+          menu.hidden = true;
+          statusButton.setAttribute("aria-expanded", "false");
+          if (await savePresenceStatus(shift, "retard", minutes)) {
+            await loadNextShift();
+          }
+        });
+        delayChoices.appendChild(delayButton);
+      });
+
+      delayHeader.addEventListener("click", event => {
+        event.stopPropagation();
+        delayChoices.hidden = !delayChoices.hidden;
+      });
+
+      delayBlock.append(delayHeader, delayChoices);
+      menu.appendChild(delayBlock);
+      return;
+    }
+
+    const option = document.createElement("button");
+    option.type = "button";
+    option.className = "volunteer-status-option";
+
+    const swatch = document.createElement("span");
+    swatch.className = `volunteer-status-swatch volunteer-status-${key}`;
+    const text = document.createElement("span");
+    text.textContent = label;
+    option.append(swatch, text);
+
+    option.addEventListener("click", async event => {
+      event.stopPropagation();
+      menu.hidden = true;
+      statusButton.setAttribute("aria-expanded", "false");
+      if (await savePresenceStatus(shift, key)) {
+        await loadNextShift();
+      }
+    });
+
+    menu.appendChild(option);
   });
-  actions.appendChild(presentButton);
 
-  const availableButton = document.createElement("button");
-  availableButton.type = "button";
-  availableButton.className = "presence-action presence-action-blue";
-  availableButton.textContent = "Je suis libéré·e et disponible pour un autre poste";
-  availableButton.addEventListener("click", async () => {
-    if (await savePresenceStatus(shift, "present", null, true)) loadNextShift();
+  statusButton.addEventListener("click", event => {
+    event.stopPropagation();
+    document.querySelectorAll(".volunteer-status-menu").forEach(other => {
+      if (other !== menu) other.hidden = true;
+    });
+    menu.hidden = !menu.hidden;
+    statusButton.setAttribute("aria-expanded", menu.hidden ? "false" : "true");
   });
-  actions.appendChild(availableButton);
 
-  if (now >= start) {
-    const pauseButton = document.createElement("button");
-    pauseButton.type = "button";
-    pauseButton.className = "presence-action presence-action-purple";
-    pauseButton.textContent = "Je suis en pause";
-    pauseButton.addEventListener("click", async () => {
-      if (await savePresenceStatus(shift, "en_pause", null, false)) loadNextShift();
-    });
-    actions.appendChild(pauseButton);
-
-    const unknownButton = document.createElement("button");
-    unknownButton.type = "button";
-    unknownButton.className = "presence-action presence-action-gray";
-    unknownButton.textContent = "Je passe en statut Inconnu";
-    unknownButton.addEventListener("click", async () => {
-      if (await savePresenceStatus(shift, "inconnu", null, false)) loadNextShift();
-    });
-    actions.appendChild(unknownButton);
-  }
-
-  if (now < start) {
-    const delayWrap = document.createElement("div");
-    delayWrap.className = "delay-control";
-
-    const delaySelect = document.createElement("select");
-    delaySelect.className = "delay-select";
-    [5, 10, 15, 20, 30, 45, 60].forEach(value => {
-      const option = document.createElement("option");
-      option.value = value;
-      option.textContent = `${value} min`;
-      delaySelect.appendChild(option);
-    });
-
-    const delayButton = document.createElement("button");
-    delayButton.type = "button";
-    delayButton.className = "presence-action presence-action-orange";
-    delayButton.textContent = "Je serai en retard de";
-    delayButton.addEventListener("click", async () => {
-      const minutes = Number(delaySelect.value);
-      if (await savePresenceStatus(shift, "retard", minutes, false)) loadNextShift();
-    });
-
-    delayWrap.appendChild(delayButton);
-    delayWrap.appendChild(delaySelect);
-    actions.appendChild(delayWrap);
-  }
-
-  const absentButton = document.createElement("button");
-  absentButton.type = "button";
-  absentButton.className = "presence-action presence-action-red";
-  absentButton.textContent = now < start ? "Je serai absent·e" : "Je ne suis pas à mon poste";
-  absentButton.addEventListener("click", async () => {
-    const status = now < start ? "absent" : "hors_poste";
-    if (await savePresenceStatus(shift, status, null, false)) loadNextShift();
-  });
-  actions.appendChild(absentButton);
-
-  wrapper.appendChild(actions);
+  statusControl.append(statusButton, menu);
+  wrapper.appendChild(statusControl);
   return wrapper;
 }
 
@@ -268,7 +250,14 @@ async function loadNextShift() {
     return;
   }
 
-  if (!shifts || shifts.length === 0) return;
+  if (!shifts || shifts.length === 0) {
+    nextShiftContent.className = "empty-shift";
+    nextShiftContent.innerHTML = `
+      <p class="empty-shift-title">Aucun horaire disponible pour le moment</p>
+      <p>Ton planning apparaîtra ici dès qu'il sera disponible.</p>
+    `;
+    return;
+  }
 
   const shift = shifts[0];
   const posteName = shift.poste_nom || "Poste à confirmer";
@@ -321,8 +310,7 @@ async function loadNextShift() {
     nextShiftContent.appendChild(responsible);
   }
 
-  const presenceArea = buildPresenceArea(shift);
-  if (presenceArea) nextShiftContent.appendChild(presenceArea);
+  nextShiftContent.appendChild(buildPresenceArea(shift));
 }
 
 async function loadDashboard() {
@@ -394,6 +382,15 @@ logoutButton.addEventListener("click", async () => {
   }
 
   window.location.replace("index.html");
+});
+
+document.addEventListener("click", () => {
+  document.querySelectorAll(".volunteer-status-menu").forEach(menu => {
+    menu.hidden = true;
+  });
+  document.querySelectorAll(".volunteer-status-button").forEach(button => {
+    button.setAttribute("aria-expanded", "false");
+  });
 });
 
 document.querySelectorAll('.dashboard-card[href="#"], .team-menu-future[href="#"]').forEach(link => {
