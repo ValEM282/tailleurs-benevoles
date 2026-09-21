@@ -329,7 +329,7 @@ function renderGroups(rows) {
         const range = document.createElement("div");
         range.className = "volunteer-end";
         range.textContent = entry.rows
-          .map(row => `→ ${formatTime(row.debut)}-${formatTime(row.fin)}`)
+          .map(row => `${formatTime(row.debut)}-${formatTime(row.fin)}`)
           .join(" | ");
         item.appendChild(range);
         list.appendChild(item);
