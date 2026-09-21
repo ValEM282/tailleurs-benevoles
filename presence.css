@@ -1,5 +1,14 @@
 /* Statuts de présence et disponibilités */
 
+.next-shift-poste {
+  margin: 0 0 12px;
+  font-family: "Macho", "Titillium Web", sans-serif;
+  font-size: 1.35rem;
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--blue);
+}
+
 .next-shift-responsible {
   margin: 10px 0 0;
 }
