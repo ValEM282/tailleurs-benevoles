@@ -68,26 +68,26 @@ function isReinforcementShift(shift) {
 
 function getDisplayedStatus(shift) {
   if (shift.statut === "retard") {
-    return { key: "retard", label: `En retard de ${shift.retard_minutes || 0} min (à ce poste)` };
+    return { key: "retard", label: `En retard de ${shift.retard_minutes || 0} min` };
   }
 
   if (shift.statut === "present" && shift.disponible) {
-    return { key: "disponible", label: "Disponible (pour un autre poste)" };
+    return { key: "disponible", label: "Disponible" };
   }
 
   const labels = {
-    present: "Présent·e (à mon poste)",
-    absent: "Absent·e (de ce poste)",
-    hors_poste: "Absent·e (de ce poste)",
+    present: "Présent·e",
+    absent: "Absent·e",
+    hors_poste: "Absent·e",
     en_pause: "En pause",
     termine: "Terminé",
-    a_venir: "Inconnu (je ne suis plus là)",
-    inconnu: "Inconnu (je ne suis plus là)"
+    a_venir: "Inconnu",
+    inconnu: "Inconnu"
   };
 
   return {
     key: shift.statut && labels[shift.statut] ? shift.statut : "inconnu",
-    label: labels[shift.statut] || "Inconnu (je ne suis plus là)"
+    label: labels[shift.statut] || "Inconnu"
   };
 }
 
@@ -151,7 +151,7 @@ function buildPresenceArea(shift) {
     ["en_pause", "En pause"],
     ["disponible", "Disponible (pour un autre poste)"],
     ["retard", "En retard (à ce poste)"],
-    ["absent", "Absent·e (de ce poste)"],
+    ["absent", "Absent·e (du festival)"],
     ["inconnu", "Inconnu (je ne suis plus là)"]
   ];
 
