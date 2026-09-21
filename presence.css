@@ -71,6 +71,11 @@
   background: rgba(28, 46, 171, 0.12);
 }
 
+.presence-purple {
+  color: #6e1768;
+  background: rgba(137, 30, 130, 0.14);
+}
+
 .presence-actions {
   display: flex;
   flex-wrap: wrap;
