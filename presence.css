@@ -143,6 +143,49 @@
   background: var(--white);
 }
 
+.team-menu-card {
+  margin-bottom: 34px;
+}
+
+.team-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.team-menu-button {
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 14px;
+  border: 2px solid var(--blue);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--blue);
+  font-family: "Macho", "Titillium Web", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.team-menu-button:hover,
+.team-menu-button-active {
+  background: var(--blue);
+  color: var(--white);
+}
+
+.team-menu-button:hover {
+  transform: translateY(-1px);
+}
+
+.team-menu-future {
+  border-color: rgba(28, 46, 171, 0.35);
+}
+
 .available-volunteers-box {
   margin-top: 18px;
   padding: 18px 20px;
@@ -188,6 +231,12 @@
   color: var(--text-light);
 }
 
+@media (max-width: 900px) {
+  .team-menu-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 700px) {
   .presence-actions,
   .delay-control {
@@ -200,6 +249,10 @@
 
   .delay-control .presence-action {
     flex: 1 1 auto;
+  }
+
+  .team-menu-grid {
+    grid-template-columns: 1fr;
   }
 
   .available-row {
