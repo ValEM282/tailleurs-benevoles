@@ -145,6 +145,17 @@ function buildSegments(rows) {
   return segments;
 }
 
+function peopleForSegment(rows, segment) {
+  const presentRows = rows
+    .filter(row => new Date(row.debut).getTime() <= segment.start && new Date(row.fin).getTime() >= segment.end)
+    .sort((a, b) =>
+      alphaCollator.compare(a.prenom || "", b.prenom || "") ||
+      alphaCollator.compare(a.nom || "", b.nom || "")
+    );
+
+  return uniqueBy(presentRows, row => String(row.personne_id));
+}
+
 function renderComplete(rows) {
   completeResult.innerHTML = "";
 
@@ -181,6 +192,8 @@ function renderComplete(rows) {
   const segments = buildSegments(rows);
   if (!segments.length) return;
 
+  const segmentPeople = segments.map(segment => peopleForSegment(rows, segment));
+
   const wrap = document.createElement("div");
   wrap.className = "complete-grid-wrap";
 
@@ -189,9 +202,18 @@ function renderComplete(rows) {
 
   const thead = document.createElement("thead");
   const headRow = document.createElement("tr");
-  segments.forEach(segment => {
+  segments.forEach((segment, index) => {
     const th = document.createElement("th");
-    th.textContent = `${formatTime(segment.start)}-${formatTime(segment.end)}`;
+
+    const range = document.createElement("div");
+    range.className = "complete-column-range";
+    range.textContent = `${formatTime(segment.start)}-${formatTime(segment.end)}`;
+
+    const count = document.createElement("div");
+    count.className = "complete-column-count";
+    count.textContent = `${segmentPeople[index].length} bén.`;
+
+    th.append(range, count);
     headRow.appendChild(th);
   });
   thead.appendChild(headRow);
@@ -199,18 +221,12 @@ function renderComplete(rows) {
   const tbody = document.createElement("tbody");
   const bodyRow = document.createElement("tr");
 
-  segments.forEach(segment => {
+  segments.forEach((segment, index) => {
     const td = document.createElement("td");
-    const presentRows = rows
-      .filter(row => new Date(row.debut).getTime() <= segment.start && new Date(row.fin).getTime() >= segment.end)
-      .sort((a, b) =>
-        alphaCollator.compare(a.nom || "", b.nom || "") ||
-        alphaCollator.compare(a.prenom || "", b.prenom || "")
-      );
-
-    const uniquePeople = uniqueBy(presentRows, row => String(row.personne_id));
+    const uniquePeople = segmentPeople[index];
 
     if (!uniquePeople.length) {
+      td.classList.add("complete-empty-td");
       const empty = document.createElement("span");
       empty.className = "complete-empty-cell";
       empty.textContent = "—";
