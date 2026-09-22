@@ -10,11 +10,12 @@
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
+      second: "2-digit",
       hour12: false,
       timeZone: "Europe/Brussels"
     }).formatToParts(new Date());
     const v = Object.fromEntries(parts.map(p => [p.type, p.value]));
-    return `${v.day}/${v.month}/${v.year} - ${Number(v.hour)}h${v.minute}`;
+    return `${v.day}-${v.month}-${v.year}  |  ${v.hour}:${v.minute}:${v.second}`;
   }
 
   function safeFilenamePart(value) {
