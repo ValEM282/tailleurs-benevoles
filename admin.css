@@ -132,9 +132,21 @@
   color: var(--white);
 }
 
+.admin-action-button:first-child {
+  border-color: #2e9d57;
+  background: #2e9d57;
+  color: var(--white);
+}
+
+.admin-action-button:first-child:hover {
+  border-color: #237a44;
+  background: #237a44;
+}
+
 .admin-action-button-danger {
   border-color: var(--red);
   color: var(--red);
+  background: var(--white);
 }
 
 .admin-action-button-danger:hover {
