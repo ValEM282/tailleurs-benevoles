@@ -8,6 +8,8 @@ const placeFilter = document.getElementById("place-filter");
 const completeResult = document.getElementById("complete-result");
 const messageBox = document.getElementById("planning-message");
 const logoutButton = document.getElementById("logout-button");
+const printButton = document.getElementById("print-planning-button");
+const printMeta = document.getElementById("print-meta");
 
 let filterRows = [];
 
@@ -58,6 +60,22 @@ function formatWeekdayUpper(isoDate) {
     weekday: "long",
     timeZone: "Europe/Brussels"
   }).format(date).toUpperCase();
+}
+
+function formatPrintTimestamp() {
+  const now = new Date();
+  const parts = new Intl.DateTimeFormat("fr-BE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "Europe/Brussels"
+  }).formatToParts(now);
+
+  const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+  return `${values.day}/${values.month}/${values.year} - ${Number(values.hour)}h${values.minute}`;
 }
 
 function uniqueBy(items, keyFn) {
@@ -411,6 +429,11 @@ async function init() {
 
   await loadComplete();
 }
+
+printButton.addEventListener("click", () => {
+  printMeta.textContent = formatPrintTimestamp();
+  window.print();
+});
 
 logoutButton.addEventListener("click", async () => {
   await supabaseClient.auth.signOut();
