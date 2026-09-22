@@ -121,6 +121,16 @@
   white-space: nowrap;
 }
 
+.complete-volunteer-name.complete-volunteer-absent {
+  color: var(--red);
+  font-weight: 700;
+}
+
+.complete-volunteer-name.complete-volunteer-retard {
+  color: #c87400;
+  font-weight: 700;
+}
+
 .complete-grid td.complete-empty-td {
   vertical-align: middle;
 }
