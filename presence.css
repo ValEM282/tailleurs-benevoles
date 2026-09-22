@@ -9,6 +9,24 @@
   color: var(--blue);
 }
 
+.next-shift-location {
+  margin: 0 0 10px;
+}
+
+.next-shift-location-link {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.next-shift-location-link:hover {
+  color: var(--blue);
+  text-decoration: underline;
+}
+
+.next-shift-schedule {
+  margin-top: 0;
+}
+
 .next-shift-responsible {
   margin: 10px 0 0;
 }
