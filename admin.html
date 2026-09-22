@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260921-2">
   <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
-  <link rel="stylesheet" href="admin.css?v=20260922-3">
+  <link rel="stylesheet" href="admin.css?v=20260922-4">
 </head>
 <body class="dashboard-page">
   <header class="dashboard-header">
@@ -50,6 +50,26 @@
     <section id="admin-content" class="admin-card" hidden>
       <div class="admin-content-heading admin-content-heading-compact">
         <button type="button" id="admin-lock-button" class="admin-secondary-button">Verrouiller</button>
+      </div>
+
+      <div class="admin-management">
+        <section class="admin-management-section" aria-labelledby="admin-volunteers-title">
+          <h2 id="admin-volunteers-title">Bénévoles</h2>
+          <div class="admin-action-grid">
+            <button type="button" class="admin-action-button">Ajouter</button>
+            <button type="button" class="admin-action-button">Modifier</button>
+            <button type="button" class="admin-action-button admin-action-button-danger">Supprimer</button>
+          </div>
+        </section>
+
+        <section class="admin-management-section" aria-labelledby="admin-responsibles-title">
+          <h2 id="admin-responsibles-title">Responsables</h2>
+          <div class="admin-action-grid">
+            <button type="button" class="admin-action-button">Ajouter</button>
+            <button type="button" class="admin-action-button">Modifier</button>
+            <button type="button" class="admin-action-button admin-action-button-danger">Supprimer</button>
+          </div>
+        </section>
       </div>
     </section>
   </main>
