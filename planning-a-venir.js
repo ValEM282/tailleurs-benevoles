@@ -59,15 +59,32 @@ function formatWeekdayUpper(isoDate) {
   }).format(date).toUpperCase();
 }
 
-function currentBrusselsDate() {
+function currentOperationalBrusselsDate() {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Europe/Brussels",
     year: "numeric",
     month: "2-digit",
-    day: "2-digit"
+    day: "2-digit",
+    hour: "2-digit",
+    hour12: false
   }).formatToParts(new Date());
   const get = type => parts.find(p => p.type === type)?.value;
-  return `${get("year")}-${get("month")}-${get("day")}`;
+  const year = Number(get("year"));
+  const month = Number(get("month"));
+  const day = Number(get("day"));
+  const hour = Number(get("hour"));
+
+  const operationalDate = new Date(Date.UTC(year, month - 1, day, 12));
+  if (hour < 3) operationalDate.setUTCDate(operationalDate.getUTCDate() - 1);
+
+  const operationalParts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "UTC",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(operationalDate);
+  const value = type => operationalParts.find(p => p.type === type)?.value;
+  return `${value("year")}-${value("month")}-${value("day")}`;
 }
 
 function showMessage(text, type = "info") {
@@ -419,9 +436,9 @@ async function init() {
   }
 
   filterRows = data || [];
-  const today = currentBrusselsDate();
+  const operationalDay = currentOperationalBrusselsDate();
   const days = [...new Set(filterRows.map(row => row.jour))]
-    .filter(day => day >= today)
+    .filter(day => day >= operationalDay)
     .sort((a, b) => a.localeCompare(b));
 
   dayFilter.innerHTML = "";
@@ -438,7 +455,7 @@ async function init() {
     return;
   }
 
-  dayFilter.value = days.includes(today) ? today : days[0];
+  dayFilter.value = days.includes(operationalDay) ? operationalDay : days[0];
   dayFilter.addEventListener("change", () => {
     selectedPostIds.clear();
     selectedPlaceIds.clear();
