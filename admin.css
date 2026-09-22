@@ -1,7 +1,7 @@
 /* Administration du portail */
 
 .admin-main {
-  max-width: 760px;
+  max-width: 980px;
 }
 
 .admin-card {
@@ -13,7 +13,7 @@
 }
 
 .admin-card h2 {
-  margin: 0 0 8px;
+  margin: 0;
   color: var(--blue);
   font-family: "Macho", "Titillium Web", sans-serif;
 }
@@ -41,7 +41,7 @@
   background: var(--white);
   color: var(--text);
   font: inherit;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
 }
 
 #new-admin-pin,
@@ -52,8 +52,8 @@
 
 .admin-primary-button,
 .admin-secondary-button,
-.admin-action-button,
-.admin-search-button {
+.admin-search-button,
+.admin-add-button {
   min-height: 44px;
   padding: 9px 14px;
   border-radius: 11px;
@@ -79,6 +79,10 @@
   color: var(--blue);
 }
 
+.admin-secondary-button:hover {
+  background: rgba(28, 46, 171, 0.06);
+}
+
 .admin-message {
   color: var(--text);
 }
@@ -92,6 +96,10 @@
 .admin-lock-message {
   margin-top: 12px !important;
   margin-bottom: 0 !important;
+}
+
+.admin-dashboard {
+  padding: 26px 28px 30px;
 }
 
 .admin-content-heading {
@@ -108,25 +116,62 @@
 
 .admin-management {
   display: grid;
-  gap: 24px;
-  margin-top: 28px;
+  gap: 18px;
+  margin-top: 26px;
 }
 
 .admin-management-section {
-  padding-top: 20px;
-  border-top: 1px solid rgba(28, 46, 171, 0.12);
+  padding: 20px 20px 22px;
+  border: 1px solid rgba(28, 46, 171, 0.12);
+  border-radius: 15px;
+  background: var(--white);
+  box-shadow: 0 4px 14px rgba(20, 28, 80, 0.04);
 }
 
-.admin-management-section h2 {
-  margin-bottom: 12px;
+.admin-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(28, 46, 171, 0.12);
+}
+
+.admin-section-heading h2 {
+  font-size: 1.7rem;
+}
+
+.admin-add-button {
+  width: 48px;
+  min-width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 2px solid #2e9d57;
+  background: var(--white);
+  color: #2e9d57;
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+.admin-add-button:hover {
+  border-color: #237a44;
+  background: rgba(46, 157, 87, 0.08);
+  color: #237a44;
 }
 
 .admin-search-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
-  gap: 10px;
+  gap: 12px;
   align-items: end;
-  margin-bottom: 14px;
+}
+
+.admin-search-grid-person {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 180px;
+}
+
+.admin-search-grid-single {
+  grid-template-columns: minmax(0, 1fr) 180px;
 }
 
 .admin-search-field {
@@ -135,10 +180,11 @@
 }
 
 .admin-search-field label {
-  font-size: 0.95rem;
+  font-size: 0.98rem;
 }
 
 .admin-search-button {
+  min-width: 0;
   border: 2px solid var(--blue);
   background: var(--blue);
   color: var(--white);
@@ -149,44 +195,23 @@
   border-color: #142389;
 }
 
-.admin-action-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
+@media (max-width: 760px) {
+  .admin-main {
+    max-width: 100%;
+  }
 
-.admin-action-button {
-  border: 2px solid var(--blue);
-  background: var(--white);
-  color: var(--blue);
-}
+  .admin-dashboard {
+    padding: 20px 18px 24px;
+  }
 
-.admin-action-button:hover {
-  background: var(--blue);
-  color: var(--white);
-}
+  .admin-search-grid-person,
+  .admin-search-grid-single {
+    grid-template-columns: 1fr;
+  }
 
-.admin-action-button:first-child {
-  border-color: #2e9d57;
-  background: var(--white);
-  color: #2e9d57;
-}
-
-.admin-action-button:first-child:hover {
-  border-color: #237a44;
-  background: rgba(46, 157, 87, 0.08);
-  color: #237a44;
-}
-
-.admin-action-button-danger {
-  border-color: var(--red);
-  color: var(--red);
-  background: var(--white);
-}
-
-.admin-action-button-danger:hover {
-  background: var(--red);
-  color: var(--white);
+  .admin-search-button {
+    width: 100%;
+  }
 }
 
 @media (max-width: 600px) {
@@ -194,25 +219,26 @@
     padding: 18px 16px;
   }
 
-  .admin-content-heading {
-    flex-direction: column;
+  .admin-dashboard {
+    padding: 18px 14px 22px;
   }
 
-  .admin-content-heading-compact {
-    align-items: center;
+  .admin-management-section {
+    padding: 16px 14px 18px;
+  }
+
+  .admin-section-heading h2 {
+    font-size: 1.5rem;
+  }
+
+  .admin-add-button {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
   }
 
   .admin-secondary-button,
   .admin-primary-button {
-    width: 100%;
-  }
-
-  .admin-search-grid,
-  .admin-action-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .admin-search-button {
     width: 100%;
   }
 }
