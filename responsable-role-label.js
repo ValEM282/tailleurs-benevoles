@@ -1,4 +1,4 @@
-/* Affiche les postes réellement gérés à la place du libellé générique Responsable. */
+/* Affiche les postes réellement gérés et, pour les admins, le rôle ADMIN PORTAIL. */
 (async function () {
   const roleElement = document.getElementById("user-role");
   if (!roleElement || typeof supabase === "undefined") return;
@@ -30,7 +30,7 @@
     .limit(1)
     .maybeSingle();
 
-  if (participation?.role !== "responsable") return;
+  if (!participation || !["responsable", "admin"].includes(participation.role)) return;
 
   const { data: posts, error } = await client.rpc("get_my_responsible_posts");
   if (error) {
@@ -39,9 +39,11 @@
   }
 
   const names = [...new Set((posts || []).map(row => row.poste_nom).filter(Boolean))];
-  if (!names.length) return;
+  const parts = [...names];
+  if (participation.role === "admin") parts.push("ADMIN PORTAIL");
+  if (!parts.length) return;
 
-  const label = names.join(" · ");
+  const label = parts.join(" · ");
   const applyLabel = () => {
     roleElement.hidden = false;
     if (roleElement.textContent !== label) roleElement.textContent = label;
