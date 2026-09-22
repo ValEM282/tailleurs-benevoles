@@ -1,7 +1,11 @@
 /* Libellés d'affichage des statuts — la valeur interne Supabase reste "inconnu". */
 (function () {
-  const replaceLabel = value =>
-    typeof value === "string" ? value.replaceAll("Inconnu", "Indisponible") : value;
+  const replaceLabel = value => {
+    if (typeof value !== "string") return value;
+    return value
+      .replaceAll("Indisponible", "Aucun")
+      .replaceAll("Inconnu", "Aucun");
+  };
 
   function syncVolunteerRoleVisibility() {
     const roleElement = document.getElementById("user-role");
