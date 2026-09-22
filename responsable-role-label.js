@@ -1,4 +1,4 @@
-/* Affiche les postes réellement gérés et, pour les admins, le rôle ADMIN PORTAIL. */
+/* Affiche uniquement les postes réellement gérés sous le prénom. */
 (async function () {
   const roleElement = document.getElementById("user-role");
   if (!roleElement || typeof supabase === "undefined") return;
@@ -39,11 +39,12 @@
   }
 
   const names = [...new Set((posts || []).map(row => row.poste_nom).filter(Boolean))];
-  const parts = [...names];
-  if (participation.role === "admin") parts.push("ADMIN PORTAIL");
-  if (!parts.length) return;
+  if (!names.length) {
+    roleElement.hidden = true;
+    return;
+  }
 
-  const label = parts.join(" · ");
+  const label = names.join(" · ");
   const applyLabel = () => {
     roleElement.hidden = false;
     if (roleElement.textContent !== label) roleElement.textContent = label;
