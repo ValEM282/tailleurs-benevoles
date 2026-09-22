@@ -217,6 +217,22 @@ function buildSlotStatus(shift) {
   return badge;
 }
 
+function createStatusActionButton(label, tone) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = `schedule-status-pill schedule-status-pill-${tone}`;
+
+  const dot = document.createElement("span");
+  dot.className = "schedule-status-pill-dot";
+  dot.setAttribute("aria-hidden", "true");
+
+  const text = document.createElement("span");
+  text.textContent = label;
+
+  button.append(dot, text);
+  return button;
+}
+
 function buildScheduleActions(group) {
   const now = Date.now();
   const groupContainsNextShift = group.shifts.some(shift => shift.affectation_id === nextShiftId);
@@ -278,13 +294,11 @@ function buildScheduleActions(group) {
   const delayControl = document.createElement("div");
   delayControl.className = "schedule-delay-control";
 
-  const delayButton = document.createElement("button");
-  delayButton.type = "button";
-  delayButton.className = "schedule-action-button schedule-action-button-delay";
-  delayButton.textContent = "Retard";
+  const delayButton = createStatusActionButton("En retard", "delay");
 
   const delaySelect = document.createElement("select");
   delaySelect.className = "schedule-delay-select";
+  delaySelect.setAttribute("aria-label", "Durée du retard");
   [5, 10, 15, 20, 30, 45, 60].forEach(value => {
     const option = document.createElement("option");
     option.value = value;
@@ -292,10 +306,7 @@ function buildScheduleActions(group) {
     delaySelect.appendChild(option);
   });
 
-  const absenceButton = document.createElement("button");
-  absenceButton.type = "button";
-  absenceButton.className = "schedule-action-button schedule-action-button-absence";
-  absenceButton.textContent = "Absence";
+  const absenceButton = createStatusActionButton("Absent·e", "absence");
 
   const getSelectedShifts = () => {
     const selectedIds = new Set(
