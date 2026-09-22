@@ -153,12 +153,17 @@
   border-radius: 50%;
   background: var(--white);
   color: #2e9d57;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.55rem;
-  font-weight: 600;
+  display: inline-grid;
+  place-items: center;
+  box-sizing: border-box;
+}
+
+.admin-add-button span {
+  display: block;
+  font-size: 1.45rem;
+  font-weight: 700;
   line-height: 1;
+  transform: translateY(-1px);
 }
 
 .admin-add-button:hover {
@@ -253,7 +258,10 @@
     min-width: 32px;
     height: 32px;
     min-height: 32px;
-    font-size: 1.35rem;
+  }
+
+  .admin-add-button span {
+    font-size: 1.25rem;
   }
 
   .admin-secondary-button,
