@@ -124,6 +124,12 @@
   font-weight: 600;
 }
 
+.schedule-slot-status-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .schedule-slot-status {
   display: inline-flex;
   align-items: center;
@@ -153,6 +159,32 @@
 
 .schedule-slot-status-absent .schedule-slot-dot {
   background: var(--red);
+}
+
+.schedule-status-separator {
+  color: var(--text-light);
+  font-weight: 400;
+}
+
+.schedule-status-cancel {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--blue);
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.schedule-status-cancel:hover {
+  color: var(--red);
+}
+
+.schedule-status-cancel:disabled {
+  opacity: 0.55;
+  cursor: wait;
 }
 
 .schedule-action-controls {
