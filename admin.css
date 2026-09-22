@@ -42,12 +42,18 @@
   color: var(--text);
   font: inherit;
   font-size: 1.1rem;
+}
+
+#new-admin-pin,
+#confirm-admin-pin,
+#admin-pin {
   letter-spacing: 0.16em;
 }
 
 .admin-primary-button,
 .admin-secondary-button,
-.admin-action-button {
+.admin-action-button,
+.admin-search-button {
   min-height: 44px;
   padding: 9px 14px;
   border-radius: 11px;
@@ -115,6 +121,34 @@
   margin-bottom: 12px;
 }
 
+.admin-search-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 14px;
+}
+
+.admin-search-field {
+  display: grid;
+  gap: 6px;
+}
+
+.admin-search-field label {
+  font-size: 0.95rem;
+}
+
+.admin-search-button {
+  border: 2px solid var(--blue);
+  background: var(--blue);
+  color: var(--white);
+}
+
+.admin-search-button:hover {
+  background: #142389;
+  border-color: #142389;
+}
+
 .admin-action-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -173,7 +207,12 @@
     width: 100%;
   }
 
+  .admin-search-grid,
   .admin-action-grid {
     grid-template-columns: 1fr;
+  }
+
+  .admin-search-button {
+    width: 100%;
   }
 }
