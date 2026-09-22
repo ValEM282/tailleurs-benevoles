@@ -13,6 +13,7 @@ const confirmPinInput = document.getElementById("confirm-admin-pin");
 const pinInput = document.getElementById("admin-pin");
 const lockMessage = document.getElementById("admin-lock-message");
 const lockButton = document.getElementById("admin-lock-button");
+const volunteerListButton = document.getElementById("admin-volunteer-list");
 
 let currentUser = null;
 const unlockDurationMs = 30 * 60 * 1000;
@@ -197,6 +198,12 @@ lockButton.addEventListener("click", () => {
   lockMessage.hidden = true;
   pinInput.focus();
 });
+
+if (volunteerListButton) {
+  volunteerListButton.addEventListener("click", () => {
+    window.location.href = "benevoles-liste.html";
+  });
+}
 
 logoutButton.addEventListener("click", async () => {
   clearUnlockedSession();
