@@ -2,8 +2,6 @@
    MES HORAIRES DE BÉNÉVOLE
    ========================================================= */
 
-let nextShiftId = null;
-
 async function initSchedulePage() {
   const user = await PortalAuth.requireAuth();
   if (!user) return;
@@ -35,20 +33,12 @@ async function loadSchedule() {
   scheduleList.innerHTML = "";
 
   try {
-    const [scheduleResult, nextResult] = await Promise.all([
-      PortalAuth.client.rpc("get_my_schedule"),
-      PortalAuth.client.rpc("get_my_next_shift")
-    ]);
-
-    if (scheduleResult.error) throw scheduleResult.error;
-    if (nextResult.error) throw nextResult.error;
-
-    const shifts = scheduleResult.data || [];
-    nextShiftId = nextResult.data?.[0]?.affectation_id || null;
+    const { data: shifts, error } = await PortalAuth.client.rpc("get_my_schedule");
+    if (error) throw error;
 
     loadingElement.hidden = true;
 
-    if (!shifts.length) {
+    if (!shifts || !shifts.length) {
       emptyElement.hidden = false;
       return;
     }
@@ -219,10 +209,9 @@ function buildSlotStatus(shift) {
 
 function buildScheduleActions(group) {
   const now = Date.now();
-  const groupContainsNextShift = group.shifts.some(shift => shift.affectation_id === nextShiftId);
   const eligibleShifts = group.shifts.filter(shift => new Date(shift.fin).getTime() > now);
 
-  if (groupContainsNextShift || !eligibleShifts.length) return null;
+  if (!eligibleShifts.length) return null;
 
   const wrapper = document.createElement("div");
   wrapper.className = "schedule-status-actions";
@@ -403,6 +392,9 @@ function buildScheduleActions(group) {
 function createShiftCard(group) {
   const card = document.createElement("article");
   card.className = "schedule-shift-card";
+
+  const allShiftsPast = group.shifts.every(shift => new Date(shift.fin).getTime() <= Date.now());
+  if (allShiftsPast) card.classList.add("schedule-shift-card-past");
 
   const content = document.createElement("div");
   content.className = "schedule-shift-content";
