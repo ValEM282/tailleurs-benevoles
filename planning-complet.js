@@ -130,7 +130,7 @@ function renderPosts() {
   options.forEach(item => {
     const option = document.createElement("option");
     option.value = item.value;
-    option.textContent = item.isParent ? item.label : item.label;
+    option.textContent = item.label;
     postFilter.appendChild(option);
   });
 
@@ -314,7 +314,7 @@ function renderComplete(rows) {
 
   const groups = new Map();
   rows.forEach(row => {
-    const key = `${row.poste_id}|${row.lieu_id ?? "none"}`;
+    const key = `${row.poste_id}|${row.lieu_nom || "Lieu à confirmer"}`;
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(row);
   });
@@ -339,12 +339,16 @@ async function loadComplete() {
 
   const selectedRows = rowsForSelectedPost();
   const postIds = [...new Set(selectedRows.map(row => Number(row.poste_id)))];
+  const selectedPlace = placeFilter.value;
+  const placeIds = selectedPlace === "all" || selectedPlace === "none"
+    ? null
+    : [Number(selectedPlace)];
 
   const { data, error } = await supabaseClient.rpc("get_planning_upcoming", {
     p_day: dayFilter.value,
     p_moment: dayStartMomentIso(dayFilter.value),
     p_poste_ids: postIds,
-    p_lieu_ids: null
+    p_lieu_ids: placeIds
   });
 
   if (error) {
@@ -354,12 +358,7 @@ async function loadComplete() {
     return;
   }
 
-  const selectedPlace = placeFilter.value;
-  const rows = selectedPlace === "all"
-    ? (data || [])
-    : (data || []).filter(row => placeKey(row) === selectedPlace);
-
-  renderComplete(rows);
+  renderComplete(data || []);
 }
 
 async function init() {
