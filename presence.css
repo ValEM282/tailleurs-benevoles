@@ -1,5 +1,9 @@
 /* Statuts de présence et disponibilités */
 
+#volunteer-next-shift-section .section-heading h2 {
+  color: var(--red);
+}
+
 .next-shift-poste {
   margin: 0 0 12px;
   font-family: "Macho", "Titillium Web", sans-serif;
@@ -25,6 +29,8 @@
 
 .next-shift-schedule {
   margin-top: 0;
+  color: var(--red);
+  font-weight: 700;
 }
 
 .next-shift-responsible {
