@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260921-2">
   <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
-  <link rel="stylesheet" href="admin.css?v=20260922-6">
+  <link rel="stylesheet" href="admin.css?v=20260922-7">
 </head>
 <body class="dashboard-page">
   <header class="dashboard-header">
@@ -55,6 +55,17 @@
       <div class="admin-management">
         <section class="admin-management-section" aria-labelledby="admin-volunteers-title">
           <h2 id="admin-volunteers-title">Bénévoles</h2>
+          <div class="admin-search-grid">
+            <div class="admin-search-field">
+              <label for="volunteer-search-firstname">Prénom</label>
+              <input id="volunteer-search-firstname" type="text" autocomplete="off">
+            </div>
+            <div class="admin-search-field">
+              <label for="volunteer-search-lastname">Nom</label>
+              <input id="volunteer-search-lastname" type="text" autocomplete="off">
+            </div>
+            <button type="button" class="admin-search-button">Rechercher</button>
+          </div>
           <div class="admin-action-grid">
             <button type="button" class="admin-action-button">Ajouter</button>
             <button type="button" class="admin-action-button">Modifier</button>
@@ -64,6 +75,17 @@
 
         <section class="admin-management-section" aria-labelledby="admin-responsibles-title">
           <h2 id="admin-responsibles-title">Responsables</h2>
+          <div class="admin-search-grid">
+            <div class="admin-search-field">
+              <label for="responsible-search-firstname">Prénom</label>
+              <input id="responsible-search-firstname" type="text" autocomplete="off">
+            </div>
+            <div class="admin-search-field">
+              <label for="responsible-search-lastname">Nom</label>
+              <input id="responsible-search-lastname" type="text" autocomplete="off">
+            </div>
+            <button type="button" class="admin-search-button">Rechercher</button>
+          </div>
           <div class="admin-action-grid">
             <button type="button" class="admin-action-button">Ajouter</button>
             <button type="button" class="admin-action-button">Modifier</button>
