@@ -1,0 +1,118 @@
+/* Administration du portail */
+
+.admin-main {
+  max-width: 760px;
+}
+
+.admin-card {
+  padding: 22px 24px;
+  background: var(--white);
+  border: 1px solid rgba(28, 46, 171, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(20, 28, 80, 0.08);
+}
+
+.admin-card h2 {
+  margin: 0 0 8px;
+  color: var(--blue);
+  font-family: "Macho", "Titillium Web", sans-serif;
+}
+
+.admin-card p {
+  margin: 0 0 16px;
+}
+
+.admin-card form {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-card label {
+  font-weight: 700;
+  color: var(--blue);
+}
+
+.admin-card input {
+  min-height: 46px;
+  box-sizing: border-box;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: var(--white);
+  color: var(--text);
+  font: inherit;
+  font-size: 1.1rem;
+  letter-spacing: 0.16em;
+}
+
+.admin-primary-button,
+.admin-secondary-button {
+  min-height: 44px;
+  padding: 9px 14px;
+  border-radius: 11px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-primary-button {
+  margin-top: 4px;
+  border: 2px solid var(--blue);
+  background: var(--blue);
+  color: var(--white);
+}
+
+.admin-primary-button:hover {
+  background: #142389;
+}
+
+.admin-secondary-button {
+  border: 2px solid var(--blue);
+  background: var(--white);
+  color: var(--blue);
+}
+
+.admin-message {
+  color: var(--text);
+}
+
+.admin-error,
+.admin-lock-message {
+  color: var(--red);
+  font-weight: 700;
+}
+
+.admin-lock-message {
+  margin-top: 12px !important;
+  margin-bottom: 0 !important;
+}
+
+.admin-content-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.admin-placeholder {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 12px;
+  background: rgba(28, 46, 171, 0.05);
+  color: var(--text-light);
+}
+
+@media (max-width: 600px) {
+  .admin-card {
+    padding: 18px 16px;
+  }
+
+  .admin-content-heading {
+    flex-direction: column;
+  }
+
+  .admin-secondary-button,
+  .admin-primary-button {
+    width: 100%;
+  }
+}
