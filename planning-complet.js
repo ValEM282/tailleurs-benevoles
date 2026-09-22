@@ -450,9 +450,11 @@ async function openPlanningPdf() {
 
   const exportRoot = document.createElement("div");
   exportRoot.style.cssText = [
-    "position:fixed",
-    "left:-200vw",
+    "position:absolute",
+    "left:0",
     "top:0",
+    "z-index:-1",
+    "pointer-events:none",
     "width:1120px",
     "padding:20px 24px 28px",
     "box-sizing:border-box",
@@ -491,6 +493,8 @@ async function openPlanningPdf() {
   document.body.appendChild(exportRoot);
 
   try {
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
     const selectedPost = postFilter.options[postFilter.selectedIndex]?.textContent || "planning";
     const selectedDay = dayFilter.value || "jour";
     const safePost = selectedPost
@@ -509,7 +513,9 @@ async function openPlanningPdf() {
         useCORS: true,
         backgroundColor: "#ffffff",
         scrollX: 0,
-        scrollY: 0
+        scrollY: 0,
+        windowWidth: 1120,
+        windowHeight: Math.max(exportRoot.scrollHeight, 700)
       },
       jsPDF: {
         unit: "mm",
