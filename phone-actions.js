@@ -1,5 +1,12 @@
 /* Actions de contact depuis un numéro de téléphone. */
 (function () {
+  const phoneSelector = [
+    "a.volunteer-phone",
+    "a.contact-phone:not(.emergency-phone)",
+    "a.responsible-phone",
+    "a.dispo-phone"
+  ].join(", ");
+
   function normalizeTel(value) {
     return (value || "").replace(/[^+\d]/g, "");
   }
@@ -14,6 +21,10 @@
   function closeAll(except = null) {
     document.querySelectorAll(".phone-actions-menu").forEach(menu => {
       if (menu !== except) menu.hidden = true;
+    });
+    document.querySelectorAll(".phone-actions-trigger").forEach(trigger => {
+      const ownMenu = trigger.parentElement?.querySelector(".phone-actions-menu");
+      if (ownMenu !== except) trigger.setAttribute("aria-expanded", "false");
     });
   }
 
@@ -36,7 +47,7 @@
 
     const trigger = document.createElement("button");
     trigger.type = "button";
-    trigger.className = "volunteer-phone phone-actions-trigger";
+    trigger.className = `${[...link.classList].join(" ")} phone-actions-trigger`.trim();
     trigger.textContent = displayText;
     trigger.setAttribute("aria-label", `Contacter ${displayText}`);
     trigger.setAttribute("aria-expanded", "false");
@@ -77,7 +88,7 @@
   }
 
   function scan(root = document) {
-    root.querySelectorAll?.("a.volunteer-phone").forEach(enhancePhone);
+    root.querySelectorAll?.(phoneSelector).forEach(enhancePhone);
   }
 
   scan();
@@ -86,7 +97,7 @@
     mutations.forEach(mutation => {
       mutation.addedNodes.forEach(node => {
         if (node.nodeType !== Node.ELEMENT_NODE) return;
-        if (node.matches?.("a.volunteer-phone")) enhancePhone(node);
+        if (node.matches?.(phoneSelector)) enhancePhone(node);
         scan(node);
       });
     });
