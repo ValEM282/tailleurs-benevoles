@@ -185,6 +185,12 @@ function statusInfo(row) {
 }
 
 function mergedStatus(rows) {
+  const delayedRows = rows.filter(row => row.statut === "retard");
+  if (delayedRows.length) {
+    const labels = [...new Set(delayedRows.map(row => `En retard de ${row.retard_minutes || 0} min`))];
+    return { key: "retard", label: labels.join(" · ") };
+  }
+
   const first = statusInfo(rows[0]);
   const same = rows.every(row => statusInfo(row).key === first.key && statusInfo(row).label === first.label);
   return same ? first : { key: "inconnu", label: "Inconnu" };
