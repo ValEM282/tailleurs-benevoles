@@ -217,22 +217,6 @@ function buildSlotStatus(shift) {
   return badge;
 }
 
-function createStatusActionButton(label, tone) {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = `schedule-status-pill schedule-status-pill-${tone}`;
-
-  const dot = document.createElement("span");
-  dot.className = "schedule-status-pill-dot";
-  dot.setAttribute("aria-hidden", "true");
-
-  const text = document.createElement("span");
-  text.textContent = label;
-
-  button.append(dot, text);
-  return button;
-}
-
 function buildScheduleActions(group) {
   const now = Date.now();
   const groupContainsNextShift = group.shifts.some(shift => shift.affectation_id === nextShiftId);
@@ -288,26 +272,6 @@ function buildScheduleActions(group) {
 
   wrapper.appendChild(choices);
 
-  const controls = document.createElement("div");
-  controls.className = "schedule-action-controls";
-
-  const delayControl = document.createElement("div");
-  delayControl.className = "schedule-delay-control";
-
-  const delayButton = createStatusActionButton("En retard", "delay");
-
-  const delaySelect = document.createElement("select");
-  delaySelect.className = "schedule-delay-select";
-  delaySelect.setAttribute("aria-label", "Durée du retard");
-  [5, 10, 15, 20, 30, 45, 60].forEach(value => {
-    const option = document.createElement("option");
-    option.value = value;
-    option.textContent = `${value} min`;
-    delaySelect.appendChild(option);
-  });
-
-  const absenceButton = createStatusActionButton("Absent·e", "absence");
-
   const getSelectedShifts = () => {
     const selectedIds = new Set(
       checkboxes
@@ -317,49 +281,121 @@ function buildScheduleActions(group) {
     return eligibleShifts.filter(shift => selectedIds.has(shift.affectation_id));
   };
 
-  delayButton.addEventListener("click", async () => {
-    const selected = getSelectedShifts();
-    if (!selected.length) {
-      alert("Choisis d’abord la ou les plages horaires concernées.");
-      return;
-    }
+  const statusControl = document.createElement("div");
+  statusControl.className = "volunteer-status-control schedule-status-picker";
 
-    delayButton.disabled = true;
-    absenceButton.disabled = true;
-    delaySelect.disabled = true;
+  const statusButton = document.createElement("button");
+  statusButton.type = "button";
+  statusButton.className = "volunteer-status-button";
+  statusButton.setAttribute("aria-label", "Choisir le statut à annoncer");
+  statusButton.setAttribute("aria-expanded", "false");
 
-    if (await setStatusForShifts(selected, "retard", Number(delaySelect.value))) {
-      await loadSchedule();
-    } else {
-      delayButton.disabled = false;
-      absenceButton.disabled = false;
-      delaySelect.disabled = false;
-    }
+  const currentDot = document.createElement("span");
+  currentDot.className = "volunteer-status-dot volunteer-status-inconnu";
+  currentDot.setAttribute("aria-hidden", "true");
+
+  const currentLabel = document.createElement("span");
+  currentLabel.className = "volunteer-status-label";
+  currentLabel.textContent = "Choisir un statut";
+
+  const chevron = document.createElement("span");
+  chevron.className = "volunteer-status-chevron";
+  chevron.textContent = "▾";
+  chevron.setAttribute("aria-hidden", "true");
+
+  statusButton.append(currentDot, currentLabel, chevron);
+
+  const menu = document.createElement("div");
+  menu.className = "volunteer-status-menu";
+  menu.hidden = true;
+
+  const delayBlock = document.createElement("div");
+  delayBlock.className = "volunteer-delay-block";
+
+  const delayHeader = document.createElement("button");
+  delayHeader.type = "button";
+  delayHeader.className = "volunteer-status-option volunteer-delay-toggle";
+
+  const delaySwatch = document.createElement("span");
+  delaySwatch.className = "volunteer-status-swatch volunteer-status-retard";
+
+  const delayText = document.createElement("span");
+  delayText.textContent = "En retard";
+  delayHeader.append(delaySwatch, delayText);
+
+  const delayChoices = document.createElement("div");
+  delayChoices.className = "volunteer-delay-choices";
+  delayChoices.hidden = true;
+
+  [5, 10, 15, 20, 30, 45, 60].forEach(minutes => {
+    const delayChoice = document.createElement("button");
+    delayChoice.type = "button";
+    delayChoice.className = "volunteer-delay-choice";
+    delayChoice.textContent = `${minutes} min`;
+    delayChoice.addEventListener("click", async event => {
+      event.stopPropagation();
+      const selected = getSelectedShifts();
+      if (!selected.length) {
+        alert("Choisis d’abord la ou les plages horaires concernées.");
+        return;
+      }
+
+      menu.hidden = true;
+      statusButton.setAttribute("aria-expanded", "false");
+      if (await setStatusForShifts(selected, "retard", minutes)) {
+        await loadSchedule();
+      }
+    });
+    delayChoices.appendChild(delayChoice);
   });
 
-  absenceButton.addEventListener("click", async () => {
+  delayHeader.addEventListener("click", event => {
+    event.stopPropagation();
+    delayChoices.hidden = !delayChoices.hidden;
+  });
+
+  delayBlock.append(delayHeader, delayChoices);
+  menu.appendChild(delayBlock);
+
+  const absenceOption = document.createElement("button");
+  absenceOption.type = "button";
+  absenceOption.className = "volunteer-status-option";
+
+  const absenceSwatch = document.createElement("span");
+  absenceSwatch.className = "volunteer-status-swatch volunteer-status-absent";
+
+  const absenceText = document.createElement("span");
+  absenceText.textContent = "Absent·e";
+  absenceOption.append(absenceSwatch, absenceText);
+
+  absenceOption.addEventListener("click", async event => {
+    event.stopPropagation();
     const selected = getSelectedShifts();
     if (!selected.length) {
       alert("Choisis d’abord la ou les plages horaires concernées.");
       return;
     }
 
-    delayButton.disabled = true;
-    absenceButton.disabled = true;
-    delaySelect.disabled = true;
-
+    menu.hidden = true;
+    statusButton.setAttribute("aria-expanded", "false");
     if (await setStatusForShifts(selected, "absent", null)) {
       await loadSchedule();
-    } else {
-      delayButton.disabled = false;
-      absenceButton.disabled = false;
-      delaySelect.disabled = false;
     }
   });
 
-  delayControl.append(delayButton, delaySelect);
-  controls.append(delayControl, absenceButton);
-  wrapper.appendChild(controls);
+  menu.appendChild(absenceOption);
+
+  statusButton.addEventListener("click", event => {
+    event.stopPropagation();
+    document.querySelectorAll(".volunteer-status-menu").forEach(other => {
+      if (other !== menu) other.hidden = true;
+    });
+    menu.hidden = !menu.hidden;
+    statusButton.setAttribute("aria-expanded", menu.hidden ? "false" : "true");
+  });
+
+  statusControl.append(statusButton, menu);
+  wrapper.appendChild(statusControl);
 
   return wrapper;
 }
@@ -427,5 +463,14 @@ function capitalizeFirst(text) {
   if (!text) return text;
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
+
+document.addEventListener("click", () => {
+  document.querySelectorAll(".volunteer-status-menu").forEach(menu => {
+    menu.hidden = true;
+  });
+  document.querySelectorAll(".volunteer-status-button").forEach(button => {
+    button.setAttribute("aria-expanded", "false");
+  });
+});
 
 initSchedulePage();
