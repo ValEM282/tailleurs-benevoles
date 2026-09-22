@@ -94,6 +94,11 @@
   gap: 16px;
 }
 
+.admin-content-heading-compact {
+  justify-content: center;
+  align-items: center;
+}
+
 .admin-placeholder {
   margin-top: 18px;
   padding: 18px;
@@ -109,6 +114,10 @@
 
   .admin-content-heading {
     flex-direction: column;
+  }
+
+  .admin-content-heading-compact {
+    align-items: center;
   }
 
   .admin-secondary-button,
