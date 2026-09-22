@@ -181,6 +181,13 @@ function volunteerShortName(row) {
   return `${row.prenom}${initial ? ` ${initial}.` : ""}`;
 }
 
+function futureVolunteerStatusClass(row) {
+  if (new Date(row.debut).getTime() <= Date.now()) return "";
+  if (row.statut === "absent") return " complete-volunteer-absent";
+  if (row.statut === "retard") return " complete-volunteer-retard";
+  return "";
+}
+
 function buildSegments(rows) {
   const points = [...new Set(rows.flatMap(row => [
     new Date(row.debut).getTime(),
@@ -286,7 +293,7 @@ function renderOneCompleteTable(rows) {
       names.className = "complete-cell-names";
       uniquePeople.forEach(row => {
         const name = document.createElement("div");
-        name.className = "complete-volunteer-name";
+        name.className = `complete-volunteer-name${futureVolunteerStatusClass(row)}`;
         name.textContent = volunteerShortName(row);
         names.appendChild(name);
       });
