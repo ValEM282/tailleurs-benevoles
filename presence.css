@@ -5,7 +5,7 @@
 }
 
 .next-shift-poste {
-  margin: 0 0 12px;
+  margin: 0 0 6px;
   font-family: "Macho", "Titillium Web", sans-serif;
   font-size: 1.35rem;
   line-height: 1.2;
@@ -14,7 +14,7 @@
 }
 
 .next-shift-location {
-  margin: 0 0 10px;
+  margin: 0 0 5px;
 }
 
 .next-shift-location-link {
@@ -28,13 +28,13 @@
 }
 
 .next-shift-schedule {
-  margin-top: 0;
+  margin: 0 0 4px;
   color: var(--red);
   font-weight: 700;
 }
 
 .next-shift-responsible {
-  margin: 10px 0 0;
+  margin: 2px 0 0;
 }
 
 .responsible-phone,
@@ -59,7 +59,7 @@
 .presence-title {
   margin-bottom: 8px;
   font-weight: 700;
-  color: var(--text);
+  color: var(--blue);
 }
 
 .volunteer-status-control {
