@@ -124,6 +124,9 @@
 .complete-volunteer-name.complete-volunteer-absent {
   color: var(--red);
   font-weight: 700;
+  text-decoration-line: line-through;
+  text-decoration-color: #111;
+  text-decoration-thickness: 1px;
 }
 
 .complete-volunteer-name.complete-volunteer-retard {
