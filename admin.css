@@ -122,7 +122,7 @@
 
 .admin-management-section {
   padding: 14px 16px 16px;
-  border: 1px solid rgba(28, 46, 171, 0.12);
+  border: 2px solid rgba(28, 46, 171, 0.22);
   border-radius: 14px;
   background: var(--white);
   box-shadow: 0 3px 10px rgba(20, 28, 80, 0.035);
