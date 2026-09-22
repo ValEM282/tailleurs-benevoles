@@ -1,0 +1,43 @@
+.dashboard-welcome-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dashboard-welcome-heading h1 {
+  margin-bottom: 0;
+}
+
+.admin-portal-button {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 8px 16px;
+  border: 2px solid var(--red);
+  border-radius: 11px;
+  background: var(--red);
+  color: var(--white);
+  font-family: "Macho", "Titillium Web", sans-serif;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.admin-portal-button:hover {
+  background: #c80029;
+  border-color: #c80029;
+}
+
+@media (max-width: 600px) {
+  .dashboard-welcome-heading {
+    align-items: flex-start;
+  }
+
+  .admin-portal-button {
+    min-height: 38px;
+    padding: 7px 12px;
+    font-size: 0.92rem;
+  }
+}
