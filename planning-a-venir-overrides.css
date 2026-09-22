@@ -29,6 +29,56 @@
   margin-bottom: 1px;
 }
 
+.phone-actions {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.phone-actions-icon {
+  flex: 0 0 auto;
+}
+
+.phone-actions-trigger {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.phone-actions-trigger:hover {
+  text-decoration: underline;
+}
+
+.phone-actions-menu {
+  position: absolute;
+  z-index: 140;
+  top: calc(100% + 5px);
+  left: 18px;
+  min-width: 132px;
+  padding: 5px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(20, 28, 80, 0.16);
+}
+
+.phone-actions-menu a {
+  display: block;
+  padding: 7px 9px;
+  border-radius: 7px;
+  color: var(--blue);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.phone-actions-menu a:hover {
+  background: rgba(28, 46, 171, 0.07);
+}
+
 @media (max-width: 760px) {
   .upcoming-group-title {
     align-items: stretch;
