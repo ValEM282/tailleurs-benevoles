@@ -133,9 +133,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding-bottom: 9px;
-  margin-bottom: 10px;
-  border-bottom: 1px solid rgba(28, 46, 171, 0.12);
+  padding-bottom: 0;
+  margin-bottom: 5px;
 }
 
 .admin-section-heading h2 {
@@ -188,7 +187,7 @@
 
 .admin-search-field {
   display: grid;
-  gap: 4px;
+  gap: 3px;
 }
 
 .admin-search-field label {
@@ -245,8 +244,8 @@
   }
 
   .admin-section-heading {
-    padding-bottom: 8px;
-    margin-bottom: 9px;
+    padding-bottom: 0;
+    margin-bottom: 4px;
   }
 
   .admin-section-heading h2 {
