@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260921-2">
   <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
-  <link rel="stylesheet" href="admin.css?v=20260922-7">
+  <link rel="stylesheet" href="admin.css?v=20260922-8">
 </head>
 <body class="dashboard-page">
   <header class="dashboard-header">
@@ -47,15 +47,18 @@
       <p id="admin-lock-message" class="admin-lock-message" hidden></p>
     </section>
 
-    <section id="admin-content" class="admin-card" hidden>
+    <section id="admin-content" class="admin-card admin-dashboard" hidden>
       <div class="admin-content-heading admin-content-heading-compact">
         <button type="button" id="admin-lock-button" class="admin-secondary-button">Verrouiller</button>
       </div>
 
       <div class="admin-management">
         <section class="admin-management-section" aria-labelledby="admin-volunteers-title">
-          <h2 id="admin-volunteers-title">Bénévoles</h2>
-          <div class="admin-search-grid">
+          <div class="admin-section-heading">
+            <h2 id="admin-volunteers-title">Bénévoles</h2>
+            <button type="button" class="admin-add-button" id="admin-volunteer-add" aria-label="Ajouter un bénévole">+</button>
+          </div>
+          <div class="admin-search-grid admin-search-grid-person">
             <div class="admin-search-field">
               <label for="volunteer-search-firstname">Prénom</label>
               <input id="volunteer-search-firstname" type="text" autocomplete="off">
@@ -64,18 +67,16 @@
               <label for="volunteer-search-lastname">Nom</label>
               <input id="volunteer-search-lastname" type="text" autocomplete="off">
             </div>
-            <button type="button" class="admin-search-button">Rechercher</button>
-          </div>
-          <div class="admin-action-grid">
-            <button type="button" class="admin-action-button">Ajouter</button>
-            <button type="button" class="admin-action-button">Modifier</button>
-            <button type="button" class="admin-action-button admin-action-button-danger">Supprimer</button>
+            <button type="button" class="admin-search-button" id="admin-volunteer-search">Recherche</button>
           </div>
         </section>
 
         <section class="admin-management-section" aria-labelledby="admin-responsibles-title">
-          <h2 id="admin-responsibles-title">Responsables</h2>
-          <div class="admin-search-grid">
+          <div class="admin-section-heading">
+            <h2 id="admin-responsibles-title">Responsables</h2>
+            <button type="button" class="admin-add-button" id="admin-responsible-add" aria-label="Ajouter un responsable">+</button>
+          </div>
+          <div class="admin-search-grid admin-search-grid-person">
             <div class="admin-search-field">
               <label for="responsible-search-firstname">Prénom</label>
               <input id="responsible-search-firstname" type="text" autocomplete="off">
@@ -84,12 +85,35 @@
               <label for="responsible-search-lastname">Nom</label>
               <input id="responsible-search-lastname" type="text" autocomplete="off">
             </div>
-            <button type="button" class="admin-search-button">Rechercher</button>
+            <button type="button" class="admin-search-button" id="admin-responsible-search">Recherche</button>
           </div>
-          <div class="admin-action-grid">
-            <button type="button" class="admin-action-button">Ajouter</button>
-            <button type="button" class="admin-action-button">Modifier</button>
-            <button type="button" class="admin-action-button admin-action-button-danger">Supprimer</button>
+        </section>
+
+        <section class="admin-management-section" aria-labelledby="admin-posts-title">
+          <div class="admin-section-heading">
+            <h2 id="admin-posts-title">Postes</h2>
+            <button type="button" class="admin-add-button" id="admin-post-add" aria-label="Ajouter un poste">+</button>
+          </div>
+          <div class="admin-search-grid admin-search-grid-single">
+            <div class="admin-search-field">
+              <label for="post-search-name">Nom du Poste</label>
+              <input id="post-search-name" type="text" autocomplete="off">
+            </div>
+            <button type="button" class="admin-search-button" id="admin-post-search">Recherche</button>
+          </div>
+        </section>
+
+        <section class="admin-management-section" aria-labelledby="admin-places-title">
+          <div class="admin-section-heading">
+            <h2 id="admin-places-title">Lieux</h2>
+            <button type="button" class="admin-add-button" id="admin-place-add" aria-label="Ajouter un lieu">+</button>
+          </div>
+          <div class="admin-search-grid admin-search-grid-single">
+            <div class="admin-search-field">
+              <label for="place-search-name">Nom du Lieu</label>
+              <input id="place-search-name" type="text" autocomplete="off">
+            </div>
+            <button type="button" class="admin-search-button" id="admin-place-search">Recherche</button>
           </div>
         </section>
       </div>
