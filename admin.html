@@ -21,10 +21,6 @@
   </header>
 
   <main class="subpage-main admin-main">
-    <section class="subpage-heading">
-      <h1>ADMIN PORTAIL</h1>
-    </section>
-
     <div id="admin-loading" class="admin-card admin-message">Vérification de l'accès administrateur…</div>
     <div id="admin-error" class="admin-card admin-message admin-error" hidden></div>
 
@@ -43,10 +39,8 @@
     </section>
 
     <section id="admin-pin-unlock" class="admin-card" hidden>
-      <h2>Accès administrateur</h2>
-      <p>Saisis ton PIN personnel pour ouvrir la page d'administration.</p>
       <form id="admin-pin-unlock-form" autocomplete="off">
-        <label for="admin-pin">PIN administrateur</label>
+        <label for="admin-pin">PIN Admin</label>
         <input id="admin-pin" type="password" inputmode="numeric" pattern="[0-9]{6,12}" minlength="6" maxlength="12" autocomplete="off" required>
         <button type="submit" class="admin-primary-button">Déverrouiller</button>
       </form>
