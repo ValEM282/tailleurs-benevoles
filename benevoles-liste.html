@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liste des bénévoles — Administration</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css?v=20260921-2">
+  <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
+  <link rel="stylesheet" href="benevoles-liste.css?v=20260923-1">
+</head>
+
+<body class="dashboard-page">
+  <header class="dashboard-header">
+    <div class="subpage-header-inner">
+      <a href="admin.html" class="back-button">← Administration</a>
+      <div class="dashboard-title">🎪 PORTAIL BÉNÉVOLES 🎪</div>
+      <button type="button" id="logout-button" class="logout-button">Se déconnecter</button>
+    </div>
+  </header>
+
+  <main class="subpage-main volunteers-list-main">
+    <section class="volunteers-list-heading">
+      <div>
+        <p class="volunteers-list-kicker">ADMINISTRATION</p>
+        <h1>Liste des bénévoles</h1>
+      </div>
+      <p id="volunteers-count" class="volunteers-count" aria-live="polite"></p>
+    </section>
+
+    <div id="volunteers-error" class="volunteers-message volunteers-error" hidden></div>
+
+    <section class="volunteers-table-card" aria-labelledby="volunteers-table-title">
+      <h2 id="volunteers-table-title" class="sr-only">Bénévoles de l'édition active</h2>
+
+      <div class="volunteers-table-scroll">
+        <table class="volunteers-table">
+          <thead>
+            <tr>
+              <th scope="col">
+                <button type="button" class="sort-button" data-sort="prenom" aria-label="Trier par prénom">
+                  Prénom <span class="sort-indicator" data-indicator="prenom">↕</span>
+                </button>
+              </th>
+              <th scope="col">
+                <button type="button" class="sort-button" data-sort="nom" aria-label="Trier par nom">
+                  Nom <span class="sort-indicator" data-indicator="nom">↑</span>
+                </button>
+              </th>
+              <th scope="col">Téléphone</th>
+              <th scope="col">Email</th>
+            </tr>
+          </thead>
+          <tbody id="volunteers-table-body">
+            <tr>
+              <td colspan="4" class="volunteers-loading">Chargement de la liste…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="portal-auth.js"></script>
+  <script src="benevoles-liste.js?v=20260923-1"></script>
+</body>
+</html>
