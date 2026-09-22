@@ -15,7 +15,7 @@
   >
 
   <link rel="stylesheet" href="styles.css?v=20260921-1">
-  <link rel="stylesheet" href="presence.css?v=20260922-4">
+  <link rel="stylesheet" href="presence.css?v=20260922-5">
   <link rel="stylesheet" href="phone-actions.css?v=20260922-1">
 </head>
 
@@ -41,9 +41,12 @@
 
     <div id="dashboard-personalized" hidden>
       <section class="dashboard-welcome">
-        <h1>
-          Salut <span id="user-firstname">...</span>
-        </h1>
+        <div class="dashboard-welcome-heading">
+          <h1>
+            Salut <span id="user-firstname">...</span>
+          </h1>
+          <a id="admin-portal-button" href="admin.html" class="admin-portal-button" hidden>ADMIN</a>
+        </div>
         <p id="user-role" class="user-role"></p>
       </section>
 
@@ -145,8 +148,8 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="dashboard.js?v=20260922-2"></script>
-  <script src="responsable-role-label.js?v=20260922-3"></script>
+  <script src="dashboard.js?v=20260922-3"></script>
+  <script src="responsable-role-label.js?v=20260922-4"></script>
   <script src="dashboard-ready.js?v=20260922-1"></script>
   <script src="phone-actions.js?v=20260922-2"></script>
   <script src="status-labels.js?v=20260922-2"></script>
