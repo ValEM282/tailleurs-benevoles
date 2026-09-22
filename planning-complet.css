@@ -12,6 +12,37 @@
   font-size: 1rem;
 }
 
+.complete-page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.complete-print-button {
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 2px solid var(--blue);
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--blue);
+  display: inline-grid;
+  place-items: center;
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.complete-print-button:hover {
+  background: rgba(28, 46, 171, 0.06);
+}
+
+.print-meta {
+  display: none;
+}
+
 .complete-result-block + .complete-result-block {
   margin-top: 36px;
 }
@@ -177,5 +208,107 @@
 
   .complete-column-count {
     font-size: 0.68rem;
+  }
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 10mm;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+  }
+
+  body {
+    margin: 0 !important;
+  }
+
+  .dashboard-header,
+  .planning-filters,
+  .complete-print-button,
+  .planning-message {
+    display: none !important;
+  }
+
+  .planning-main,
+  .now-section {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    border: 0 !important;
+  }
+
+  .print-meta {
+    display: block !important;
+    text-align: center;
+    margin: 0 0 8mm;
+    color: #111;
+    font-size: 10pt;
+    font-weight: 600;
+  }
+
+  .complete-page-heading {
+    margin-bottom: 5mm;
+  }
+
+  .complete-page-heading h2 {
+    margin: 0;
+    font-size: 16pt;
+  }
+
+  .complete-result-block {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .complete-result-block + .complete-result-block {
+    margin-top: 8mm;
+  }
+
+  .complete-title-card {
+    margin-bottom: 3mm;
+    padding: 2.5mm 3mm;
+    border: 1px solid #c9cfe9;
+    border-radius: 4mm;
+    background: #f2f4fb !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .complete-grid-wrap {
+    overflow: visible !important;
+    border: 1px solid #c9cfe9;
+    border-radius: 4mm;
+  }
+
+  .complete-grid {
+    width: 100% !important;
+    min-width: 0 !important;
+    table-layout: fixed;
+  }
+
+  .complete-grid th,
+  .complete-grid td {
+    min-width: 0 !important;
+    padding: 2.5mm 2mm;
+    font-size: 9pt;
+    border-color: #c9cfe9;
+  }
+
+  .complete-grid thead th {
+    background: #f2f4fb !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .complete-volunteer-name {
+    white-space: normal;
+    font-size: 9pt;
   }
 }
