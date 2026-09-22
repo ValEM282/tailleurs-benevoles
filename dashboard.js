@@ -275,19 +275,25 @@ async function loadNextShift() {
   poste.textContent = posteName;
   nextShiftContent.appendChild(poste);
 
+  if (locationName) {
+    const location = document.createElement("p");
+    location.className = "next-shift-location";
+
+    const locationLink = document.createElement("a");
+    locationLink.href = "plan.html";
+    locationLink.className = "next-shift-location-link";
+    locationLink.textContent = `📍 ${locationName}`;
+
+    location.appendChild(locationLink);
+    nextShiftContent.appendChild(location);
+  }
+
   const schedule = document.createElement("p");
   schedule.className = "next-shift-schedule";
   schedule.textContent = isReinforcementShift(shift)
     ? `${formatShiftDate(shift.debut)} · ${formatShiftTime(shift.debut)} - renfort`
     : `${formatShiftDate(shift.debut)} · ${formatShiftTime(shift.debut)}-${formatShiftTime(shift.fin)}`;
   nextShiftContent.appendChild(schedule);
-
-  if (locationName) {
-    const location = document.createElement("p");
-    location.className = "next-shift-location";
-    location.textContent = `📍 ${locationName}`;
-    nextShiftContent.appendChild(location);
-  }
 
   if (shift.responsable_prenom) {
     const responsible = document.createElement("p");
