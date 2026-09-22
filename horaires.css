@@ -61,6 +61,22 @@
   line-height: 1.35;
 }
 
+.schedule-shift-card-past,
+.schedule-shift-card-past .schedule-shift-content,
+.schedule-shift-card-past .schedule-shift-content h3,
+.schedule-shift-card-past .schedule-shift-location,
+.schedule-shift-card-past .schedule-shift-location-link,
+.schedule-shift-card-past .schedule-shift-time,
+.schedule-shift-card-past .schedule-shift-responsible,
+.schedule-shift-card-past .volunteer-phone {
+  color: #8a8f99 !important;
+}
+
+.schedule-shift-card-past .schedule-shift-location-link:hover,
+.schedule-shift-card-past .volunteer-phone:hover {
+  color: #747983 !important;
+}
+
 .schedule-status-actions {
   margin-top: 17px;
   padding-top: 15px;
