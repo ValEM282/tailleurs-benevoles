@@ -148,40 +148,57 @@
 
 .schedule-delay-control {
   display: inline-flex;
-  align-items: stretch;
+  align-items: center;
   gap: 6px;
 }
 
-.schedule-action-button,
+.schedule-status-pill,
 .schedule-delay-select {
-  min-height: 40px;
-  border-radius: 9px;
+  min-height: 42px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--white);
   font: inherit;
 }
 
-.schedule-action-button {
+.schedule-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
   padding: 8px 13px;
-  border: 0;
-  color: var(--white);
+  color: var(--text);
   font-weight: 700;
   cursor: pointer;
 }
 
-.schedule-action-button-delay {
-  background: #d67b00;
+.schedule-status-pill:hover {
+  border-color: rgba(28, 46, 171, 0.38);
+  background: rgba(28, 46, 171, 0.03);
 }
 
-.schedule-action-button-absence {
+.schedule-status-pill-dot {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.08);
+}
+
+.schedule-status-pill-delay .schedule-status-pill-dot {
+  background: #f39c12;
+}
+
+.schedule-status-pill-absence .schedule-status-pill-dot {
   background: var(--red);
 }
 
 .schedule-delay-select {
-  padding: 7px 9px;
-  border: 1px solid var(--border);
-  background: var(--white);
+  padding: 7px 28px 7px 10px;
+  color: var(--text);
+  cursor: pointer;
 }
 
-.schedule-action-button:disabled,
+.schedule-status-pill:disabled,
 .schedule-delay-select:disabled {
   opacity: 0.55;
   cursor: not-allowed;
@@ -209,7 +226,11 @@
     width: 100%;
   }
 
-  .schedule-delay-control .schedule-action-button {
+  .schedule-status-pill-delay {
     flex: 1 1 auto;
+  }
+
+  .schedule-status-pill-absence {
+    align-self: flex-start;
   }
 }
