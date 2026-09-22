@@ -188,6 +188,10 @@ function futureVolunteerStatusClass(row) {
   return "";
 }
 
+function isFutureAnnouncedAbsence(row) {
+  return new Date(row.debut).getTime() > Date.now() && row.statut === "absent";
+}
+
 function buildSegments(rows) {
   const points = [...new Set(rows.flatMap(row => [
     new Date(row.debut).getTime(),
@@ -264,7 +268,7 @@ function renderOneCompleteTable(rows) {
     time.textContent = `${formatTime(segment.start)}-${formatTime(segment.end)}`;
     th.appendChild(time);
 
-    const count = segmentPeople[index].length;
+    const count = segmentPeople[index].filter(row => !isFutureAnnouncedAbsence(row)).length;
     if (count > 0) {
       const subtitle = document.createElement("div");
       subtitle.className = "complete-column-count";
