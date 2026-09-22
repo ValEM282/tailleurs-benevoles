@@ -218,20 +218,7 @@ function buildScheduleActions(group) {
 
   const title = document.createElement("p");
   title.className = "schedule-action-title";
-  title.append("Annonce ton ");
-
-  const delayWord = document.createElement("span");
-  delayWord.className = "schedule-delay-word";
-  delayWord.textContent = "retard";
-  title.appendChild(delayWord);
-
-  title.append(" ou ton ");
-
-  const absenceWord = document.createElement("span");
-  absenceWord.className = "schedule-absence-word";
-  absenceWord.textContent = "absence";
-  title.appendChild(absenceWord);
-
+  title.textContent = "En retard ou absent·e ?";
   wrapper.appendChild(title);
 
   const choices = document.createElement("div");
