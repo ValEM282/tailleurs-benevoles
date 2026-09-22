@@ -191,6 +191,9 @@ async function setStatusForShifts(shifts, status, retardMinutes = null) {
 function buildSlotStatus(shift) {
   if (shift.statut !== "retard" && shift.statut !== "absent") return null;
 
+  const wrapper = document.createElement("span");
+  wrapper.className = "schedule-slot-status-wrap";
+
   const badge = document.createElement("span");
   badge.className = `schedule-slot-status schedule-slot-status-${shift.statut}`;
 
@@ -204,7 +207,31 @@ function buildSlotStatus(shift) {
     : "Absent·e";
 
   badge.append(dot, text);
-  return badge;
+
+  const separator = document.createElement("span");
+  separator.className = "schedule-status-separator";
+  separator.textContent = "·";
+
+  const cancel = document.createElement("button");
+  cancel.type = "button";
+  cancel.className = "schedule-status-cancel";
+  cancel.textContent = "Annuler";
+  cancel.setAttribute("aria-label", `Annuler le statut ${text.textContent} pour ${formatShiftRange(shift)}`);
+
+  cancel.addEventListener("click", async event => {
+    event.preventDefault();
+    event.stopPropagation();
+    cancel.disabled = true;
+
+    if (await setStatusForShifts([shift], "inconnu", null)) {
+      await loadSchedule();
+    } else {
+      cancel.disabled = false;
+    }
+  });
+
+  wrapper.append(badge, separator, cancel);
+  return wrapper;
 }
 
 function buildScheduleActions(group) {
