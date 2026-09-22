@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="styles.css?v=20260921-1">
   <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
   <link rel="stylesheet" href="planning.css?v=20260922-2">
-  <link rel="stylesheet" href="planning-complet.css?v=20260922-7">
+  <link rel="stylesheet" href="planning-complet.css?v=20260922-8">
 </head>
 <body class="dashboard-page planning-page">
   <header class="dashboard-header">
@@ -38,8 +38,10 @@
     </section>
 
     <section class="now-section">
-      <div class="now-heading">
+      <div class="print-meta" id="print-meta" aria-hidden="true"></div>
+      <div class="now-heading complete-page-heading">
         <div><h2>PLANNING COMPLET</h2></div>
+        <button type="button" id="print-planning-button" class="complete-print-button" aria-label="Imprimer le planning sélectionné" title="Imprimer le planning sélectionné">🖨️</button>
       </div>
 
       <div id="planning-message" class="planning-message" hidden></div>
@@ -48,6 +50,6 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="planning-complet.js?v=20260922-6"></script>
+  <script src="planning-complet.js?v=20260922-7"></script>
 </body>
 </html>
