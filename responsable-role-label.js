@@ -1,4 +1,4 @@
-/* Affiche les responsabilités réelles à la place du libellé générique « Responsable de poste ». */
+/* Affiche les postes réellement gérés à la place du libellé générique Responsable. */
 (async function () {
   const roleElement = document.getElementById("user-role");
   if (!roleElement || typeof supabase === "undefined") return;
@@ -22,7 +22,7 @@
 
   const { data: participation } = await client
     .from("participations")
-    .select("role, fonction_orga, editions!inner(active)")
+    .select("role, editions!inner(active)")
     .eq("benevole_id", personne.id)
     .eq("actif", true)
     .eq("editions.active", true)
@@ -30,8 +30,26 @@
     .limit(1)
     .maybeSingle();
 
-  if (participation?.role === "responsable" && participation.fonction_orga) {
-    roleElement.hidden = false;
-    roleElement.textContent = participation.fonction_orga;
+  if (participation?.role !== "responsable") return;
+
+  const { data: posts, error } = await client.rpc("get_my_responsible_posts");
+  if (error) {
+    console.error("Impossible de charger les postes du responsable :", error);
+    return;
   }
+
+  const names = [...new Set((posts || []).map(row => row.poste_nom).filter(Boolean))];
+  if (!names.length) return;
+
+  const label = names.join(" · ");
+  const applyLabel = () => {
+    roleElement.hidden = false;
+    if (roleElement.textContent !== label) roleElement.textContent = label;
+  };
+
+  applyLabel();
+
+  const observer = new MutationObserver(applyLabel);
+  observer.observe(roleElement, { childList: true, characterData: true, subtree: true });
+  setTimeout(() => observer.disconnect(), 5000);
 })();
