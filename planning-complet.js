@@ -430,10 +430,113 @@ async function init() {
   await loadComplete();
 }
 
-printButton.addEventListener("click", () => {
-  printMeta.textContent = formatPrintTimestamp();
-  window.print();
-});
+async function openPlanningPdf() {
+  if (typeof html2pdf === "undefined") {
+    showMessage("Impossible de créer le PDF pour le moment.", "error");
+    return;
+  }
+
+  const pdfWindow = window.open("", "_blank");
+  if (!pdfWindow) {
+    showMessage("Le navigateur a bloqué l'ouverture du PDF. Autorise les fenêtres pop-up pour ce site puis réessaie.", "error");
+    return;
+  }
+
+  pdfWindow.document.write('<!DOCTYPE html><html lang="fr"><head><title>Création du PDF…</title></head><body style="font-family:Arial,sans-serif;padding:30px;text-align:center;">Création du PDF en cours…</body></html>');
+  pdfWindow.document.close();
+
+  const timestamp = formatPrintTimestamp();
+  printMeta.textContent = timestamp;
+
+  const exportRoot = document.createElement("div");
+  exportRoot.style.cssText = [
+    "position:fixed",
+    "left:-200vw",
+    "top:0",
+    "width:1120px",
+    "padding:20px 24px 28px",
+    "box-sizing:border-box",
+    "background:#fff",
+    "color:#111",
+    "font-family:'Titillium Web',Arial,sans-serif"
+  ].join(";");
+
+  const meta = document.createElement("div");
+  meta.textContent = timestamp;
+  meta.style.cssText = "text-align:center;font-size:13px;margin:0 0 10px;color:#333;";
+
+  const heading = document.createElement("h2");
+  heading.textContent = "PLANNING COMPLET";
+  heading.style.cssText = "margin:0 0 22px;color:#1C2EAB;font-size:24px;font-weight:700;";
+
+  const resultClone = completeResult.cloneNode(true);
+  resultClone.removeAttribute("aria-live");
+
+  resultClone.querySelectorAll(".complete-grid-wrap").forEach(wrap => {
+    wrap.style.overflow = "visible";
+    wrap.style.width = "100%";
+  });
+
+  resultClone.querySelectorAll(".complete-grid").forEach(table => {
+    table.style.width = "100%";
+    table.style.minWidth = "0";
+  });
+
+  resultClone.querySelectorAll(".complete-result-block").forEach(block => {
+    block.style.breakInside = "avoid";
+    block.style.pageBreakInside = "avoid";
+  });
+
+  exportRoot.append(meta, heading, resultClone);
+  document.body.appendChild(exportRoot);
+
+  try {
+    const selectedPost = postFilter.options[postFilter.selectedIndex]?.textContent || "planning";
+    const selectedDay = dayFilter.value || "jour";
+    const safePost = selectedPost
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
+      .toLowerCase();
+
+    const options = {
+      margin: [8, 8, 8, 8],
+      filename: `planning-${selectedDay}-${safePost || "complet"}.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        scrollX: 0,
+        scrollY: 0
+      },
+      jsPDF: {
+        unit: "mm",
+        format: "a4",
+        orientation: "landscape"
+      },
+      pagebreak: {
+        mode: ["css", "legacy"],
+        avoid: [".complete-result-block", ".complete-title-card", ".complete-grid-wrap"]
+      }
+    };
+
+    const pdf = await html2pdf().set(options).from(exportRoot).toPdf().get("pdf");
+    const blob = pdf.output("blob");
+    const blobUrl = URL.createObjectURL(blob);
+    pdfWindow.location.replace(blobUrl);
+    window.setTimeout(() => URL.revokeObjectURL(blobUrl), 120000);
+  } catch (error) {
+    console.error(error);
+    pdfWindow.close();
+    showMessage("Impossible de créer le PDF pour le moment.", "error");
+  } finally {
+    exportRoot.remove();
+  }
+}
+
+printButton.addEventListener("click", openPlanningPdf);
 
 logoutButton.addEventListener("click", async () => {
   await supabaseClient.auth.signOut();
