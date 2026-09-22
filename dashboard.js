@@ -278,11 +278,12 @@ async function loadNextShift() {
   if (locationName) {
     const location = document.createElement("p");
     location.className = "next-shift-location";
+    location.append("📍 ");
 
     const locationLink = document.createElement("a");
     locationLink.href = "plan.html";
     locationLink.className = "next-shift-location-link";
-    locationLink.textContent = `📍 ${locationName}`;
+    locationLink.textContent = locationName;
 
     location.appendChild(locationLink);
     nextShiftContent.appendChild(location);
