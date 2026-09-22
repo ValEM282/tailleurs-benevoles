@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administration — Portail Bénévoles</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20260921-2">
+  <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
+  <link rel="stylesheet" href="admin.css?v=20260922-1">
+</head>
+<body class="dashboard-page">
+  <header class="dashboard-header">
+    <div class="subpage-header-inner">
+      <a href="dashboard.html" class="back-button">← Accueil</a>
+      <div class="dashboard-title">🎪 PORTAIL BÉNÉVOLES 🎪</div>
+      <button type="button" id="logout-button" class="logout-button">Se déconnecter</button>
+    </div>
+  </header>
+
+  <main class="subpage-main admin-main">
+    <section class="subpage-heading">
+      <h1>ADMIN PORTAIL</h1>
+    </section>
+
+    <div id="admin-loading" class="admin-card admin-message">Vérification de l'accès administrateur…</div>
+    <div id="admin-error" class="admin-card admin-message admin-error" hidden></div>
+
+    <section id="admin-pin-create" class="admin-card" hidden>
+      <h2>Créer mon PIN administrateur</h2>
+      <p>Choisis un PIN personnel de 6 à 12 chiffres. Il sera enregistré uniquement sous forme de hash sécurisé.</p>
+      <form id="admin-pin-create-form" autocomplete="off">
+        <label for="new-admin-pin">Nouveau PIN</label>
+        <input id="new-admin-pin" type="password" inputmode="numeric" pattern="[0-9]{6,12}" minlength="6" maxlength="12" autocomplete="new-password" required>
+
+        <label for="confirm-admin-pin">Confirmer le PIN</label>
+        <input id="confirm-admin-pin" type="password" inputmode="numeric" pattern="[0-9]{6,12}" minlength="6" maxlength="12" autocomplete="new-password" required>
+
+        <button type="submit" class="admin-primary-button">Créer mon PIN</button>
+      </form>
+    </section>
+
+    <section id="admin-pin-unlock" class="admin-card" hidden>
+      <h2>Accès administrateur</h2>
+      <p>Saisis ton PIN personnel pour ouvrir la page d'administration.</p>
+      <form id="admin-pin-unlock-form" autocomplete="off">
+        <label for="admin-pin">PIN administrateur</label>
+        <input id="admin-pin" type="password" inputmode="numeric" pattern="[0-9]{6,12}" minlength="6" maxlength="12" autocomplete="off" required>
+        <button type="submit" class="admin-primary-button">Déverrouiller</button>
+      </form>
+      <p id="admin-lock-message" class="admin-lock-message" hidden></p>
+    </section>
+
+    <section id="admin-content" class="admin-card" hidden>
+      <div class="admin-content-heading">
+        <div>
+          <h2>Administration du portail</h2>
+          <p>Accès administrateur déverrouillé.</p>
+        </div>
+        <button type="button" id="admin-lock-button" class="admin-secondary-button">Verrouiller</button>
+      </div>
+
+      <div class="admin-placeholder">
+        Les outils d'administration seront ajoutés ici progressivement.
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="portal-auth.js"></script>
+  <script src="admin.js?v=20260922-1"></script>
+</body>
+</html>
