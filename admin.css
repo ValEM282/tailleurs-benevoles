@@ -134,13 +134,14 @@
 
 .admin-action-button:first-child {
   border-color: #2e9d57;
-  background: #2e9d57;
-  color: var(--white);
+  background: var(--white);
+  color: #2e9d57;
 }
 
 .admin-action-button:first-child:hover {
   border-color: #237a44;
-  background: #237a44;
+  background: rgba(46, 157, 87, 0.08);
+  color: #237a44;
 }
 
 .admin-action-button-danger {
