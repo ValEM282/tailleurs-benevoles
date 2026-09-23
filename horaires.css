@@ -1,5 +1,44 @@
 /* Mes horaires — rendu aligné sur la carte « Mon prochain poste ». */
 
+.volunteer-schedule-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.schedule-print-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 2px solid var(--blue);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--blue);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color .2s ease, color .2s ease, transform .15s ease;
+}
+
+.schedule-print-button:hover {
+  background: var(--blue);
+  color: #fff;
+}
+
+.schedule-print-button:active {
+  transform: scale(.97);
+}
+
+.schedule-print-button:focus-visible {
+  outline: 3px solid rgba(28, 46, 171, .25);
+  outline-offset: 3px;
+}
+
 .schedule-day {
   margin-bottom: 34px;
 }
@@ -253,6 +292,15 @@
 }
 
 @media (max-width: 600px) {
+  .volunteer-schedule-heading {
+    align-items: flex-start;
+  }
+
+  .schedule-print-button {
+    width: 42px;
+    height: 42px;
+  }
+
   .schedule-shift-card {
     padding: 17px 16px;
   }
