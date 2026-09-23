@@ -47,10 +47,6 @@ function formatShiftRange(shift) {
   return `${formatCompactTime(shift.debut)}-${formatCompactTime(shift.fin)}`;
 }
 
-function formatPhoneForLink(phone) {
-  return (phone || "").replace(/[^0-9+]/g, "");
-}
-
 function getLocationName(shift) {
   let locationName = shift.lieu || "";
   if (!locationName && shift.note && shift.note.toLowerCase().includes("hall polyvalent / site")) {
@@ -62,17 +58,19 @@ function getLocationName(shift) {
 function groupByDay(shifts) {
   const grouped = new Map();
 
-  shifts.forEach(shift => {
-    const key = new Intl.DateTimeFormat("fr-CA", {
-      timeZone: "Europe/Brussels",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit"
-    }).format(new Date(shift.debut));
+  [...shifts]
+    .sort((a, b) => new Date(a.debut) - new Date(b.debut))
+    .forEach(shift => {
+      const key = new Intl.DateTimeFormat("fr-CA", {
+        timeZone: "Europe/Brussels",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).format(new Date(shift.debut));
 
-    if (!grouped.has(key)) grouped.set(key, []);
-    grouped.get(key).push(shift);
-  });
+      if (!grouped.has(key)) grouped.set(key, []);
+      grouped.get(key).push(shift);
+    });
 
   return grouped;
 }
@@ -80,35 +78,33 @@ function groupByDay(shifts) {
 function groupDayShiftsByPost(dayShifts) {
   const grouped = new Map();
 
-  dayShifts.forEach(shift => {
-    const poste = shift.poste || "Poste à confirmer";
-    const location = getLocationName(shift);
-    const responsibleKey = [
-      shift.responsable_prenom || "",
-      shift.responsable_initiale || "",
-      shift.responsable_telephone || ""
-    ].join("|");
-    const key = `${poste}|||${location}|||${responsibleKey}`;
+  [...dayShifts]
+    .sort((a, b) => new Date(a.debut) - new Date(b.debut))
+    .forEach(shift => {
+      const poste = shift.poste || "Poste à confirmer";
+      const location = getLocationName(shift);
+      const key = `${poste}|||${location}`;
 
-    if (!grouped.has(key)) {
-      grouped.set(key, {
-        poste,
-        location,
-        responsable_prenom: shift.responsable_prenom || "",
-        responsable_initiale: shift.responsable_initiale || "",
-        responsable_telephone: shift.responsable_telephone || "",
-        shifts: []
-      });
-    }
+      if (!grouped.has(key)) {
+        grouped.set(key, {
+          poste,
+          location,
+          shifts: []
+        });
+      }
 
-    grouped.get(key).shifts.push(shift);
-  });
+      grouped.get(key).shifts.push(shift);
+    });
 
-  grouped.forEach(group => {
+  const groups = Array.from(grouped.values());
+
+  groups.forEach(group => {
     group.shifts.sort((a, b) => new Date(a.debut) - new Date(b.debut));
   });
 
-  return grouped;
+  groups.sort((a, b) => new Date(a.shifts[0].debut) - new Date(b.shifts[0].debut));
+
+  return groups;
 }
 
 function createShiftCard(group) {
@@ -128,14 +124,7 @@ function createShiftCard(group) {
   if (group.location) {
     const location = document.createElement("p");
     location.className = "schedule-shift-location";
-    location.append("📍 ");
-
-    const locationLink = document.createElement("a");
-    locationLink.className = "schedule-shift-location-link";
-    locationLink.href = "plan.html";
-    locationLink.textContent = group.location;
-
-    location.appendChild(locationLink);
+    location.textContent = group.location;
     content.appendChild(location);
   }
 
@@ -143,27 +132,6 @@ function createShiftCard(group) {
   time.className = "schedule-shift-time";
   time.textContent = group.shifts.map(formatShiftRange).join(" | ");
   content.appendChild(time);
-
-  if (group.responsable_prenom) {
-    const responsible = document.createElement("p");
-    responsible.className = "schedule-shift-responsible";
-    responsible.append("Responsable : ");
-
-    const name = document.createElement("span");
-    name.textContent = `${group.responsable_prenom} ${group.responsable_initiale || ""}.`.replace("..", ".");
-    responsible.appendChild(name);
-
-    if (group.responsable_telephone) {
-      responsible.append(" · ");
-      const phone = document.createElement("a");
-      phone.className = "volunteer-phone";
-      phone.href = `tel:${formatPhoneForLink(group.responsable_telephone)}`;
-      phone.textContent = group.responsable_telephone;
-      responsible.appendChild(phone);
-    }
-
-    content.appendChild(responsible);
-  }
 
   card.appendChild(content);
   return card;
@@ -248,7 +216,7 @@ async function initPage() {
 
   const displayName = [prenom, nom].filter(Boolean).join(" ");
   const title = document.getElementById("volunteer-schedule-title");
-  if (displayName) title.textContent = `Horaires de ${displayName}`;
+  if (displayName) title.textContent = displayName;
 
   const printLabelButton = document.getElementById("print-volunteer-label-button");
   if (printLabelButton) {
