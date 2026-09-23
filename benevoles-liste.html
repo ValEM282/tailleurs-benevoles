@@ -11,7 +11,7 @@
 
   <link rel="stylesheet" href="styles.css?v=20260921-2">
   <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
-  <link rel="stylesheet" href="benevoles-liste.css?v=20260923-4">
+  <link rel="stylesheet" href="benevoles-liste.css?v=20260923-5">
 </head>
 
 <body class="dashboard-page">
@@ -25,21 +25,29 @@
 
   <main class="subpage-main volunteers-list-main">
     <section class="volunteers-list-heading">
-      <div>
-        <h1>Liste des bénévoles</h1>
-      </div>
+      <h1>Liste des bénévoles</h1>
 
-      <div class="volunteers-list-actions">
-        <p id="volunteers-count" class="volunteers-count" aria-live="polite"></p>
-        <button
-          type="button"
-          id="print-volunteers-button"
-          class="print-list-button"
-          aria-label="Imprimer la liste des bénévoles"
-          title="Imprimer la liste des bénévoles"
+      <div class="volunteers-list-heading-actions">
+        <a
+          href="etiquettes-benevoles.html?print=1"
+          class="labels-print-button"
+          id="print-all-labels-button"
         >
-          🖨️
-        </button>
+          Imprimer toutes les étiquettes
+        </a>
+
+        <div class="volunteers-list-actions">
+          <p id="volunteers-count" class="volunteers-count" aria-live="polite"></p>
+          <button
+            type="button"
+            id="print-volunteers-button"
+            class="print-list-button"
+            aria-label="Imprimer la liste des bénévoles"
+            title="Imprimer la liste des bénévoles"
+          >
+            🖨️
+          </button>
+        </div>
       </div>
     </section>
 
