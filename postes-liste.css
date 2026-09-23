@@ -1,0 +1,246 @@
+/* =========================================================
+   ADMINISTRATION — LISTE ÉDITABLE DES POSTES
+   ========================================================= */
+
+.posts-list-main {
+  max-width: 1320px;
+}
+
+.posts-table {
+  min-width: 1180px;
+}
+
+.posts-table th:nth-child(1),
+.posts-table td:nth-child(1) {
+  min-width: 220px;
+  width: 23%;
+}
+
+.posts-table th:nth-child(2),
+.posts-table td:nth-child(2) {
+  min-width: 230px;
+  width: 24%;
+}
+
+.posts-table th:nth-child(3),
+.posts-table td:nth-child(3) {
+  min-width: 300px;
+  width: 29%;
+}
+
+.posts-table th:nth-child(4),
+.posts-table td:nth-child(4) {
+  min-width: 300px;
+  width: 24%;
+}
+
+.post-editable-display {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+}
+
+.post-edit-button {
+  flex: 0 0 auto;
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  font-size: .96rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: .72;
+}
+
+.post-edit-button:hover {
+  background: #eef1ff;
+  opacity: 1;
+}
+
+.post-edit-button:focus-visible {
+  outline: 3px solid rgba(28, 46, 171, .22);
+  outline-offset: 2px;
+}
+
+.post-cell-value {
+  min-width: 0;
+  color: #26314f;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.post-muted {
+  color: #7d8499;
+  font-weight: 400;
+}
+
+.post-pill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.post-pill {
+  display: inline-flex;
+  padding: 3px 7px;
+  border: 1px solid #d8dded;
+  border-radius: 999px;
+  background: #f7f8fc;
+  color: #37405d;
+  font-size: .87rem;
+  line-height: 1.2;
+}
+
+.post-editor-panel {
+  position: relative;
+  z-index: 25;
+  min-width: 260px;
+  padding: 10px;
+  border: 1px solid #cfd5e6;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(20, 28, 80, .15);
+}
+
+.post-name-editor {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 34px 34px;
+  gap: 6px;
+  align-items: center;
+}
+
+.post-editor-input,
+.post-editor-search {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 36px;
+  padding: 6px 9px;
+  border: 1px solid #aeb7ce;
+  border-radius: 7px;
+  background: #fff;
+  color: #1f2947;
+  font: inherit;
+}
+
+.post-editor-input:focus,
+.post-editor-search:focus {
+  border-color: var(--blue);
+  outline: 2px solid rgba(28, 46, 171, .15);
+}
+
+.post-editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.post-editor-save,
+.post-editor-cancel {
+  min-width: 92px;
+  min-height: 36px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.post-editor-save {
+  border: 2px solid #2e9d57;
+  background: #2e9d57;
+  color: #fff;
+}
+
+.post-editor-save:hover {
+  border-color: #237a44;
+  background: #237a44;
+}
+
+.post-editor-cancel {
+  border: 2px solid var(--red);
+  color: var(--red);
+}
+
+.post-editor-cancel:hover {
+  background: rgba(228, 2, 48, .06);
+}
+
+.post-editor-save:disabled,
+.post-editor-cancel:disabled {
+  opacity: .5;
+  cursor: wait;
+}
+
+.post-editor-choice-list {
+  display: grid;
+  gap: 4px;
+  max-height: 240px;
+  overflow: auto;
+  padding: 5px 3px;
+}
+
+.post-editor-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 4px 5px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.post-editor-choice:hover {
+  background: #f5f7fc;
+}
+
+.post-editor-choice input {
+  margin-top: 3px;
+}
+
+.post-editor-section + .post-editor-section {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e3e6ef;
+}
+
+.post-editor-section-title {
+  margin: 0 0 7px;
+  color: var(--blue);
+  font-weight: 700;
+}
+
+.post-editor-help {
+  margin: 0 0 8px;
+  color: #626b87;
+  font-size: .86rem;
+  line-height: 1.25;
+}
+
+.post-editor-error {
+  margin-top: 8px;
+  color: #b00027;
+  font-size: .84rem;
+  font-weight: 600;
+}
+
+@media print {
+  .post-edit-button,
+  .post-editor-panel {
+    display: none !important;
+  }
+
+  .posts-table {
+    min-width: 0;
+  }
+
+  .posts-table th,
+  .posts-table td {
+    font-size: 8pt;
+  }
+}
