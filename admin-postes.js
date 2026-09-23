@@ -201,3 +201,12 @@
     }
   });
 })();
+
+// Charge la gestion de l'encadré LIEUX sans dupliquer le code dans admin.html.
+(() => {
+  if (document.querySelector('script[data-admin-lieux-loader="true"]')) return;
+  const script = document.createElement("script");
+  script.src = "admin-lieux.js?v=20260924-2";
+  script.dataset.adminLieuxLoader = "true";
+  document.body.appendChild(script);
+})();
