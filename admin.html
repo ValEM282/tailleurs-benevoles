@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="styles.css?v=20260921-2">
   <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
   <link rel="stylesheet" href="admin.css?v=20260923-17">
+  <link rel="stylesheet" href="admin-responsables.css?v=20260924-1">
 </head>
 <body class="dashboard-page">
   <header class="dashboard-header">
@@ -122,7 +123,7 @@
         <section class="admin-management-section" aria-labelledby="admin-responsibles-title">
           <div class="admin-section-heading">
             <h2 id="admin-responsibles-title">RESPONSABLES</h2>
-            <button type="button" class="admin-add-button" id="admin-responsible-add" aria-label="Ajouter un responsable"><span>+</span></button>
+            <button type="button" class="admin-add-button" id="admin-responsible-add" aria-label="Ajouter un·e responsable" aria-controls="admin-responsible-create-panel" aria-expanded="false"><span>+</span></button>
           </div>
           <div class="admin-search-grid admin-search-grid-person">
             <div class="admin-search-field">
@@ -137,6 +138,47 @@
               <button type="button" class="admin-list-button" id="admin-responsible-list">Liste</button>
               <button type="button" class="admin-search-button" id="admin-responsible-search">Recherche</button>
             </div>
+          </div>
+
+          <div id="admin-responsible-create-panel" class="admin-volunteer-create-panel admin-responsible-create-panel" hidden>
+            <h3>Ajouter un·e responsable</h3>
+            <form id="admin-responsible-create-form">
+              <div class="admin-volunteer-create-grid">
+                <div class="admin-search-field">
+                  <label for="new-responsible-firstname">Prénom</label>
+                  <input id="new-responsible-firstname" name="prenom" type="text" autocomplete="given-name" required>
+                </div>
+                <div class="admin-search-field">
+                  <label for="new-responsible-lastname">NOM</label>
+                  <input id="new-responsible-lastname" name="nom" type="text" autocomplete="family-name" class="admin-uppercase-input" required>
+                </div>
+                <div class="admin-search-field">
+                  <label for="new-responsible-phone">Téléphone</label>
+                  <input id="new-responsible-phone" name="telephone" type="tel" autocomplete="tel">
+                </div>
+                <div class="admin-search-field">
+                  <label for="new-responsible-email">Email</label>
+                  <input id="new-responsible-email" name="email" type="email" autocomplete="email" required>
+                </div>
+              </div>
+
+              <div class="admin-responsibility-columns">
+                <fieldset class="admin-responsibility-fieldset">
+                  <legend>Responsable</legend>
+                  <div id="new-responsible-main-posts" class="admin-post-choice-list" aria-live="polite">Chargement des postes…</div>
+                </fieldset>
+                <fieldset class="admin-responsibility-fieldset">
+                  <legend>Co-responsable</legend>
+                  <div id="new-responsible-co-posts" class="admin-post-choice-list" aria-live="polite">Chargement des postes…</div>
+                </fieldset>
+              </div>
+
+              <p id="admin-responsible-create-error" class="admin-volunteer-create-error" role="alert" hidden></p>
+              <div class="admin-volunteer-create-actions">
+                <button type="button" class="admin-secondary-button" id="admin-responsible-create-cancel">Annuler</button>
+                <button type="submit" class="admin-primary-button">Valider</button>
+              </div>
+            </form>
           </div>
         </section>
 
@@ -180,5 +222,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="portal-auth.js"></script>
   <script src="admin.js?v=20260923-5"></script>
+  <script src="admin-responsables.js?v=20260924-1"></script>
 </body>
 </html>
