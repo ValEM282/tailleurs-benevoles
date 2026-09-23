@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="benevoles-liste.css?v=20260923-7">
   <link rel="stylesheet" href="benevoles-liste-edit.css?v=20260923-1">
   <link rel="stylesheet" href="postes-liste.css?v=20260924-2">
+  <link rel="stylesheet" href="postes-tri.css?v=20260924-1">
 </head>
 <body class="dashboard-page">
   <header class="dashboard-header">
@@ -41,7 +42,11 @@
         <table class="volunteers-table posts-table">
           <thead>
             <tr>
-              <th scope="col">Nom du Poste</th>
+              <th scope="col">
+                <button type="button" id="postes-sort-name" class="posts-sort-button" aria-label="Trier par Nom du Poste">
+                  Nom du Poste <span id="postes-sort-indicator" aria-hidden="true">↑</span>
+                </button>
+              </th>
               <th scope="col">Nom du Sous-poste</th>
               <th scope="col">Lieu(x)</th>
               <th scope="col">Responsable(s)</th>
@@ -59,5 +64,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="portal-auth.js"></script>
   <script src="postes-liste.js?v=20260924-2"></script>
+  <script src="postes-tri.js?v=20260924-1"></script>
 </body>
 </html>
