@@ -243,7 +243,9 @@ function buildSlotStatus(shift) {
 
 function buildScheduleActions(group) {
   const now = Date.now();
-  const eligibleShifts = group.shifts.filter(shift => new Date(shift.fin).getTime() > now);
+  const eligibleShifts = group.shifts.filter(shift =>
+    !isReinforcementShift(shift) && new Date(shift.fin).getTime() > now
+  );
 
   if (!eligibleShifts.length) return null;
 
