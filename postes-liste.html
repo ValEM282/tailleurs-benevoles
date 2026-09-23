@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
   <link rel="stylesheet" href="benevoles-liste.css?v=20260923-7">
   <link rel="stylesheet" href="benevoles-liste-edit.css?v=20260923-1">
-  <link rel="stylesheet" href="postes-liste.css?v=20260924-1">
+  <link rel="stylesheet" href="postes-liste.css?v=20260924-2">
 </head>
 <body class="dashboard-page">
   <header class="dashboard-header">
@@ -43,12 +43,13 @@
             <tr>
               <th scope="col">Nom du Poste</th>
               <th scope="col">Nom du Sous-poste</th>
-              <th scope="col">Lieu(s) associé(s)</th>
+              <th scope="col">Lieu(x)</th>
               <th scope="col">Responsable(s)</th>
+              <th scope="col">Co-responsable(s)</th>
             </tr>
           </thead>
           <tbody id="postes-table-body">
-            <tr><td colspan="4" class="volunteers-loading">Chargement de la liste…</td></tr>
+            <tr><td colspan="5" class="volunteers-loading">Chargement de la liste…</td></tr>
           </tbody>
         </table>
       </div>
@@ -57,6 +58,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="portal-auth.js"></script>
-  <script src="postes-liste.js?v=20260924-1"></script>
+  <script src="postes-liste.js?v=20260924-2"></script>
 </body>
 </html>
