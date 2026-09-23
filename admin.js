@@ -111,6 +111,32 @@ function showVolunteerCreateError(message, input) {
   if (input) input.focus();
 }
 
+function formatBelgianPhoneDigits(digits) {
+  return [digits.slice(0, 4), digits.slice(4, 6), digits.slice(6, 8), digits.slice(8, 10)]
+    .filter(Boolean)
+    .join(" ");
+}
+
+function formatVolunteerPhoneInput(input) {
+  const original = input.value;
+  const phone = original.trimStart();
+  if (phone.startsWith("+") || phone.startsWith("00")) return;
+
+  const cursor = input.selectionStart ?? original.length;
+  const digitsBeforeCursor = original.slice(0, cursor).replace(/\D/g, "").length;
+  const formatted = formatBelgianPhoneDigits(original.replace(/\D/g, "").slice(0, 10));
+  if (formatted === original) return;
+
+  input.value = formatted;
+  let newCursor = 0;
+  let digitsSeen = 0;
+  while (newCursor < formatted.length && digitsSeen < digitsBeforeCursor) {
+    if (/\d/.test(formatted[newCursor])) digitsSeen += 1;
+    newCursor += 1;
+  }
+  input.setSelectionRange(cursor === original.length ? formatted.length : newCursor, cursor === original.length ? formatted.length : newCursor);
+}
+
 function normalizeVolunteerPhone(value) {
   const phone = value.trim();
   if (!phone) return { value: null };
@@ -126,7 +152,7 @@ function normalizeVolunteerPhone(value) {
     return { error: "Format attendu : 04XX XX XX XX (sauf indicatif étranger)." };
   }
 
-  return { value: `${digits.slice(0, 4)} ${digits.slice(4, 6)} ${digits.slice(6, 8)} ${digits.slice(8, 10)}` };
+  return { value: formatBelgianPhoneDigits(digits) };
 }
 
 async function loadAdminPage() {
@@ -283,6 +309,10 @@ volunteerLastname.addEventListener("change", () => {
   volunteerLastname.value = volunteerLastname.value.trim().toLocaleUpperCase("fr");
 });
 
+volunteerPhone.addEventListener("input", () => {
+  formatVolunteerPhoneInput(volunteerPhone);
+});
+
 volunteerCreateForm.addEventListener("submit", async event => {
   event.preventDefault();
 
@@ -293,6 +323,7 @@ volunteerCreateForm.addEventListener("submit", async event => {
   const tailloux = Number(volunteerTailloux.value);
   const phone = normalizeVolunteerPhone(volunteerPhone.value);
   volunteerLastname.value = nom;
+  if (!phone.error) volunteerPhone.value = phone.value || "";
 
   if (!prenom || !nom) {
     showVolunteerCreateError("Indique le prénom et le nom du bénévole.", !prenom ? volunteerFirstname : volunteerLastname);
