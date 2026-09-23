@@ -11,7 +11,7 @@
 
   <link rel="stylesheet" href="styles.css?v=20260921-2">
   <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
-  <link rel="stylesheet" href="benevoles-liste.css?v=20260923-2">
+  <link rel="stylesheet" href="benevoles-liste.css?v=20260923-3">
 </head>
 
 <body class="dashboard-page">
@@ -41,6 +41,7 @@
         <table class="volunteers-table">
           <thead>
             <tr>
+              <th scope="col" class="schedule-view-heading"><span class="sr-only">Horaires</span></th>
               <th scope="col">
                 <button type="button" class="sort-button" data-sort="prenom" aria-label="Trier par prénom">
                   Prénom <span class="sort-indicator" data-indicator="prenom">↕</span>
@@ -61,7 +62,7 @@
           </thead>
           <tbody id="volunteers-table-body">
             <tr>
-              <td colspan="8" class="volunteers-loading">Chargement de la liste…</td>
+              <td colspan="9" class="volunteers-loading">Chargement de la liste…</td>
             </tr>
           </tbody>
         </table>
@@ -71,6 +72,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="portal-auth.js"></script>
-  <script src="benevoles-liste.js?v=20260923-2"></script>
+  <script src="benevoles-liste.js?v=20260923-3"></script>
 </body>
 </html>
