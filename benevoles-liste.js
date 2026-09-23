@@ -161,12 +161,15 @@ function scheduleButton(volunteer) {
     nom: volunteer.nom || ""
   });
 
+  const activeClass = volunteer.en_poste ? " schedule-view-button-active" : "";
+  const activeText = volunteer.en_poste ? " — actuellement en poste" : "";
+
   return `
     <a
-      class="schedule-view-button"
+      class="schedule-view-button${activeClass}"
       href="benevole-horaires-admin.html?${params.toString()}"
-      title="Voir les horaires de ${escapeHtml(label)}"
-      aria-label="Voir les horaires de ${escapeHtml(label)}"
+      title="Voir les horaires de ${escapeHtml(label)}${activeText}"
+      aria-label="Voir les horaires de ${escapeHtml(label)}${activeText}"
     >🕥</a>
   `;
 }
