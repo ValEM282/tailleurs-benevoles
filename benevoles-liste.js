@@ -67,6 +67,11 @@ function formatEmailLink(email) {
   return `<a class="volunteer-email" href="mailto:${encodeURIComponent(value)}">${escapeHtml(value)}</a>`;
 }
 
+function formatValue(value) {
+  if (value === null || value === undefined || value === "") return "—";
+  return escapeHtml(value);
+}
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -101,13 +106,31 @@ function updateSortIndicators() {
   });
 }
 
+function kitCheckbox(volunteer) {
+  const checked = volunteer.kit_ok ? "checked" : "";
+  const label = `${volunteer.prenom || ""} ${volunteer.nom || ""}`.trim() || "ce bénévole";
+
+  return `
+    <label class="kit-checkbox-wrap" title="Valider la remise du kit à ${escapeHtml(label)}">
+      <input
+        type="checkbox"
+        class="kit-checkbox"
+        data-participation-id="${escapeHtml(volunteer.participation_id)}"
+        ${checked}
+        aria-label="Kit remis à ${escapeHtml(label)}"
+      >
+      <span class="kit-checkbox-mark" aria-hidden="true"></span>
+    </label>
+  `;
+}
+
 function renderTable() {
   const rows = sortedVolunteers();
 
   if (!rows.length) {
     tableBody.innerHTML = `
       <tr>
-        <td colspan="4" class="volunteers-empty">Aucun bénévole à afficher.</td>
+        <td colspan="8" class="volunteers-empty">Aucun bénévole à afficher.</td>
       </tr>
     `;
     countElement.textContent = "0 bénévole";
@@ -121,11 +144,40 @@ function renderTable() {
       <td class="volunteer-name">${escapeHtml(volunteer.nom || "—")}</td>
       <td>${formatPhoneLink(volunteer.telephone)}</td>
       <td>${formatEmailLink(volunteer.email)}</td>
+      <td class="logistics-cell">${formatValue(volunteer.tshirt)}</td>
+      <td class="logistics-cell">${formatValue(volunteer.tailloux)}</td>
+      <td class="logistics-cell sandwich-cell">${formatValue(volunteer.sandwich)}</td>
+      <td class="kit-ok-cell">${kitCheckbox(volunteer)}</td>
     </tr>
   `).join("");
 
   countElement.textContent = `${rows.length} bénévole${rows.length > 1 ? "s" : ""}`;
   updateSortIndicators();
+}
+
+async function updateKitStatus(checkbox) {
+  const participationId = checkbox.dataset.participationId;
+  const newValue = checkbox.checked;
+  const previousValue = !newValue;
+
+  checkbox.disabled = true;
+
+  const { error } = await PortalAuth.client.rpc("admin_set_benevole_kit_ok", {
+    p_participation_id: participationId,
+    p_kit_ok: newValue
+  });
+
+  if (error) {
+    console.error("Impossible de mettre à jour la remise du kit :", error);
+    checkbox.checked = previousValue;
+    showError("La validation du kit n'a pas pu être enregistrée.");
+  } else {
+    const volunteer = volunteers.find(item => item.participation_id === participationId);
+    if (volunteer) volunteer.kit_ok = newValue;
+    errorElement.hidden = true;
+  }
+
+  checkbox.disabled = false;
 }
 
 async function loadVolunteers() {
@@ -172,6 +224,12 @@ sortButtons.forEach(button => {
 
     renderTable();
   });
+});
+
+tableBody.addEventListener("change", event => {
+  const checkbox = event.target.closest(".kit-checkbox");
+  if (!checkbox) return;
+  updateKitStatus(checkbox);
 });
 
 logoutButton.addEventListener("click", async () => {
