@@ -1,0 +1,109 @@
+/* Administration — liste éditable des lieux */
+
+.places-list-main {
+  max-width: 900px;
+}
+
+.places-table {
+  min-width: 520px;
+}
+
+.places-table th,
+.places-table td {
+  width: 100%;
+}
+
+.place-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.place-edit-button {
+  flex: 0 0 auto;
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  opacity: .72;
+}
+
+.place-edit-button:hover {
+  background: #eef1ff;
+  opacity: 1;
+}
+
+.place-name {
+  color: #26314f;
+  font-weight: 600;
+}
+
+.place-editor {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 38px 38px;
+  gap: 7px;
+  align-items: center;
+}
+
+.place-editor input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 38px;
+  padding: 7px 10px;
+  border: 1px solid #aeb7ce;
+  border-radius: 8px;
+  font: inherit;
+}
+
+.place-editor input:focus {
+  border-color: var(--blue);
+  outline: 2px solid rgba(28, 46, 171, .15);
+}
+
+.place-save,
+.place-cancel {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.place-save {
+  border: 2px solid #2e9d57;
+  background: #2e9d57;
+  color: #fff;
+}
+
+.place-cancel {
+  border: 2px solid var(--red);
+  color: var(--red);
+}
+
+.place-editor-error {
+  grid-column: 1 / -1;
+  color: #b00027;
+  font-size: .85rem;
+  font-weight: 600;
+}
+
+@media print {
+  .place-edit-button,
+  .place-editor {
+    display: none !important;
+  }
+
+  .places-table {
+    min-width: 0;
+  }
+}
