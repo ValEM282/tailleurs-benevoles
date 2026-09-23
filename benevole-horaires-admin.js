@@ -232,6 +232,117 @@ function findOverlapWarning(group, proposedSlots) {
   return "";
 }
 
+function adminPresenceInfo(shift) {
+  const key = shift.disponible ? "disponible" : (shift.statut || "inconnu");
+  const labels = {
+    present: "Présent·e",
+    absent: "Absent·e",
+    disponible: "Disponible",
+    en_pause: "En pause",
+    inconnu: "Aucun",
+    a_venir: "Aucun",
+    hors_poste: "Absent·e",
+    termine: "Terminé"
+  };
+  return {
+    key,
+    label: key === "retard"
+      ? `En retard de ${shift.retard_minutes || 0} min`
+      : (labels[key] || "Aucun")
+  };
+}
+
+function closeAdminPresenceMenus(except = null) {
+  document.querySelectorAll(".schedule-presence-menu").forEach(menu => {
+    if (menu !== except) {
+      menu.hidden = true;
+      menu.previousElementSibling?.setAttribute("aria-expanded", "false");
+    }
+  });
+}
+
+function createAdminPresenceControl(shift) {
+  const status = adminPresenceInfo(shift);
+  const wrapper = document.createElement("div");
+  wrapper.className = "schedule-presence-control";
+
+  const dot = document.createElement("button");
+  dot.type = "button";
+  dot.className = `schedule-presence-dot schedule-presence-${status.key}`;
+  dot.title = `${status.label} — cliquer pour modifier`;
+  dot.setAttribute("aria-label", `${formatShiftRange(shift)} : ${status.label}. Modifier le statut de présence.`);
+  dot.setAttribute("aria-expanded", "false");
+  dot.setAttribute("aria-haspopup", "true");
+
+  const menu = document.createElement("div");
+  menu.className = "schedule-presence-menu";
+  menu.hidden = true;
+
+  [
+    ["present", "Présent·e"],
+    ["en_pause", "En pause"],
+    ["disponible", "Disponible"],
+    ["absent", "Absent·e"],
+    ["inconnu", "Aucun"]
+  ].forEach(([key, label]) => {
+    const option = document.createElement("button");
+    option.type = "button";
+    const swatch = document.createElement("span");
+    swatch.className = `schedule-presence-swatch schedule-presence-${key}`;
+    swatch.setAttribute("aria-hidden", "true");
+    const caption = document.createElement("span");
+    caption.textContent = label;
+    option.append(swatch, caption);
+
+    option.addEventListener("click", async event => {
+      event.stopPropagation();
+      closeAdminPresenceMenus();
+      dot.disabled = true;
+      menu.querySelectorAll("button").forEach(button => button.disabled = true);
+
+      try {
+        const { error } = await PortalAuth.client.rpc("set_managed_presence_status", {
+          p_affectation_id: shift.affectation_id,
+          p_statut: key
+        });
+        if (error) throw error;
+
+        shift.statut = key === "inconnu" ? "a_venir" : (key === "disponible" ? "present" : key);
+        shift.disponible = key === "disponible";
+        shift.retard_minutes = null;
+        wrapper.replaceWith(createAdminPresenceControl(shift));
+      } catch (error) {
+        console.error("Impossible de modifier la présence :", error);
+        const message = wrapper.closest(".schedule-shift-card")?.querySelector(".schedule-presence-error");
+        if (message) {
+          message.textContent = "Le statut n'a pas pu être modifié.";
+          message.hidden = false;
+        }
+        dot.disabled = false;
+        menu.querySelectorAll("button").forEach(button => button.disabled = false);
+      }
+    });
+
+    menu.appendChild(option);
+  });
+
+  dot.addEventListener("click", event => {
+    event.stopPropagation();
+    const opening = menu.hidden;
+    closeAdminPresenceMenus(menu);
+    menu.hidden = !opening;
+    dot.setAttribute("aria-expanded", String(opening));
+  });
+
+  wrapper.append(dot, menu);
+  return wrapper;
+}
+
+document.addEventListener("click", () => closeAdminPresenceMenus());
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") closeAdminPresenceMenus();
+});
+
 function createShiftCard(group, dayKey) {
   const card = document.createElement("article");
   card.className = "schedule-shift-card";
@@ -268,8 +379,23 @@ function createShiftCard(group, dayKey) {
 
   const time = document.createElement("div");
   time.className = "schedule-shift-time";
-  time.textContent = group.shifts.map(formatShiftRange).join(" | ");
+  group.shifts.forEach(shift => {
+    const row = document.createElement("div");
+    row.className = "schedule-presence-row";
+    row.appendChild(createAdminPresenceControl(shift));
+
+    const range = document.createElement("span");
+    range.textContent = formatShiftRange(shift);
+    row.appendChild(range);
+    time.appendChild(row);
+  });
   content.appendChild(time);
+
+  const presenceError = document.createElement("p");
+  presenceError.className = "schedule-presence-error";
+  presenceError.setAttribute("role", "alert");
+  presenceError.hidden = true;
+  content.appendChild(presenceError);
 
   card.appendChild(content);
   return card;
