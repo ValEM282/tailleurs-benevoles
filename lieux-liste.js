@@ -60,12 +60,26 @@ function lieuxUpdateSortIndicator() {
   lieuxSortIndicator.textContent = lieuxSortDirection === "asc" ? "↑" : "↓";
 }
 
+function googleMapsCell(lieu) {
+  const url = String(lieu.google_maps_url || "").trim();
+  const value = url
+    ? `<a class="place-map-link" href="${lieuxEscapeHtml(url)}" target="_blank" rel="noopener">Ouvrir dans Google Maps</a>`
+    : '<span class="place-map-empty">Non renseigné</span>';
+
+  return `
+    <div class="place-display">
+      <button type="button" class="place-edit-button" data-action="edit-map" data-lieu-id="${lieu.id}" title="Modifier" aria-label="Modifier le lien Google Maps">✏️</button>
+      <span class="place-name">${value}</span>
+    </div>
+  `;
+}
+
 function lieuxRender() {
   const rows = lieuxFilteredRows();
   lieuxUpdateSortIndicator();
 
   if (!rows.length) {
-    lieuxTableBody.innerHTML = `<tr><td class="volunteers-empty">${lieuxSearchText ? "Aucun lieu ne correspond à cette recherche." : "Aucun lieu à afficher."}</td></tr>`;
+    lieuxTableBody.innerHTML = `<tr><td colspan="2" class="volunteers-empty">${lieuxSearchText ? "Aucun lieu ne correspond à cette recherche." : "Aucun lieu à afficher."}</td></tr>`;
     lieuxCount.textContent = "0 lieu";
     return;
   }
@@ -74,25 +88,31 @@ function lieuxRender() {
     <tr data-lieu-id="${lieu.id}">
       <td>
         <div class="place-display">
-          <button type="button" class="place-edit-button" data-action="edit" data-lieu-id="${lieu.id}" title="Modifier" aria-label="Modifier le nom du lieu">✏️</button>
+          <button type="button" class="place-edit-button" data-action="edit-name" data-lieu-id="${lieu.id}" title="Modifier" aria-label="Modifier le nom du lieu">✏️</button>
           <span class="place-name">${lieuxEscapeHtml(lieu.nom)}</span>
         </div>
       </td>
+      <td>${googleMapsCell(lieu)}</td>
     </tr>
   `).join("");
 
   lieuxCount.textContent = `${rows.length} lieu${rows.length > 1 ? "x" : ""}`;
 }
 
-function lieuxOpenEditor(button) {
+function lieuxOpenEditor(button, kind) {
   const id = Number(button.dataset.lieuId);
   const lieu = lieuxRows.find(item => Number(item.id) === id);
   const cell = button.closest("td");
   if (!lieu || !cell) return;
 
+  const isMap = kind === "map";
+  const value = isMap ? (lieu.google_maps_url || "") : lieu.nom;
+  const type = isMap ? "url" : "text";
+  const placeholder = isMap ? ' placeholder="https://maps.app.goo.gl/…"' : "";
+
   cell.innerHTML = `
-    <div class="place-editor" data-lieu-id="${id}">
-      <input type="text" value="${lieuxEscapeHtml(lieu.nom)}" aria-label="Nouveau nom du lieu">
+    <div class="place-editor" data-lieu-id="${id}" data-kind="${kind}">
+      <input type="${type}" value="${lieuxEscapeHtml(value)}"${placeholder} aria-label="${isMap ? "Lien Google Maps" : "Nouveau nom du lieu"}">
       <button type="button" class="place-save" data-action="save" title="Valider" aria-label="Valider">✓</button>
       <button type="button" class="place-cancel" data-action="cancel" title="Annuler" aria-label="Annuler">✕</button>
       <span class="place-editor-error"></span>
@@ -110,11 +130,18 @@ async function lieuxSave(button) {
   if (!editor || !input) return;
 
   const id = Number(editor.dataset.lieuId);
-  const nom = input.value.trim();
+  const kind = editor.dataset.kind;
+  const value = input.value.trim();
   const errorElement = editor.querySelector(".place-editor-error");
 
-  if (!nom) {
+  if (kind === "name" && !value) {
     errorElement.textContent = "Le nom du lieu ne peut pas être vide.";
+    input.focus();
+    return;
+  }
+
+  if (kind === "map" && value && !/^https:\/\//i.test(value)) {
+    errorElement.textContent = "Le lien doit commencer par https://";
     input.focus();
     return;
   }
@@ -123,10 +150,12 @@ async function lieuxSave(button) {
   const cancel = editor.querySelector('[data-action="cancel"]');
   cancel.disabled = true;
 
-  const { error } = await PortalAuth.client.rpc("admin_update_lieu_name", {
-    p_lieu_id: id,
-    p_nom: nom
-  });
+  const rpc = kind === "map" ? "admin_update_lieu_google_maps_url" : "admin_update_lieu_name";
+  const args = kind === "map"
+    ? { p_lieu_id: id, p_url: value || null }
+    : { p_lieu_id: id, p_nom: value };
+
+  const { error } = await PortalAuth.client.rpc(rpc, args);
 
   if (error) {
     console.error("Impossible de modifier le lieu :", error);
@@ -137,7 +166,10 @@ async function lieuxSave(button) {
   }
 
   const lieu = lieuxRows.find(item => Number(item.id) === id);
-  if (lieu) lieu.nom = nom;
+  if (lieu) {
+    if (kind === "map") lieu.google_maps_url = value || null;
+    else lieu.nom = value;
+  }
   lieuxError.hidden = true;
   lieuxRender();
 }
@@ -146,7 +178,8 @@ lieuxTableBody.addEventListener("click", event => {
   const button = event.target.closest("button[data-action]");
   if (!button) return;
 
-  if (button.dataset.action === "edit") lieuxOpenEditor(button);
+  if (button.dataset.action === "edit-name") lieuxOpenEditor(button, "name");
+  else if (button.dataset.action === "edit-map") lieuxOpenEditor(button, "map");
   else if (button.dataset.action === "save") lieuxSave(button);
   else if (button.dataset.action === "cancel") lieuxRender();
 });
@@ -191,7 +224,7 @@ async function loadLieuxPage() {
     return;
   }
 
-  const { data, error } = await PortalAuth.client.rpc("admin_list_lieux_options");
+  const { data, error } = await PortalAuth.client.rpc("admin_list_lieux_details");
   if (error) {
     console.error("Impossible de charger les lieux :", error);
     lieuxTableBody.innerHTML = "";
