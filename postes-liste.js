@@ -92,9 +92,15 @@ function postesNameCell(row, kind) {
 }
 
 function postesListCell(row, kind, values) {
+  const label = kind === "lieux"
+    ? "le ou les lieux"
+    : kind === "coresponsables"
+      ? "les co-responsables"
+      : "les responsables";
+
   return `
     <div class="post-editable-display">
-      <button type="button" class="post-edit-button" data-action="edit-${kind}" data-row-id="${row.ligne_poste_id}" title="Modifier" aria-label="Modifier ${kind === "lieux" ? "les lieux associés" : "les responsables"}">✏️</button>
+      <button type="button" class="post-edit-button" data-action="edit-${kind}" data-row-id="${row.ligne_poste_id}" title="Modifier" aria-label="Modifier ${label}">✏️</button>
       <div class="post-cell-value">${postesPills(values)}</div>
     </div>
   `;
@@ -104,11 +110,15 @@ function postesEffectiveResponsables(row) {
   return uniqueStrings([...(row.parent_responsables || []), ...(row.child_responsables || [])]);
 }
 
+function postesEffectiveCoresponsables(row) {
+  return uniqueStrings([...(row.parent_coresponsables || []), ...(row.child_coresponsables || [])]);
+}
+
 function postesRenderTable() {
   const rows = postesFilteredRows();
 
   if (!rows.length) {
-    postesTableBody.innerHTML = `<tr><td colspan="4" class="volunteers-empty">${postesSearchText ? "Aucun poste ne correspond à cette recherche." : "Aucun poste à afficher."}</td></tr>`;
+    postesTableBody.innerHTML = `<tr><td colspan="5" class="volunteers-empty">${postesSearchText ? "Aucun poste ne correspond à cette recherche." : "Aucun poste à afficher."}</td></tr>`;
     postesCount.textContent = "0 poste";
     return;
   }
@@ -119,6 +129,7 @@ function postesRenderTable() {
       <td>${postesNameCell(row, "child")}</td>
       <td>${postesListCell(row, "lieux", row.lieux || [])}</td>
       <td>${postesListCell(row, "responsables", postesEffectiveResponsables(row))}</td>
+      <td>${postesListCell(row, "coresponsables", postesEffectiveCoresponsables(row))}</td>
     </tr>
   `).join("");
 
@@ -175,7 +186,7 @@ function postesOpenLieuxEditor(button) {
 
   cell.innerHTML = `
     <div class="post-editor-panel" data-editor="lieux" data-row-id="${row.ligne_poste_id}">
-      <div class="post-editor-section-title">Lieu(s) associé(s)</div>
+      <div class="post-editor-section-title">Lieu(x)</div>
       <div class="post-editor-choice-list">
         ${postesLieux.map(lieu => `
           <label class="post-editor-choice">
@@ -193,9 +204,9 @@ function postesOpenLieuxEditor(button) {
   `;
 }
 
-function postesResponsableSection(title, help, group, selectedIds) {
+function postesResponsibilitySection(title, help, group, selectedIds) {
   return `
-    <div class="post-editor-section" data-responsable-section="${group}">
+    <div class="post-editor-section" data-responsibility-section="${group}">
       <div class="post-editor-section-title">${postesEscapeHtml(title)}</div>
       ${help ? `<p class="post-editor-help">${postesEscapeHtml(help)}</p>` : ""}
       <input type="search" class="post-editor-search" data-filter-group="${group}" placeholder="Rechercher une personne…">
@@ -212,20 +223,20 @@ function postesOpenResponsablesEditor(button) {
   if (!row || !cell) return;
 
   const childSection = row.sous_poste_id
-    ? postesResponsableSection(
+    ? postesResponsibilitySection(
         `Responsable(s) du sous-poste « ${row.sous_poste_nom} »`,
         "Ces responsables s’ajoutent à ceux du poste principal.",
-        "child",
+        "resp-child",
         row.child_responsable_ids || []
       )
     : "";
 
   cell.innerHTML = `
     <div class="post-editor-panel" data-editor="responsables" data-row-id="${row.ligne_poste_id}">
-      ${postesResponsableSection(
+      ${postesResponsibilitySection(
         `Responsable(s) du poste « ${row.poste_nom} »`,
         row.sous_poste_id ? "Ce choix s’applique à tous les sous-postes de ce poste." : "",
-        "parent",
+        "resp-parent",
         row.parent_responsable_ids || []
       )}
       ${childSection}
@@ -238,13 +249,45 @@ function postesOpenResponsablesEditor(button) {
   `;
 }
 
+function postesOpenCoresponsablesEditor(button) {
+  const row = postesFindRow(button.dataset.rowId);
+  const cell = button.closest("td");
+  if (!row || !cell) return;
+
+  const childSection = row.sous_poste_id
+    ? postesResponsibilitySection(
+        `Co-responsable(s) du sous-poste « ${row.sous_poste_nom} »`,
+        "Ces co-responsables s’ajoutent à ceux du poste principal.",
+        "co-child",
+        row.child_coresponsable_ids || []
+      )
+    : "";
+
+  cell.innerHTML = `
+    <div class="post-editor-panel" data-editor="coresponsables" data-row-id="${row.ligne_poste_id}">
+      ${postesResponsibilitySection(
+        `Co-responsable(s) du poste « ${row.poste_nom} »`,
+        row.sous_poste_id ? "Ce choix s’applique à tous les sous-postes de ce poste." : "",
+        "co-parent",
+        row.parent_coresponsable_ids || []
+      )}
+      ${childSection}
+      <div class="post-editor-actions">
+        <button type="button" class="post-editor-cancel" data-action="cancel-editor">Annuler</button>
+        <button type="button" class="post-editor-save" data-action="save-coresponsables">Valider</button>
+      </div>
+      <div class="post-editor-error"></div>
+    </div>
+  `;
+}
+
 function postesEditorError(editor, message) {
   const target = editor.querySelector(".post-editor-error");
   if (target) target.textContent = message;
 }
 
 async function postesReload() {
-  const { data, error } = await PortalAuth.client.rpc("admin_list_postes_details");
+  const { data, error } = await PortalAuth.client.rpc("admin_list_postes_details_v2");
   if (error) throw error;
   postesRows = Array.isArray(data) ? data : [];
   postesRenderTable();
@@ -321,8 +364,8 @@ async function postesSaveResponsables(button) {
   const row = postesFindRow(editor?.dataset.rowId);
   if (!editor || !row) return;
 
-  const parentIds = postesSelectedIds(editor, "parent");
-  const childIds = row.sous_poste_id ? postesSelectedIds(editor, "child") : [];
+  const parentIds = postesSelectedIds(editor, "resp-parent");
+  const childIds = row.sous_poste_id ? postesSelectedIds(editor, "resp-child") : [];
 
   button.disabled = true;
   const cancel = editor.querySelector('[data-action="cancel-editor"]');
@@ -337,6 +380,37 @@ async function postesSaveResponsables(button) {
 
   if (error) {
     console.error("Impossible de modifier les responsables :", error);
+    button.disabled = false;
+    if (cancel) cancel.disabled = false;
+    postesEditorError(editor, error.message || "Modification impossible.");
+    return;
+  }
+
+  await postesReload();
+  postesError.hidden = true;
+}
+
+async function postesSaveCoresponsables(button) {
+  const editor = button.closest(".post-editor-panel");
+  const row = postesFindRow(editor?.dataset.rowId);
+  if (!editor || !row) return;
+
+  const parentIds = postesSelectedIds(editor, "co-parent");
+  const childIds = row.sous_poste_id ? postesSelectedIds(editor, "co-child") : [];
+
+  button.disabled = true;
+  const cancel = editor.querySelector('[data-action="cancel-editor"]');
+  if (cancel) cancel.disabled = true;
+
+  const { error } = await PortalAuth.client.rpc("admin_set_poste_coresponsables_scope", {
+    p_parent_poste_id: row.poste_id,
+    p_child_poste_id: row.sous_poste_id || null,
+    p_parent_personne_ids: parentIds,
+    p_child_personne_ids: childIds
+  });
+
+  if (error) {
+    console.error("Impossible de modifier les co-responsables :", error);
     button.disabled = false;
     if (cancel) cancel.disabled = false;
     postesEditorError(editor, error.message || "Modification impossible.");
@@ -365,9 +439,11 @@ postesTableBody.addEventListener("click", event => {
   if (action === "edit-name") postesOpenNameEditor(button);
   else if (action === "edit-lieux") postesOpenLieuxEditor(button);
   else if (action === "edit-responsables") postesOpenResponsablesEditor(button);
+  else if (action === "edit-coresponsables") postesOpenCoresponsablesEditor(button);
   else if (action === "save-name") postesSaveName(button);
   else if (action === "save-lieux") postesSaveLieux(button);
   else if (action === "save-responsables") postesSaveResponsables(button);
+  else if (action === "save-coresponsables") postesSaveCoresponsables(button);
   else if (action === "cancel-editor") postesRenderTable();
 });
 
@@ -410,7 +486,7 @@ async function loadPostesPage() {
   }
 
   const [rowsResult, lieuxResult, responsablesResult] = await Promise.all([
-    PortalAuth.client.rpc("admin_list_postes_details"),
+    PortalAuth.client.rpc("admin_list_postes_details_v2"),
     PortalAuth.client.rpc("admin_list_lieux_options"),
     PortalAuth.client.rpc("admin_list_responsable_options")
   ]);
