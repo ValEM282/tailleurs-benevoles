@@ -424,7 +424,7 @@ async function loadUpcoming() {
     return;
   }
 
-  renderGroups(data || []);
+  renderGroups((data || []).filter(row => row.statut !== "disponible"));
 }
 
 async function init() {

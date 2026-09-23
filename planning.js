@@ -314,7 +314,7 @@ function renderGroups(rows) {
         const end = document.createElement("div");
         end.className = "volunteer-end";
         end.textContent = row.renfort
-          ? `→ ${formatTime(row.debut)} - renfort`
+          ? `${formatTime(row.debut)} · RENFORT`
           : `→ ${formatTime(row.fin)}`;
         item.appendChild(end);
         list.appendChild(item);
@@ -352,8 +352,9 @@ async function loadNow() {
     return;
   }
 
-  if (data && data.length) {
-    renderGroups(data);
+  const visibleRows = (data || []).filter(row => row.statut !== "disponible");
+  if (visibleRows.length) {
+    renderGroups(visibleRows);
     return;
   }
 
@@ -376,7 +377,7 @@ async function loadNow() {
     return;
   }
 
-  if (allCurrentRows && allCurrentRows.length) {
+  if ((allCurrentRows || []).some(row => row.statut !== "disponible")) {
     renderEmpty("Aucun résultat - Pour voir tous les planning horaire, consultez la vue A VENIR");
   } else {
     renderEmpty("Aucun planning horaire actuellement en cours");
