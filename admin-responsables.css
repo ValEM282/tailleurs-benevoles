@@ -1,0 +1,84 @@
+/* Administration — formulaire responsables / co-responsables */
+
+.admin-responsibility-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.admin-responsibility-fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 10px 12px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.admin-responsibility-fieldset legend {
+  padding: 0 6px;
+  color: var(--blue);
+  font-weight: 700;
+}
+
+.admin-post-choice-list {
+  display: grid;
+  gap: 5px;
+  max-height: 250px;
+  overflow-y: auto;
+  padding: 2px 4px 2px 0;
+}
+
+.admin-post-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 7px;
+  color: var(--text);
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.admin-post-choice:hover {
+  background: rgba(28, 46, 171, 0.05);
+}
+
+.admin-post-choice input {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+  margin: 1px 0 0;
+  accent-color: var(--blue);
+}
+
+.admin-post-choice-empty {
+  margin: 0;
+  color: #67708d;
+  font-weight: 600;
+}
+
+.admin-responsible-create-panel .admin-volunteer-create-actions button {
+  width: 104px;
+  min-width: 104px;
+}
+
+@media (max-width: 760px) {
+  .admin-responsibility-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-responsible-create-panel .admin-volunteer-create-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .admin-responsible-create-panel .admin-volunteer-create-actions button {
+    width: 100%;
+    min-width: 0;
+  }
+}
