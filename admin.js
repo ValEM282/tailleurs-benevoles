@@ -16,6 +16,17 @@ const volunteerListButton = document.getElementById("admin-volunteer-list");
 const volunteerSearchButton = document.getElementById("admin-volunteer-search");
 const volunteerSearchFirstname = document.getElementById("volunteer-search-firstname");
 const volunteerSearchLastname = document.getElementById("volunteer-search-lastname");
+const volunteerAddButton = document.getElementById("admin-volunteer-add");
+const volunteerCreatePanel = document.getElementById("admin-volunteer-create-panel");
+const volunteerCreateForm = document.getElementById("admin-volunteer-create-form");
+const volunteerCreateCancel = document.getElementById("admin-volunteer-create-cancel");
+const volunteerCreateError = document.getElementById("admin-volunteer-create-error");
+const volunteerFirstname = document.getElementById("new-volunteer-firstname");
+const volunteerLastname = document.getElementById("new-volunteer-lastname");
+const volunteerPhone = document.getElementById("new-volunteer-phone");
+const volunteerEmail = document.getElementById("new-volunteer-email");
+const volunteerTshirt = document.getElementById("new-volunteer-tshirt");
+const volunteerTailloux = document.getElementById("new-volunteer-tailloux");
 
 let currentUser = null;
 const unlockDurationMs = 30 * 60 * 1000;
@@ -78,6 +89,44 @@ function openVolunteerSearch() {
   window.location.href = query
     ? `benevoles-liste.html?${query}`
     : "benevoles-liste.html";
+}
+
+function setVolunteerCreateOpen(open) {
+  volunteerCreatePanel.hidden = !open;
+  volunteerAddButton.setAttribute("aria-expanded", String(open));
+  volunteerCreateError.hidden = true;
+  volunteerCreateError.textContent = "";
+
+  if (open) {
+    volunteerFirstname.focus();
+  } else {
+    volunteerCreateForm.reset();
+    volunteerAddButton.focus();
+  }
+}
+
+function showVolunteerCreateError(message, input) {
+  volunteerCreateError.textContent = message;
+  volunteerCreateError.hidden = false;
+  if (input) input.focus();
+}
+
+function normalizeVolunteerPhone(value) {
+  const phone = value.trim();
+  if (!phone) return { value: null };
+
+  if (phone.startsWith("+") || phone.startsWith("00")) {
+    return phone.startsWith("+32") || phone.startsWith("0032")
+      ? { error: "Un numéro belge doit être au format 04XX XX XX XX." }
+      : { value: phone };
+  }
+
+  const digits = phone.replace(/\D/g, "");
+  if (!/^04\d{8}$/.test(digits)) {
+    return { error: "Format attendu : 04XX XX XX XX (sauf indicatif étranger)." };
+  }
+
+  return { value: `${digits.slice(0, 4)} ${digits.slice(4, 6)} ${digits.slice(6, 8)} ${digits.slice(8, 10)}` };
 }
 
 async function loadAdminPage() {
@@ -214,6 +263,85 @@ if (volunteerListButton) {
 if (volunteerSearchButton) {
   volunteerSearchButton.addEventListener("click", openVolunteerSearch);
 }
+
+for (let count = 0; count <= 25; count += 1) {
+  const option = document.createElement("option");
+  option.value = String(count);
+  option.textContent = String(count);
+  volunteerTailloux.appendChild(option);
+}
+
+volunteerAddButton.addEventListener("click", () => {
+  setVolunteerCreateOpen(volunteerCreatePanel.hidden);
+});
+
+volunteerCreateCancel.addEventListener("click", () => {
+  setVolunteerCreateOpen(false);
+});
+
+volunteerLastname.addEventListener("change", () => {
+  volunteerLastname.value = volunteerLastname.value.trim().toLocaleUpperCase("fr");
+});
+
+volunteerCreateForm.addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const prenom = volunteerFirstname.value.trim();
+  const nom = volunteerLastname.value.trim().toLocaleUpperCase("fr");
+  const email = volunteerEmail.value.trim().toLowerCase();
+  const tshirt = volunteerTshirt.value;
+  const tailloux = Number(volunteerTailloux.value);
+  const phone = normalizeVolunteerPhone(volunteerPhone.value);
+  volunteerLastname.value = nom;
+
+  if (!prenom || !nom) {
+    showVolunteerCreateError("Indique le prénom et le nom du bénévole.", !prenom ? volunteerFirstname : volunteerLastname);
+    return;
+  }
+
+  if (phone.error) {
+    showVolunteerCreateError(phone.error, volunteerPhone);
+    return;
+  }
+
+  if (!tshirt || volunteerTailloux.value === "" || !Number.isInteger(tailloux) || tailloux < 0 || tailloux > 25) {
+    showVolunteerCreateError("Choisis un T-shirt et un nombre de Tailloux entre 0 et 25.", !tshirt ? volunteerTshirt : volunteerTailloux);
+    return;
+  }
+
+  volunteerCreateError.hidden = true;
+  const submit = volunteerCreateForm.querySelector('[type="submit"]');
+  submit.disabled = true;
+  volunteerCreateCancel.disabled = true;
+
+  try {
+    const { error } = await PortalAuth.client.rpc("admin_create_benevole", {
+      p_prenom: prenom,
+      p_nom: nom,
+      p_telephone: phone.value,
+      p_email: email,
+      p_tshirt: tshirt,
+      p_tailloux: tailloux
+    });
+
+    if (error) {
+      console.error("Impossible de créer le bénévole :", error);
+      showVolunteerCreateError(error.code === "23505"
+        ? "Cette adresse e-mail est déjà utilisée par un autre bénévole."
+        : error.message || "Impossible de créer le bénévole pour le moment.");
+      return;
+    }
+
+    const params = new URLSearchParams({ prenom, nom });
+    window.location.href = `benevoles-liste.html?${params.toString()}`;
+  } catch (error) {
+    console.error("Impossible de créer le bénévole :", error);
+    showVolunteerCreateError("Impossible de créer le bénévole pour le moment.");
+  } finally {
+    submit.disabled = false;
+    volunteerCreateCancel.disabled = false;
+  }
+});
 
 [volunteerSearchFirstname, volunteerSearchLastname].forEach(input => {
   if (!input) return;

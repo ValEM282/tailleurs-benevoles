@@ -32,7 +32,8 @@
   color: var(--blue);
 }
 
-.admin-card input {
+.admin-card input,
+.admin-card select {
   min-height: 42px;
   box-sizing: border-box;
   padding: 7px 11px;
@@ -195,6 +196,46 @@
   font-size: 0.92rem;
 }
 
+.admin-volunteer-create-panel {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.admin-volunteer-create-panel[hidden] {
+  display: none;
+}
+
+.admin-volunteer-create-panel h3 {
+  margin: 0 0 12px;
+  color: var(--blue);
+  font-family: "Macho", "Titillium Web", sans-serif;
+  font-size: 1.2rem;
+}
+
+.admin-volunteer-create-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.admin-uppercase-input {
+  text-transform: uppercase;
+}
+
+.admin-volunteer-create-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.admin-volunteer-create-error {
+  margin: 4px 0 0 !important;
+  color: var(--red);
+  font-weight: 700;
+}
+
 .admin-search-actions {
   display: grid;
   grid-template-columns: 1fr 1.15fr;
@@ -239,7 +280,8 @@
   }
 
   .admin-search-grid-person,
-  .admin-search-grid-single {
+  .admin-search-grid-single,
+  .admin-volunteer-create-grid {
     grid-template-columns: 1fr;
   }
 

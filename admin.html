@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260921-2">
   <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
-  <link rel="stylesheet" href="admin.css?v=20260923-14">
+  <link rel="stylesheet" href="admin.css?v=20260923-15">
 </head>
 <body class="dashboard-page">
   <header class="dashboard-header">
@@ -52,7 +52,7 @@
         <section class="admin-management-section" aria-labelledby="admin-volunteers-title">
           <div class="admin-section-heading">
             <h2 id="admin-volunteers-title">BÉNÉVOLES</h2>
-            <button type="button" class="admin-add-button" id="admin-volunteer-add" aria-label="Ajouter un bénévole"><span>+</span></button>
+            <button type="button" class="admin-add-button" id="admin-volunteer-add" aria-label="Ajouter un bénévole" aria-controls="admin-volunteer-create-panel" aria-expanded="false"><span>+</span></button>
           </div>
           <div class="admin-search-grid admin-search-grid-person">
             <div class="admin-search-field">
@@ -67,6 +67,55 @@
               <button type="button" class="admin-list-button" id="admin-volunteer-list">Liste</button>
               <button type="button" class="admin-search-button" id="admin-volunteer-search">Recherche</button>
             </div>
+          </div>
+          <div id="admin-volunteer-create-panel" class="admin-volunteer-create-panel" hidden>
+            <h3>Ajouter un bénévole</h3>
+            <form id="admin-volunteer-create-form">
+              <div class="admin-volunteer-create-grid">
+                <div class="admin-search-field">
+                  <label for="new-volunteer-firstname">Prénom</label>
+                  <input id="new-volunteer-firstname" name="prenom" type="text" autocomplete="given-name" required>
+                </div>
+                <div class="admin-search-field">
+                  <label for="new-volunteer-lastname">NOM</label>
+                  <input id="new-volunteer-lastname" name="nom" type="text" autocomplete="family-name" class="admin-uppercase-input" required>
+                </div>
+                <div class="admin-search-field">
+                  <label for="new-volunteer-phone">Téléphone</label>
+                  <input id="new-volunteer-phone" name="telephone" type="tel" autocomplete="tel" placeholder="04XX XX XX XX">
+                </div>
+                <div class="admin-search-field">
+                  <label for="new-volunteer-email">Email</label>
+                  <input id="new-volunteer-email" name="email" type="email" autocomplete="email" required>
+                </div>
+                <div class="admin-search-field">
+                  <label for="new-volunteer-tshirt">T-shirt</label>
+                  <select id="new-volunteer-tshirt" name="tshirt" required>
+                    <option value="">Choisir</option>
+                    <option value="0">0 — Aucun</option>
+                    <option value="XS">XS</option>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                    <option value="2XL">2XL</option>
+                    <option value="3XL">3XL</option>
+                    <option value="4XL">4XL</option>
+                  </select>
+                </div>
+                <div class="admin-search-field">
+                  <label for="new-volunteer-tailloux">Tailloux</label>
+                  <select id="new-volunteer-tailloux" name="tailloux" required>
+                    <option value="">Choisir</option>
+                  </select>
+                </div>
+              </div>
+              <p id="admin-volunteer-create-error" class="admin-volunteer-create-error" role="alert" hidden></p>
+              <div class="admin-volunteer-create-actions">
+                <button type="button" class="admin-secondary-button" id="admin-volunteer-create-cancel">Annuler</button>
+                <button type="submit" class="admin-primary-button">Créer le bénévole</button>
+              </div>
+            </form>
           </div>
         </section>
 
@@ -130,6 +179,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="portal-auth.js"></script>
-  <script src="admin.js?v=20260923-3"></script>
+  <script src="admin.js?v=20260923-4"></script>
 </body>
 </html>
