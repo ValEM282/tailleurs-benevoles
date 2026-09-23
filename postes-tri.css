@@ -1,0 +1,24 @@
+/* Tri de la liste des postes */
+
+.posts-sort-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  cursor: pointer;
+}
+
+.posts-sort-button:hover {
+  text-decoration: underline;
+}
+
+.posts-sort-button:focus-visible {
+  outline: 3px solid rgba(28, 46, 171, .22);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
