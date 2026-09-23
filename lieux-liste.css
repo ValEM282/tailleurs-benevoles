@@ -13,6 +13,29 @@
   width: 100%;
 }
 
+.places-sort-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.places-sort-button:hover {
+  text-decoration: underline;
+}
+
+.places-sort-button:focus-visible {
+  outline: 3px solid rgba(28, 46, 171, .22);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
 .place-display {
   display: flex;
   align-items: center;
@@ -101,6 +124,11 @@
   .place-edit-button,
   .place-editor {
     display: none !important;
+  }
+
+  .places-sort-button {
+    pointer-events: none;
+    text-decoration: none;
   }
 
   .places-table {
