@@ -80,6 +80,10 @@ function formatShiftRange(shift) {
   return `${formatCompactTime(shift.debut)}-${formatCompactTime(shift.fin)}`;
 }
 
+function isPastShift(shift) {
+  return new Date(shift.fin).getTime() <= Date.now();
+}
+
 function getLocationName(shift) {
   let locationName = shift.lieu || "";
   if (!locationName && shift.note && shift.note.toLowerCase().includes("hall polyvalent / site")) {
@@ -204,7 +208,7 @@ function intervalsOverlap(aStart, aEnd, bStart, bEnd) {
 }
 
 function findOverlapWarning(group, proposedSlots) {
-  const groupIds = new Set(group.shifts.map(shift => shift.affectation_id));
+  const groupIds = new Set(group.shifts.filter(shift => !isPastShift(shift)).map(shift => shift.affectation_id));
 
   for (let i = 0; i < proposedSlots.length; i += 1) {
     for (let j = i + 1; j < proposedSlots.length; j += 1) {
@@ -262,8 +266,7 @@ function closeAdminPresenceMenus(except = null) {
 }
 
 function futureAdminShifts() {
-  const now = Date.now();
-  return currentShifts.filter(shift => new Date(shift.fin).getTime() > now);
+  return currentShifts.filter(shift => !isPastShift(shift));
 }
 
 function renderBulkPresenceControl() {
@@ -354,6 +357,12 @@ function createAdminPresenceControl(shift) {
   dot.setAttribute("aria-label", `${formatShiftRange(shift)} : ${status.label}. Modifier le statut de présence.`);
   dot.setAttribute("aria-expanded", "false");
   dot.setAttribute("aria-haspopup", "true");
+  if (isPastShift(shift)) {
+    dot.disabled = true;
+    dot.classList.add("schedule-presence-locked");
+    dot.title = `${status.label} — poste terminé, statut non modifiable`;
+    dot.setAttribute("aria-label", `${formatShiftRange(shift)} : ${status.label}. Poste terminé, statut non modifiable.`);
+  }
 
   const menu = document.createElement("div");
   menu.className = "schedule-presence-menu";
@@ -378,6 +387,10 @@ function createAdminPresenceControl(shift) {
     option.addEventListener("click", async event => {
       event.stopPropagation();
       closeAdminPresenceMenus();
+      if (isPastShift(shift)) {
+        wrapper.replaceWith(createAdminPresenceControl(shift));
+        return;
+      }
       dot.disabled = true;
       menu.querySelectorAll("button").forEach(button => button.disabled = true);
 
@@ -410,6 +423,10 @@ function createAdminPresenceControl(shift) {
 
   dot.addEventListener("click", event => {
     event.stopPropagation();
+    if (isPastShift(shift)) {
+      dot.disabled = true;
+      return;
+    }
     const opening = menu.hidden;
     closeAdminPresenceMenus(menu);
     menu.hidden = !opening;
@@ -429,7 +446,7 @@ function createShiftCard(group, dayKey) {
   const card = document.createElement("article");
   card.className = "schedule-shift-card";
 
-  const allShiftsPast = group.shifts.every(shift => new Date(shift.fin).getTime() <= Date.now());
+  const allShiftsPast = group.shifts.every(isPastShift);
   if (allShiftsPast) card.classList.add("schedule-shift-card-past");
 
   const content = document.createElement("div");
@@ -444,7 +461,18 @@ function createShiftCard(group, dayKey) {
   editButton.textContent = "✏️";
   editButton.title = "Modifier cette affectation";
   editButton.setAttribute("aria-label", `Modifier ${group.poste}`);
-  editButton.addEventListener("click", () => enterEditMode(card, group, dayKey));
+  if (allShiftsPast) {
+    editButton.disabled = true;
+    editButton.title = "Poste terminé — modification impossible";
+    editButton.setAttribute("aria-label", `${group.poste} : poste terminé, non modifiable`);
+  }
+  editButton.addEventListener("click", () => {
+    if (group.shifts.every(isPastShift)) {
+      editButton.disabled = true;
+      return;
+    }
+    enterEditMode(card, group, dayKey);
+  });
 
   const poste = document.createElement("h3");
   poste.textContent = group.poste;
@@ -505,7 +533,11 @@ function createSlotEditorHtml(shift = null, index = 0) {
 }
 
 function enterEditMode(card, group, dayKey) {
-  const firstShift = group.shifts[0];
+  const editableShifts = group.shifts.filter(shift => !isPastShift(shift));
+  if (!editableShifts.length) return;
+  const firstShift = editableShifts[0];
+  const pastShifts = group.shifts.filter(isPastShift);
+  card._editableShiftIds = new Set(editableShifts.map(shift => String(shift.affectation_id)));
 
   card.classList.remove("schedule-shift-card-past");
   card.classList.add("schedule-shift-card-editing");
@@ -526,8 +558,10 @@ function enterEditMode(card, group, dayKey) {
       </div>
 
       <div class="schedule-edit-slots">
-        ${group.shifts.map((shift, index) => createSlotEditorHtml(shift, index)).join("")}
+        ${editableShifts.map((shift, index) => createSlotEditorHtml(shift, index)).join("")}
       </div>
+
+      ${pastShifts.length ? `<p class="schedule-edit-past-slots">Plages terminées (lecture seule) : ${pastShifts.map(shift => escapeHtml(formatShiftRange(shift))).join(" · ")}</p>` : ""}
 
       <button type="button" class="schedule-add-slot-button">+ Ajouter une plage</button>
 
@@ -564,6 +598,12 @@ function enterEditMode(card, group, dayKey) {
   cancelButton.addEventListener("click", () => renderSchedule());
 
   confirmButton.addEventListener("click", async () => {
+    if (editableShifts.some(isPastShift)) {
+      message.textContent = "Une plage s'est terminée depuis l'ouverture de cette carte. Recharge la page avant de modifier les autres.";
+      message.className = "schedule-edit-message schedule-edit-message-error";
+      message.hidden = false;
+      return;
+    }
     const posteId = Number(card.querySelector(".schedule-edit-poste").value);
     const lieuValue = card.querySelector(".schedule-edit-lieu").value;
     const lieuId = lieuValue ? Number(lieuValue) : null;
@@ -589,6 +629,13 @@ function enterEditMode(card, group, dayKey) {
         endMinutes
       };
     });
+
+    if (proposedSlots.some(slot => slot.end.getTime() <= Date.now())) {
+      message.textContent = "Une plage terminée ne peut plus être enregistrée.";
+      message.className = "schedule-edit-message schedule-edit-message-error";
+      message.hidden = false;
+      return;
+    }
 
     const overlapWarning = findOverlapWarning(group, proposedSlots);
 

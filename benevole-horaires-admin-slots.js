@@ -95,6 +95,20 @@
     if (!confirmButton || confirmButton.dataset.slotDeletesProcessed === "yes") return;
 
     const card = confirmButton.closest(".schedule-shift-card");
+    if (card?._editableShiftIds && [...card._editableShiftIds].some(id => {
+      const shift = currentShifts.find(item => String(item.affectation_id) === id);
+      return shift && isPastShift(shift);
+    })) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      const message = card.querySelector(".schedule-edit-message");
+      if (message) {
+        message.textContent = "Une plage s'est terminée depuis l'ouverture de cette carte. Recharge la page.";
+        message.className = "schedule-edit-message schedule-edit-message-error";
+        message.hidden = false;
+      }
+      return;
+    }
     const removedIds = card?._removedAffectationIds
       ? [...card._removedAffectationIds]
       : [];

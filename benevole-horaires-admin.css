@@ -29,10 +29,21 @@
   transition: background-color .15s ease, border-color .15s ease, transform .15s ease;
 }
 
-.schedule-edit-button:hover {
+.schedule-edit-button:not(:disabled):hover {
   border-color: var(--blue);
   background: #f2f4ff;
   transform: translateY(-1px);
+}
+
+.schedule-edit-button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.schedule-edit-past-slots {
+  margin: 0;
+  color: #747983;
+  font-weight: 600;
 }
 
 .schedule-shift-card-editing {
@@ -273,6 +284,10 @@
 .schedule-presence-dot:disabled {
   opacity: .55;
   cursor: wait;
+}
+
+.schedule-presence-locked:disabled {
+  cursor: not-allowed;
 }
 
 .schedule-presence-present { background: #35B86B; }
