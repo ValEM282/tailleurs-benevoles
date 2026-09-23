@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
   <link rel="stylesheet" href="admin.css?v=20260923-17">
   <link rel="stylesheet" href="admin-responsables.css?v=20260924-1">
+  <link rel="stylesheet" href="admin-postes.css?v=20260924-1">
 </head>
 <body class="dashboard-page">
   <header class="dashboard-header">
@@ -185,7 +186,7 @@
         <section class="admin-management-section" aria-labelledby="admin-posts-title">
           <div class="admin-section-heading">
             <h2 id="admin-posts-title">POSTES</h2>
-            <button type="button" class="admin-add-button" id="admin-post-add" aria-label="Ajouter un poste"><span>+</span></button>
+            <button type="button" class="admin-add-button" id="admin-post-add" aria-label="Ajouter un poste" aria-controls="admin-post-create-panel" aria-expanded="false"><span>+</span></button>
           </div>
           <div class="admin-search-grid admin-search-grid-single">
             <div class="admin-search-field">
@@ -196,6 +197,43 @@
               <button type="button" class="admin-list-button" id="admin-post-list">Liste</button>
               <button type="button" class="admin-search-button" id="admin-post-search">Recherche</button>
             </div>
+          </div>
+
+          <div id="admin-post-create-panel" class="admin-volunteer-create-panel admin-post-create-panel" hidden>
+            <h3>Ajouter un poste</h3>
+            <form id="admin-post-create-form">
+              <div class="admin-volunteer-create-grid">
+                <div class="admin-search-field">
+                  <label for="new-post-name">Nom du Poste</label>
+                  <input id="new-post-name" name="poste" type="text" autocomplete="off" required>
+                </div>
+                <div class="admin-search-field">
+                  <label for="new-subpost-name">Nom du Sous-poste</label>
+                  <input id="new-subpost-name" name="sous_poste" type="text" autocomplete="off">
+                </div>
+              </div>
+
+              <div class="admin-post-create-columns">
+                <fieldset class="admin-responsibility-fieldset">
+                  <legend>Lieu(x)</legend>
+                  <div id="new-post-lieux" class="admin-post-choice-list" aria-live="polite">Chargement des lieux…</div>
+                </fieldset>
+                <fieldset class="admin-responsibility-fieldset">
+                  <legend>Responsable(s)</legend>
+                  <div id="new-post-responsables" class="admin-post-choice-list" aria-live="polite">Chargement des personnes…</div>
+                </fieldset>
+                <fieldset class="admin-responsibility-fieldset">
+                  <legend>Co-responsable(s)</legend>
+                  <div id="new-post-coresponsables" class="admin-post-choice-list" aria-live="polite">Chargement des personnes…</div>
+                </fieldset>
+              </div>
+
+              <p id="admin-post-create-error" class="admin-volunteer-create-error" role="alert" hidden></p>
+              <div class="admin-volunteer-create-actions">
+                <button type="button" class="admin-secondary-button" id="admin-post-create-cancel">Annuler</button>
+                <button type="submit" class="admin-primary-button">Valider</button>
+              </div>
+            </form>
           </div>
         </section>
 
@@ -223,5 +261,6 @@
   <script src="portal-auth.js"></script>
   <script src="admin.js?v=20260923-5"></script>
   <script src="admin-responsables.js?v=20260924-2"></script>
+  <script src="admin-postes.js?v=20260924-2"></script>
 </body>
 </html>
