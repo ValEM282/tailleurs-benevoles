@@ -1,0 +1,212 @@
+/* =========================================================
+   ADMINISTRATION — ÉDITION DES HORAIRES D'UN BÉNÉVOLE
+   ========================================================= */
+
+.schedule-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 6px;
+}
+
+.schedule-card-heading h3 {
+  margin: 0;
+}
+
+.schedule-edit-button {
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid #cfd5e6;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease, transform .15s ease;
+}
+
+.schedule-edit-button:hover {
+  border-color: var(--blue);
+  background: #f2f4ff;
+  transform: translateY(-1px);
+}
+
+.schedule-shift-card-editing {
+  border: 2px solid rgba(28, 46, 171, .16);
+}
+
+.schedule-edit-form {
+  display: grid;
+  gap: 14px;
+}
+
+.schedule-edit-field {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+}
+
+.schedule-edit-field > label,
+.schedule-edit-slot-label {
+  font-weight: 700;
+  color: var(--blue);
+}
+
+.schedule-edit-field select,
+.schedule-edit-slot select {
+  min-height: 42px;
+  width: 100%;
+  border: 1px solid #cfd5e6;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  padding: 7px 32px 7px 10px;
+}
+
+.schedule-edit-field select:focus,
+.schedule-edit-slot select:focus {
+  border-color: var(--blue);
+  outline: 3px solid rgba(28, 46, 171, .13);
+}
+
+.schedule-edit-slots {
+  display: grid;
+  gap: 10px;
+}
+
+.schedule-edit-slot {
+  display: grid;
+  grid-template-columns: 90px minmax(120px, 1fr) minmax(120px, 1fr);
+  align-items: end;
+  gap: 10px;
+  padding: 11px 12px;
+  border: 1px solid #e3e6ef;
+  border-radius: 12px;
+  background: #fafbff;
+}
+
+.schedule-edit-slot label {
+  display: grid;
+  gap: 5px;
+}
+
+.schedule-edit-slot label > span {
+  font-size: .88rem;
+  font-weight: 700;
+  color: #5d6682;
+}
+
+.schedule-add-slot-button {
+  justify-self: start;
+  padding: 8px 12px;
+  border: 1px solid var(--blue);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--blue);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.schedule-add-slot-button:hover {
+  background: #f2f4ff;
+}
+
+.schedule-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.schedule-edit-confirm,
+.schedule-edit-cancel {
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 1.25rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.schedule-edit-confirm {
+  border: 2px solid #56c978;
+  color: #21853f;
+}
+
+.schedule-edit-confirm:hover {
+  background: #effcf3;
+}
+
+.schedule-edit-cancel {
+  border: 2px solid #ef657f;
+  color: #d41437;
+}
+
+.schedule-edit-cancel:hover {
+  background: #fff1f4;
+}
+
+.schedule-edit-confirm:disabled,
+.schedule-edit-cancel:disabled,
+.schedule-add-slot-button:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+
+.schedule-edit-message {
+  margin: 0;
+  padding: 9px 11px;
+  border-radius: 9px;
+  background: #f3f5fb;
+  color: #4c5575;
+  font-size: .92rem;
+  font-weight: 600;
+}
+
+.schedule-edit-message-warning {
+  border: 1px solid #efc36a;
+  background: #fff8e7;
+  color: #7a5200;
+}
+
+.schedule-edit-message-error {
+  border: 1px solid #f1b1be;
+  background: #fff1f4;
+  color: #a60026;
+}
+
+@media (max-width: 700px) {
+  .schedule-edit-field {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .schedule-edit-slot {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .schedule-edit-slot-label {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 460px) {
+  .schedule-edit-slot {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-edit-slot-label {
+    grid-column: auto;
+  }
+}
