@@ -76,8 +76,15 @@ function formatCompactTime(value) {
   return formatClockMinutes(clockMinutesFor(value));
 }
 
+function isReinforcementShift(shift) {
+  const note = (shift.note || "").toLowerCase();
+  return shift.renfort === true || note.startsWith("renfort") || note.startsWith("affectation depuis la liste des bénévoles disponibles");
+}
+
 function formatShiftRange(shift) {
-  return `${formatCompactTime(shift.debut)}-${formatCompactTime(shift.fin)}`;
+  return isReinforcementShift(shift)
+    ? `${formatCompactTime(shift.debut)}-RENFORT`
+    : `${formatCompactTime(shift.debut)}-${formatCompactTime(shift.fin)}`;
 }
 
 function isPastShift(shift) {
