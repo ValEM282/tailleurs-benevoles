@@ -124,13 +124,31 @@ function kitCheckbox(volunteer) {
   `;
 }
 
+function scheduleButton(volunteer) {
+  const label = `${volunteer.prenom || ""} ${volunteer.nom || ""}`.trim() || "ce bénévole";
+  const params = new URLSearchParams({
+    id: volunteer.id,
+    prenom: volunteer.prenom || "",
+    nom: volunteer.nom || ""
+  });
+
+  return `
+    <a
+      class="schedule-view-button"
+      href="benevole-horaires-admin.html?${params.toString()}"
+      title="Voir les horaires de ${escapeHtml(label)}"
+      aria-label="Voir les horaires de ${escapeHtml(label)}"
+    >🕥</a>
+  `;
+}
+
 function renderTable() {
   const rows = sortedVolunteers();
 
   if (!rows.length) {
     tableBody.innerHTML = `
       <tr>
-        <td colspan="8" class="volunteers-empty">Aucun bénévole à afficher.</td>
+        <td colspan="9" class="volunteers-empty">Aucun bénévole à afficher.</td>
       </tr>
     `;
     countElement.textContent = "0 bénévole";
@@ -140,6 +158,7 @@ function renderTable() {
 
   tableBody.innerHTML = rows.map(volunteer => `
     <tr>
+      <td class="schedule-view-cell">${scheduleButton(volunteer)}</td>
       <td class="volunteer-name">${escapeHtml(volunteer.prenom || "—")}</td>
       <td class="volunteer-name">${escapeHtml(volunteer.nom || "—")}</td>
       <td>${formatPhoneLink(volunteer.telephone)}</td>
