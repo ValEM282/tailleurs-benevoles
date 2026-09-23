@@ -56,7 +56,7 @@
 
 .volunteers-table {
   width: 100%;
-  min-width: 760px;
+  min-width: 1100px;
   border-collapse: collapse;
 }
 
@@ -73,6 +73,7 @@
   color: #26314f;
   font-size: 0.95rem;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .volunteers-table tbody tr:last-child td {
@@ -122,6 +123,74 @@
 .volunteer-phone:hover,
 .volunteer-email:hover {
   text-decoration: underline;
+}
+
+.logistics-cell {
+  text-align: center !important;
+  white-space: nowrap;
+  font-weight: 600;
+  color: #38415f;
+}
+
+.sandwich-cell {
+  min-width: 115px;
+}
+
+.kit-ok-heading,
+.kit-ok-cell {
+  width: 68px;
+  text-align: center !important;
+}
+
+.kit-checkbox-wrap {
+  position: relative;
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.kit-checkbox {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.kit-checkbox-mark {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #9ba3b8;
+  border-radius: 6px;
+  background: #fff;
+  transition: 0.15s ease;
+}
+
+.kit-checkbox:checked + .kit-checkbox-mark {
+  border-color: #258443;
+  background: #258443;
+}
+
+.kit-checkbox:checked + .kit-checkbox-mark::after {
+  content: "✓";
+  display: block;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center;
+}
+
+.kit-checkbox:focus-visible + .kit-checkbox-mark {
+  outline: 3px solid rgba(28, 46, 171, 0.25);
+  outline-offset: 3px;
+}
+
+.kit-checkbox:disabled + .kit-checkbox-mark {
+  opacity: 0.55;
+  cursor: wait;
 }
 
 .volunteers-loading,
