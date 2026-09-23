@@ -250,6 +250,17 @@ async function initPage() {
   const title = document.getElementById("volunteer-schedule-title");
   if (displayName) title.textContent = `Horaires de ${displayName}`;
 
+  const printLabelButton = document.getElementById("print-volunteer-label-button");
+  if (printLabelButton) {
+    printLabelButton.addEventListener("click", () => {
+      const labelParams = new URLSearchParams({
+        id: volunteerId,
+        print: "1"
+      });
+      window.location.href = `etiquettes-benevoles.html?${labelParams.toString()}`;
+    });
+  }
+
   const logoutButton = document.getElementById("logout-button");
   logoutButton.addEventListener("click", async () => {
     sessionStorage.removeItem(unlockStorageKey());
