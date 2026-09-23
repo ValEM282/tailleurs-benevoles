@@ -6,6 +6,7 @@ const tableBody = document.getElementById("volunteers-table-body");
 const countElement = document.getElementById("volunteers-count");
 const errorElement = document.getElementById("volunteers-error");
 const logoutButton = document.getElementById("logout-button");
+const printButton = document.getElementById("print-volunteers-button");
 const sortButtons = [...document.querySelectorAll(".sort-button")];
 
 let volunteers = [];
@@ -199,6 +200,16 @@ async function updateKitStatus(checkbox) {
   checkbox.disabled = false;
 }
 
+function printVolunteersList() {
+  sortField = "nom";
+  sortDirection = "asc";
+  renderTable();
+
+  requestAnimationFrame(() => {
+    window.print();
+  });
+}
+
 async function loadVolunteers() {
   const user = await PortalAuth.requireAuth();
   if (!user) return;
@@ -250,6 +261,10 @@ tableBody.addEventListener("change", event => {
   if (!checkbox) return;
   updateKitStatus(checkbox);
 });
+
+if (printButton) {
+  printButton.addEventListener("click", printVolunteersList);
+}
 
 logoutButton.addEventListener("click", async () => {
   if (currentUser) {
