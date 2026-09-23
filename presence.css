@@ -109,7 +109,7 @@
 .volunteer-status-present { background: #35B86B; }
 .volunteer-status-disponible { background: #4A83E3; }
 .volunteer-status-en_pause { background: var(--purple, #891E82); }
-.volunteer-status-retard { background: #f39c12; }
+.volunteer-status-retard { background: #FFA31A; }
 .volunteer-status-absent,
 .volunteer-status-hors_poste { background: var(--red); }
 .volunteer-status-inconnu,
@@ -168,7 +168,7 @@
 .volunteer-delay-choice {
   min-height: 34px;
   padding: 5px 7px;
-  border: 1px solid rgba(243, 156, 18, 0.45);
+  border: 1px solid rgba(255, 163, 26, 0.45);
   border-radius: 8px;
   background: var(--white);
   color: #9b5a00;
@@ -176,7 +176,7 @@
 }
 
 .volunteer-delay-choice:hover {
-  background: rgba(243, 156, 18, 0.09);
+  background: rgba(255, 163, 26, 0.09);
 }
 
 .presence-badge {
@@ -194,7 +194,7 @@
 
 .presence-orange {
   color: #9b5a00;
-  background: rgba(243, 156, 18, 0.16);
+  background: rgba(255, 163, 26, 0.16);
 }
 
 .presence-red {
@@ -258,7 +258,7 @@
 
 .presence-action-orange {
   color: #9b5a00;
-  border-color: rgba(243, 156, 18, 0.55);
+  border-color: rgba(255, 163, 26, 0.55);
 }
 
 .presence-action-purple {
