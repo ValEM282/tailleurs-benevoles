@@ -25,6 +25,43 @@
   line-height: 1.1;
 }
 
+.volunteers-list-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+}
+
+.labels-print-button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 16px;
+  border: 2px solid var(--red);
+  border-radius: 10px;
+  background: var(--red);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color .2s ease, color .2s ease, transform .15s ease;
+}
+
+.labels-print-button:hover {
+  background: #fff;
+  color: var(--red);
+}
+
+.labels-print-button:active {
+  transform: scale(.98);
+}
+
+.labels-print-button:focus-visible {
+  outline: 3px solid rgba(228, 2, 48, .22);
+  outline-offset: 3px;
+}
+
 .volunteers-list-actions {
   display: flex;
   align-items: center;
@@ -304,6 +341,7 @@
 
   .dashboard-header,
   .print-list-button,
+  .labels-print-button,
   #logout-button,
   .back-button,
   #volunteers-error {
@@ -329,6 +367,7 @@
     font-size: 17pt;
   }
 
+  .volunteers-list-heading-actions,
   .volunteers-list-actions {
     display: none !important;
   }
@@ -426,7 +465,6 @@
     line-height: 14px;
   }
 
-  /* Largeurs optimisées pour tenir sur une page A4 portrait */
   .volunteers-table th:nth-child(2),
   .volunteers-table td:nth-child(2) { width: 10%; }
 
@@ -452,19 +490,40 @@
   .volunteers-table td:nth-child(9) { width: 8%; }
 }
 
+@media (max-width: 900px) {
+  .volunteers-list-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .volunteers-list-heading-actions {
+    width: 100%;
+    justify-content: space-between;
+    margin-left: 0;
+  }
+}
+
 @media (max-width: 700px) {
   .volunteers-list-main {
     padding: 24px 14px 36px;
   }
 
   .volunteers-list-heading {
-    align-items: flex-start;
-    flex-direction: column;
     gap: 10px;
   }
 
   .volunteers-list-heading h1 {
     font-size: 1.7rem;
+  }
+
+  .volunteers-list-heading-actions {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .labels-print-button {
+    width: 100%;
   }
 
   .volunteers-list-actions {
