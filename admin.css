@@ -230,6 +230,14 @@
   margin-top: 6px;
 }
 
+.admin-volunteer-create-actions .admin-primary-button,
+.admin-volunteer-create-actions .admin-secondary-button {
+  width: 120px;
+  min-width: 120px;
+  min-height: 42px;
+  box-sizing: border-box;
+}
+
 .admin-volunteer-create-actions .admin-primary-button {
   border-color: #2e9d57;
   background: #2e9d57;
