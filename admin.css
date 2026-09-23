@@ -118,7 +118,7 @@
 .admin-management {
   display: grid;
   gap: 12px;
-  margin-top: 18px;
+  margin-top: 0;
 }
 
 .admin-management-section {
@@ -235,7 +235,7 @@
 
   .admin-management {
     gap: 10px;
-    margin-top: 14px;
+    margin-top: 0;
   }
 
   .admin-search-grid-person,
