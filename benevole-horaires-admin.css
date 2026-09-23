@@ -235,3 +235,107 @@
     grid-column: 1;
   }
 }
+
+/* Statut de présence de chaque plage, aligné sur les vues responsables. */
+.schedule-shift-card:has(.schedule-presence-menu:not([hidden])) {
+  position: relative;
+  z-index: 20;
+}
+
+.schedule-presence-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 27px;
+}
+
+.schedule-presence-control {
+  position: relative;
+  flex: 0 0 20px;
+  height: 20px;
+}
+
+.schedule-presence-dot {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 2px solid rgba(0, 0, 0, .08);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 0 3px var(--white);
+}
+
+.schedule-presence-dot:focus-visible {
+  outline: 3px solid rgba(28, 46, 171, .3);
+  outline-offset: 3px;
+}
+
+.schedule-presence-dot:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+
+.schedule-presence-present { background: #176b35; }
+.schedule-presence-absent,
+.schedule-presence-hors_poste { background: var(--red); }
+.schedule-presence-retard { background: #f39c12; }
+.schedule-presence-disponible { background: var(--blue); }
+.schedule-presence-en_pause { background: var(--purple, #891E82); }
+.schedule-presence-inconnu,
+.schedule-presence-a_venir,
+.schedule-presence-termine { background: #8a8f99; }
+
+.schedule-presence-menu {
+  position: absolute;
+  z-index: 100;
+  top: 26px;
+  left: -5px;
+  width: 190px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 10px 28px rgba(20, 28, 80, .18);
+}
+
+.schedule-presence-menu[hidden],
+.schedule-presence-error[hidden] {
+  display: none;
+}
+
+.schedule-presence-menu button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 9px;
+  padding: 8px 9px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.schedule-presence-menu button:hover,
+.schedule-presence-menu button:focus-visible {
+  background: rgba(28, 46, 171, .06);
+}
+
+.schedule-presence-menu button:disabled { opacity: .55; cursor: wait; }
+
+.schedule-presence-swatch {
+  flex: 0 0 12px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.schedule-presence-error {
+  margin: 8px 0 0;
+  color: #a60026;
+  font-weight: 600;
+}
