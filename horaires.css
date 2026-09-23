@@ -189,7 +189,7 @@
 }
 
 .schedule-slot-status-retard .schedule-slot-dot {
-  background: #f39c12;
+  background: #FFA31A;
 }
 
 .schedule-slot-status-absent {
@@ -272,7 +272,7 @@
 }
 
 .schedule-status-pill-delay .schedule-status-pill-dot {
-  background: #f39c12;
+  background: #FFA31A;
 }
 
 .schedule-status-pill-absence .schedule-status-pill-dot {
