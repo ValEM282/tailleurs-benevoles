@@ -1,16 +1,21 @@
 /* Administration — liste éditable des lieux */
 
 .places-list-main {
-  max-width: 900px;
+  max-width: 1100px;
 }
 
 .places-table {
-  min-width: 520px;
+  min-width: 760px;
 }
 
-.places-table th,
-.places-table td {
-  width: 100%;
+.places-table th:nth-child(1),
+.places-table td:nth-child(1) {
+  width: 48%;
+}
+
+.places-table th:nth-child(2),
+.places-table td:nth-child(2) {
+  width: 52%;
 }
 
 .places-sort-button {
@@ -64,8 +69,22 @@
 }
 
 .place-name {
+  min-width: 0;
   color: #26314f;
   font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.place-map-link {
+  color: var(--blue);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.place-map-empty {
+  color: #7d8499;
+  font-weight: 400;
 }
 
 .place-editor {
