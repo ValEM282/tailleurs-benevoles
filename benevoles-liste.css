@@ -205,10 +205,10 @@
 }
 
 .activity-filter-all {
-  border-top: 4px solid #7bdc94;
-  border-right: 4px solid #7bdc94;
-  border-bottom: 1px solid #cfd5e6;
-  border-left: 1px solid #cfd5e6;
+  border-top: 1px solid #cfd5e6;
+  border-right: 1px solid #cfd5e6;
+  border-bottom: 4px solid #7bdc94;
+  border-left: 4px solid #7bdc94;
 }
 
 .activity-filter-active {
