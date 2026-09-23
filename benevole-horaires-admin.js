@@ -261,6 +261,87 @@ function closeAdminPresenceMenus(except = null) {
   });
 }
 
+function futureAdminShifts() {
+  const now = Date.now();
+  return currentShifts.filter(shift => new Date(shift.fin).getTime() > now);
+}
+
+function renderBulkPresenceControl() {
+  const button = document.getElementById("schedule-bulk-status");
+  if (!button) return;
+
+  const shifts = futureAdminShifts();
+  const allAbsent = shifts.length > 0 && shifts.every(shift => shift.statut === "absent");
+  button.disabled = shifts.length === 0;
+  button.className = `schedule-presence-dot schedule-presence-${allAbsent ? "absent" : "inconnu"}`;
+  button.title = shifts.length
+    ? (allAbsent ? "Absent·e pour tous les horaires à venir — cliquer pour modifier"
+      : "Modifier la présence pour tous les horaires à venir")
+    : "Aucun horaire à venir";
+  button.setAttribute("aria-label", button.title);
+}
+
+function updateVisibleAdminPresenceControls() {
+  document.querySelectorAll(".schedule-presence-row[data-affectation-id]").forEach(row => {
+    const shift = currentShifts.find(item => String(item.affectation_id) === row.dataset.affectationId);
+    const control = row.querySelector(".schedule-presence-control");
+    if (shift && control) control.replaceWith(createAdminPresenceControl(shift));
+  });
+  renderBulkPresenceControl();
+}
+
+function setupBulkPresenceControl() {
+  const button = document.getElementById("schedule-bulk-status");
+  const menu = document.getElementById("schedule-bulk-menu");
+  const absentButton = document.getElementById("schedule-bulk-absent");
+  const message = document.getElementById("schedule-bulk-message");
+
+  button.addEventListener("click", event => {
+    event.stopPropagation();
+    const opening = menu.hidden;
+    closeAdminPresenceMenus(menu);
+    menu.hidden = !opening;
+    button.setAttribute("aria-expanded", String(opening));
+  });
+
+  absentButton.addEventListener("click", async event => {
+    event.stopPropagation();
+    closeAdminPresenceMenus();
+    const shifts = futureAdminShifts();
+    if (!shifts.length) return;
+
+    button.disabled = true;
+    absentButton.disabled = true;
+    message.textContent = "Mise à jour des présences…";
+    message.hidden = false;
+
+    const results = await Promise.allSettled(shifts.map(shift =>
+      PortalAuth.client.rpc("set_managed_presence_status", {
+        p_affectation_id: shift.affectation_id,
+        p_statut: "absent"
+      })
+    ));
+
+    let failures = 0;
+    results.forEach((result, index) => {
+      if (result.status === "rejected" || result.value.error) {
+        failures += 1;
+        console.error("Impossible de modifier une présence :", result.reason || result.value.error);
+        return;
+      }
+      shifts[index].statut = "absent";
+      shifts[index].disponible = false;
+      shifts[index].retard_minutes = null;
+    });
+
+    updateVisibleAdminPresenceControls();
+    absentButton.disabled = false;
+    message.textContent = failures
+      ? `${shifts.length - failures} horaire(s) mis à jour sur ${shifts.length}. Réessaie pour les autres.`
+      : `Absent·e enregistré pour ${shifts.length} horaire(s) à venir.`;
+  });
+}
+
 function createAdminPresenceControl(shift) {
   const status = adminPresenceInfo(shift);
   const wrapper = document.createElement("div");
@@ -311,6 +392,7 @@ function createAdminPresenceControl(shift) {
         shift.disponible = key === "disponible";
         shift.retard_minutes = null;
         wrapper.replaceWith(createAdminPresenceControl(shift));
+        renderBulkPresenceControl();
       } catch (error) {
         console.error("Impossible de modifier la présence :", error);
         const message = wrapper.closest(".schedule-shift-card")?.querySelector(".schedule-presence-error");
@@ -382,6 +464,7 @@ function createShiftCard(group, dayKey) {
   group.shifts.forEach(shift => {
     const row = document.createElement("div");
     row.className = "schedule-presence-row";
+    row.dataset.affectationId = String(shift.affectation_id);
     row.appendChild(createAdminPresenceControl(shift));
 
     const range = document.createElement("span");
@@ -638,6 +721,7 @@ async function loadSchedule(volunteerId) {
   }
 
   currentShifts = Array.isArray(shifts) ? shifts : [];
+  renderBulkPresenceControl();
   renderSchedule();
 }
 
@@ -705,6 +789,8 @@ async function initPage() {
       logoutButton.textContent = "Se déconnecter";
     }
   });
+
+  setupBulkPresenceControl();
 
   try {
     await loadEditOptions();
