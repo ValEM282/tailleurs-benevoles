@@ -1,0 +1,77 @@
+/* Liste des responsables / co-responsables */
+
+.responsables-list-main {
+  max-width: 1320px;
+}
+
+.responsables-table {
+  min-width: 1220px;
+}
+
+.responsables-table th:nth-child(1),
+.responsables-table td:nth-child(1) {
+  width: 12%;
+}
+
+.responsables-table th:nth-child(2),
+.responsables-table td:nth-child(2) {
+  width: 15%;
+}
+
+.responsables-table th:nth-child(3),
+.responsables-table td:nth-child(3) {
+  width: 16%;
+}
+
+.responsables-table th:nth-child(4),
+.responsables-table td:nth-child(4) {
+  width: 23%;
+}
+
+.responsables-table th:nth-child(5),
+.responsables-table td:nth-child(5),
+.responsables-table th:nth-child(6),
+.responsables-table td:nth-child(6) {
+  width: 17%;
+}
+
+.responsibility-list {
+  display: grid;
+  gap: 4px;
+}
+
+.responsibility-item {
+  display: block;
+  line-height: 1.25;
+  color: #26314f;
+  font-weight: 600;
+}
+
+.responsibility-empty {
+  color: #7a829b;
+}
+
+@media print {
+  .responsables-table {
+    min-width: 0;
+    font-size: 8pt;
+  }
+
+  .responsables-table th:nth-child(1),
+  .responsables-table td:nth-child(1) { width: 11%; }
+
+  .responsables-table th:nth-child(2),
+  .responsables-table td:nth-child(2) { width: 13%; }
+
+  .responsables-table th:nth-child(3),
+  .responsables-table td:nth-child(3) { width: 15%; }
+
+  .responsables-table th:nth-child(4),
+  .responsables-table td:nth-child(4) { width: 23%; }
+
+  .responsables-table th:nth-child(5),
+  .responsables-table td:nth-child(5) { width: 19%; }
+
+  .responsables-table th:nth-child(6),
+  .responsables-table td:nth-child(6) { width: 19%; }
+}
