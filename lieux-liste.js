@@ -5,12 +5,15 @@ const lieuxCount = document.getElementById("lieux-count");
 const lieuxError = document.getElementById("lieux-error");
 const lieuxLogoutButton = document.getElementById("logout-button");
 const lieuxPrintButton = document.getElementById("print-lieux-button");
+const lieuxSortButton = document.getElementById("lieux-sort-name");
+const lieuxSortIndicator = document.getElementById("lieux-sort-indicator");
 
 const lieuxSearchParams = new URLSearchParams(window.location.search);
 const lieuxSearchText = (lieuxSearchParams.get("lieu") || "").trim();
 
 let lieuxRows = [];
 let lieuxCurrentUser = null;
+let lieuxSortDirection = "asc";
 
 function lieuxUnlockStorageKey() {
   return lieuxCurrentUser ? `portalAdminUnlockedUntil:${lieuxCurrentUser.id}` : "";
@@ -39,13 +42,27 @@ function lieuxNormalize(value) {
 }
 
 function lieuxFilteredRows() {
-  if (!lieuxSearchText) return lieuxRows;
-  const needle = lieuxNormalize(lieuxSearchText);
-  return lieuxRows.filter(lieu => lieuxNormalize(lieu.nom).includes(needle));
+  const rows = lieuxSearchText
+    ? lieuxRows.filter(lieu => lieuxNormalize(lieu.nom).includes(lieuxNormalize(lieuxSearchText)))
+    : [...lieuxRows];
+
+  return rows.sort((a, b) => {
+    const result = String(a.nom ?? "").localeCompare(String(b.nom ?? ""), "fr", {
+      sensitivity: "base",
+      ignorePunctuation: true
+    });
+    return lieuxSortDirection === "asc" ? result : -result;
+  });
+}
+
+function lieuxUpdateSortIndicator() {
+  if (!lieuxSortIndicator) return;
+  lieuxSortIndicator.textContent = lieuxSortDirection === "asc" ? "↑" : "↓";
 }
 
 function lieuxRender() {
   const rows = lieuxFilteredRows();
+  lieuxUpdateSortIndicator();
 
   if (!rows.length) {
     lieuxTableBody.innerHTML = `<tr><td class="volunteers-empty">${lieuxSearchText ? "Aucun lieu ne correspond à cette recherche." : "Aucun lieu à afficher."}</td></tr>`;
@@ -133,6 +150,13 @@ lieuxTableBody.addEventListener("click", event => {
   else if (button.dataset.action === "save") lieuxSave(button);
   else if (button.dataset.action === "cancel") lieuxRender();
 });
+
+if (lieuxSortButton) {
+  lieuxSortButton.addEventListener("click", () => {
+    lieuxSortDirection = lieuxSortDirection === "asc" ? "desc" : "asc";
+    lieuxRender();
+  });
+}
 
 if (lieuxPrintButton) {
   lieuxPrintButton.addEventListener("click", () => window.print());
