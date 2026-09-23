@@ -230,6 +230,25 @@
   margin-top: 6px;
 }
 
+.admin-volunteer-create-actions .admin-primary-button {
+  border-color: #2e9d57;
+  background: #2e9d57;
+}
+
+.admin-volunteer-create-actions .admin-primary-button:hover {
+  border-color: #237a44;
+  background: #237a44;
+}
+
+.admin-volunteer-create-actions .admin-secondary-button {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.admin-volunteer-create-actions .admin-secondary-button:hover {
+  background: rgba(228, 2, 48, 0.06);
+}
+
 .admin-volunteer-create-error {
   margin: 4px 0 0 !important;
   color: var(--red);
