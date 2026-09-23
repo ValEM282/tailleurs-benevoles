@@ -216,10 +216,10 @@
   box-shadow: 0 0 0 3px var(--white);
 }
 
-.status-present { background: #176b35; }
+.status-present { background: #35B86B; }
 .status-absent { background: var(--red); }
 .status-retard { background: #f39c12; }
-.status-disponible { background: var(--blue); }
+.status-disponible { background: #4A83E3; }
 .status-inconnu { background: #8a8f99; }
 .status-en_pause { background: var(--purple, #891E82); }
 .status-hors_poste { background: var(--red); }
