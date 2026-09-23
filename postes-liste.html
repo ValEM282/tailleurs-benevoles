@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liste des postes — Administration</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css?v=20260921-2">
+  <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
+  <link rel="stylesheet" href="benevoles-liste.css?v=20260923-7">
+  <link rel="stylesheet" href="benevoles-liste-edit.css?v=20260923-1">
+  <link rel="stylesheet" href="postes-liste.css?v=20260924-1">
+</head>
+<body class="dashboard-page">
+  <header class="dashboard-header">
+    <div class="subpage-header-inner">
+      <a href="admin.html" class="back-button">← Administration</a>
+      <div class="dashboard-title">🎪 PORTAIL BÉNÉVOLES 🎪</div>
+      <button type="button" id="logout-button" class="logout-button">Se déconnecter</button>
+    </div>
+  </header>
+
+  <main class="subpage-main volunteers-list-main posts-list-main">
+    <section class="volunteers-list-heading">
+      <h1>Liste des postes</h1>
+      <div class="volunteers-list-actions">
+        <p id="postes-count" class="volunteers-count" aria-live="polite"></p>
+        <button type="button" id="print-postes-button" class="print-list-button" aria-label="Imprimer la liste des postes" title="Imprimer la liste des postes">🖨️</button>
+      </div>
+    </section>
+
+    <div id="postes-error" class="volunteers-message volunteers-error" hidden></div>
+
+    <section class="volunteers-table-card" aria-labelledby="postes-table-title">
+      <h2 id="postes-table-title" class="sr-only">Postes de l'édition active</h2>
+      <div class="volunteers-table-scroll">
+        <table class="volunteers-table posts-table">
+          <thead>
+            <tr>
+              <th scope="col">Nom du Poste</th>
+              <th scope="col">Nom du Sous-poste</th>
+              <th scope="col">Lieu(s) associé(s)</th>
+              <th scope="col">Responsable(s)</th>
+            </tr>
+          </thead>
+          <tbody id="postes-table-body">
+            <tr><td colspan="4" class="volunteers-loading">Chargement de la liste…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="portal-auth.js"></script>
+  <script src="postes-liste.js?v=20260924-1"></script>
+</body>
+</html>
