@@ -257,6 +257,9 @@ async function loadLabels() {
     return;
   }
 
+  const params = new URLSearchParams(window.location.search);
+  const targetVolunteerId = normalizeText(params.get("id"));
+
   const [volunteersResult, schedulesResult] = await Promise.all([
     PortalAuth.client.rpc("admin_list_benevoles"),
     PortalAuth.client.rpc("admin_list_all_benevole_schedules")
@@ -269,8 +272,18 @@ async function loadLabels() {
     return;
   }
 
-  const volunteers = Array.isArray(volunteersResult.data) ? volunteersResult.data : [];
-  const schedules = Array.isArray(schedulesResult.data) ? schedulesResult.data : [];
+  let volunteers = Array.isArray(volunteersResult.data) ? volunteersResult.data : [];
+  let schedules = Array.isArray(schedulesResult.data) ? schedulesResult.data : [];
+
+  if (targetVolunteerId) {
+    volunteers = volunteers.filter(volunteer => volunteer.id === targetVolunteerId);
+    schedules = schedules.filter(shift => shift.benevole_id === targetVolunteerId);
+
+    if (!volunteers.length) {
+      showError("Ce bénévole n'a pas été trouvé dans l'édition active.");
+      return;
+    }
+  }
 
   if (!volunteers.length) {
     showError("Aucun bénévole à imprimer.");
@@ -281,7 +294,14 @@ async function loadLabels() {
   loadingElement.hidden = true;
   printButton.disabled = false;
 
-  const params = new URLSearchParams(window.location.search);
+  if (targetVolunteerId) {
+    const volunteer = volunteers[0];
+    const displayName = [normalizeText(volunteer.prenom), normalizeText(volunteer.nom).toUpperCase()]
+      .filter(Boolean)
+      .join(" ");
+    document.title = `Étiquette ${displayName || "bénévole"} — Administration`;
+  }
+
   if (params.get("print") === "1") {
     await waitForFonts();
     window.setTimeout(() => window.print(), 250);
