@@ -275,11 +275,11 @@
   cursor: wait;
 }
 
-.schedule-presence-present { background: #176b35; }
+.schedule-presence-present { background: #35B86B; }
 .schedule-presence-absent,
 .schedule-presence-hors_poste { background: var(--red); }
-.schedule-presence-retard { background: #f39c12; }
-.schedule-presence-disponible { background: var(--blue); }
+.schedule-presence-retard { background: #FFA31A; }
+.schedule-presence-disponible { background: #4A83E3; }
 .schedule-presence-en_pause { background: var(--purple, #891E82); }
 .schedule-presence-inconnu,
 .schedule-presence-a_venir,
