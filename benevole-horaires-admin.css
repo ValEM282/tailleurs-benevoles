@@ -339,3 +339,40 @@
   color: #a60026;
   font-weight: 600;
 }
+
+/* Action de présence pour l'ensemble des horaires à venir. */
+.schedule-volunteer-identity {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-width: 0;
+}
+
+.schedule-volunteer-identity h1 {
+  margin: 0;
+}
+
+.schedule-bulk-control {
+  position: relative;
+  z-index: 30;
+  flex: 0 0 20px;
+  height: 20px;
+}
+
+.schedule-bulk-menu {
+  width: min(270px, calc(100vw - 50px));
+  top: 27px;
+  left: -8px;
+}
+
+.schedule-bulk-menu button {
+  line-height: 1.25;
+}
+
+.schedule-bulk-message {
+  margin: 0 0 12px;
+  color: var(--blue);
+  font-weight: 700;
+}
+
+.schedule-bulk-message[hidden] { display: none; }
