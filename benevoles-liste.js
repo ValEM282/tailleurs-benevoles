@@ -9,6 +9,11 @@ const logoutButton = document.getElementById("logout-button");
 const printButton = document.getElementById("print-volunteers-button");
 const sortButtons = [...document.querySelectorAll(".sort-button")];
 
+const searchParams = new URLSearchParams(window.location.search);
+const searchFirstname = (searchParams.get("prenom") || "").trim();
+const searchLastname = (searchParams.get("nom") || "").trim();
+const hasSearch = Boolean(searchFirstname || searchLastname);
+
 let volunteers = [];
 let currentUser = null;
 let sortField = "nom";
@@ -33,6 +38,25 @@ function normalizeText(value) {
   return String(value || "").trim();
 }
 
+function normalizeSearch(value) {
+  return normalizeText(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("fr");
+}
+
+function matchesSearch(volunteer) {
+  if (!hasSearch) return true;
+
+  const firstnameMatches = !searchFirstname ||
+    normalizeSearch(volunteer.prenom).includes(normalizeSearch(searchFirstname));
+
+  const lastnameMatches = !searchLastname ||
+    normalizeSearch(volunteer.nom).includes(normalizeSearch(searchLastname));
+
+  return firstnameMatches && lastnameMatches;
+}
+
 function compareFrench(a, b) {
   return normalizeText(a).localeCompare(normalizeText(b), "fr", {
     sensitivity: "base",
@@ -40,8 +64,12 @@ function compareFrench(a, b) {
   });
 }
 
+function filteredVolunteers() {
+  return volunteers.filter(matchesSearch);
+}
+
 function sortedVolunteers() {
-  return [...volunteers].sort((a, b) => {
+  return filteredVolunteers().sort((a, b) => {
     let result = compareFrench(a[sortField], b[sortField]);
 
     if (result === 0) {
@@ -149,7 +177,7 @@ function renderTable() {
   if (!rows.length) {
     tableBody.innerHTML = `
       <tr>
-        <td colspan="9" class="volunteers-empty">Aucun bénévole à afficher.</td>
+        <td colspan="9" class="volunteers-empty">${hasSearch ? "Aucun bénévole ne correspond à cette recherche." : "Aucun bénévole à afficher."}</td>
       </tr>
     `;
     countElement.textContent = "0 bénévole";
