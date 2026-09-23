@@ -91,21 +91,6 @@ function sortedVolunteers() {
   });
 }
 
-function formatPhoneLink(phone) {
-  const value = normalizeText(phone);
-  if (!value) return "—";
-
-  const href = value.replace(/[^+\d]/g, "");
-  return `<a class="volunteer-phone" href="tel:${href}">${escapeHtml(value)}</a>`;
-}
-
-function formatEmailLink(email) {
-  const value = normalizeText(email);
-  if (!value) return "—";
-
-  return `<a class="volunteer-email" href="mailto:${encodeURIComponent(value)}">${escapeHtml(value)}</a>`;
-}
-
 function formatValue(value) {
   if (value === null || value === undefined || value === "") return "—";
   return escapeHtml(value);
@@ -221,6 +206,163 @@ function scheduleButton(volunteer) {
   `;
 }
 
+function editableContact(volunteer, field) {
+  const value = normalizeText(volunteer[field]);
+  const label = field === "telephone" ? "numéro de téléphone" : "adresse e-mail";
+  const displayValue = value || "—";
+
+  return `
+    <div class="contact-display">
+      <button
+        type="button"
+        class="contact-edit-button"
+        data-benevole-id="${escapeHtml(volunteer.id)}"
+        data-field="${field}"
+        title="Modifier le ${label}"
+        aria-label="Modifier le ${label}"
+      >✏️</button>
+      <span class="contact-value">${escapeHtml(displayValue)}</span>
+    </div>
+  `;
+}
+
+function validateAndNormalizePhone(value) {
+  const trimmed = normalizeText(value);
+  if (!trimmed) return { ok: true, value: "" };
+
+  const isInternational = trimmed.startsWith("+") || trimmed.startsWith("00");
+
+  if (isInternational) {
+    if (trimmed.startsWith("+32") || trimmed.startsWith("0032")) {
+      return {
+        ok: false,
+        message: "Un numéro belge doit être au format 04XX XX XX XX."
+      };
+    }
+
+    return { ok: true, value: trimmed };
+  }
+
+  const digits = trimmed.replace(/\D/g, "");
+  if (!/^04\d{8}$/.test(digits)) {
+    return {
+      ok: false,
+      message: "Format attendu : 04XX XX XX XX (sauf indicatif étranger)."
+    };
+  }
+
+  return {
+    ok: true,
+    value: `${digits.slice(0, 4)} ${digits.slice(4, 6)} ${digits.slice(6, 8)} ${digits.slice(8, 10)}`
+  };
+}
+
+function validateEmail(value) {
+  const trimmed = normalizeText(value).toLowerCase();
+  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
+
+  return valid
+    ? { ok: true, value: trimmed }
+    : { ok: false, message: "Adresse e-mail invalide." };
+}
+
+function openContactEditor(button) {
+  const volunteerId = button.dataset.benevoleId;
+  const field = button.dataset.field;
+  const volunteer = volunteers.find(item => item.id === volunteerId);
+  const cell = button.closest("td");
+
+  if (!volunteer || !cell) return;
+
+  const currentValue = normalizeText(volunteer[field]);
+  const inputType = field === "email" ? "email" : "text";
+  const inputMode = field === "email" ? "email" : "tel";
+
+  cell.innerHTML = `
+    <div class="contact-editor" data-benevole-id="${escapeHtml(volunteerId)}" data-field="${field}">
+      <input
+        type="${inputType}"
+        inputmode="${inputMode}"
+        class="contact-edit-input"
+        value="${escapeHtml(currentValue)}"
+        ${field === "telephone" ? 'placeholder="04XX XX XX XX"' : 'placeholder="nom@exemple.be"'}
+        aria-label="Nouvelle valeur"
+      >
+      <button type="button" class="contact-save-button" title="Valider" aria-label="Valider">✓</button>
+      <button type="button" class="contact-cancel-button" title="Annuler" aria-label="Annuler">✕</button>
+      <span class="contact-edit-error" aria-live="polite"></span>
+    </div>
+  `;
+
+  const input = cell.querySelector(".contact-edit-input");
+  input.focus();
+  input.select();
+}
+
+function showContactEditError(editor, message) {
+  const error = editor.querySelector(".contact-edit-error");
+  const input = editor.querySelector(".contact-edit-input");
+  if (error) error.textContent = message;
+  if (input) {
+    input.classList.add("contact-edit-input-error");
+    input.focus();
+  }
+}
+
+async function saveContactEditor(button) {
+  const editor = button.closest(".contact-editor");
+  if (!editor) return;
+
+  const volunteerId = editor.dataset.benevoleId;
+  const field = editor.dataset.field;
+  const input = editor.querySelector(".contact-edit-input");
+  const saveButton = editor.querySelector(".contact-save-button");
+  const cancelButton = editor.querySelector(".contact-cancel-button");
+
+  let validation;
+  if (field === "telephone") {
+    validation = validateAndNormalizePhone(input.value);
+  } else {
+    validation = validateEmail(input.value);
+  }
+
+  if (!validation.ok) {
+    showContactEditError(editor, validation.message);
+    return;
+  }
+
+  input.classList.remove("contact-edit-input-error");
+  saveButton.disabled = true;
+  cancelButton.disabled = true;
+  input.disabled = true;
+
+  const { data, error } = await PortalAuth.client.rpc("admin_update_benevole_contact", {
+    p_benevole_id: volunteerId,
+    p_field: field,
+    p_value: validation.value
+  });
+
+  if (error) {
+    console.error("Impossible de modifier le contact du bénévole :", error);
+    saveButton.disabled = false;
+    cancelButton.disabled = false;
+    input.disabled = false;
+    showContactEditError(editor, error.message || "La modification n'a pas pu être enregistrée.");
+    return;
+  }
+
+  const updated = Array.isArray(data) ? data[0] : data;
+  const volunteer = volunteers.find(item => item.id === volunteerId);
+
+  if (volunteer) {
+    volunteer.telephone = updated?.telephone ?? volunteer.telephone;
+    volunteer.email = updated?.email ?? volunteer.email;
+  }
+
+  errorElement.hidden = true;
+  renderTable();
+}
+
 function emptyMessage() {
   if (activityFilter === "active") {
     return hasSearch
@@ -259,8 +401,8 @@ function renderTable() {
       <td class="schedule-view-cell">${scheduleButton(volunteer)}</td>
       <td class="volunteer-name">${escapeHtml(volunteer.prenom || "—")}</td>
       <td class="volunteer-name">${escapeHtml(volunteer.nom || "—")}</td>
-      <td>${formatPhoneLink(volunteer.telephone)}</td>
-      <td>${formatEmailLink(volunteer.email)}</td>
+      <td class="contact-cell contact-phone-cell">${editableContact(volunteer, "telephone")}</td>
+      <td class="contact-cell contact-email-cell">${editableContact(volunteer, "email")}</td>
       <td class="logistics-cell">${formatValue(volunteer.tshirt)}</td>
       <td class="logistics-cell">${formatValue(volunteer.tailloux)}</td>
       <td class="logistics-cell sandwich-cell">${formatValue(volunteer.sandwich)}</td>
@@ -367,6 +509,44 @@ if (activityFilterButton) {
     renderTable();
   });
 }
+
+tableBody.addEventListener("click", event => {
+  const editButton = event.target.closest(".contact-edit-button");
+  if (editButton) {
+    openContactEditor(editButton);
+    return;
+  }
+
+  const saveButton = event.target.closest(".contact-save-button");
+  if (saveButton) {
+    saveContactEditor(saveButton);
+    return;
+  }
+
+  const cancelButton = event.target.closest(".contact-cancel-button");
+  if (cancelButton) {
+    renderTable();
+  }
+});
+
+tableBody.addEventListener("keydown", event => {
+  const input = event.target.closest(".contact-edit-input");
+  if (!input) return;
+
+  const editor = input.closest(".contact-editor");
+  if (!editor) return;
+
+  if (event.key === "Enter") {
+    event.preventDefault();
+    const saveButton = editor.querySelector(".contact-save-button");
+    if (saveButton) saveContactEditor(saveButton);
+  }
+
+  if (event.key === "Escape") {
+    event.preventDefault();
+    renderTable();
+  }
+});
 
 tableBody.addEventListener("change", event => {
   const checkbox = event.target.closest(".kit-checkbox");
