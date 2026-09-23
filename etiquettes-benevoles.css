@@ -1,0 +1,332 @@
+/* =========================================================
+   ÉTIQUETTES BÉNÉVOLES — TOPSTICK 8409
+   105 x 148 mm — 4 étiquettes par feuille A4
+   ========================================================= */
+
+.labels-page {
+  background: #f4f5fb;
+}
+
+.labels-main {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 24px 50px;
+}
+
+.labels-toolbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 22px;
+}
+
+.labels-toolbar h1 {
+  margin: 0 0 4px;
+  color: var(--blue);
+  font-family: "Macho", "Titillium Web", sans-serif;
+  font-size: 2rem;
+}
+
+.labels-toolbar p {
+  margin: 0;
+  color: #5f6884;
+}
+
+.labels-primary-button {
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 2px solid var(--red);
+  border-radius: 10px;
+  background: var(--red);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.labels-primary-button:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+
+.labels-message {
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: #fff;
+  color: #4d5774;
+}
+
+.labels-error {
+  border: 1px solid #f0b0bd;
+  background: #fff2f5;
+  color: #a40025;
+  font-weight: 600;
+}
+
+.labels-pages {
+  display: grid;
+  gap: 24px;
+}
+
+.label-sheet {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+  width: min(100%, 900px);
+  margin: 0 auto;
+  padding: 2px;
+  background: #d9deeb;
+  border: 1px solid #d0d6e4;
+  box-shadow: 0 10px 28px rgba(20, 28, 80, .10);
+}
+
+.volunteer-label {
+  min-width: 0;
+  min-height: 410px;
+  padding: 24px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.label-volunteer-name {
+  margin: 0 0 18px;
+  color: var(--blue);
+  font-family: "Macho", "Titillium Web", sans-serif;
+  font-size: 2rem;
+  line-height: 1.05;
+}
+
+.label-day + .label-day {
+  margin-top: 18px;
+}
+
+.label-day-title {
+  margin: 0 0 9px;
+  color: var(--red);
+  font-family: "Macho", "Titillium Web", sans-serif;
+  font-size: 1.4rem;
+  line-height: 1.1;
+}
+
+.label-shift-group + .label-shift-group {
+  margin-top: 11px;
+}
+
+.label-poste {
+  margin: 0 0 2px;
+  color: var(--blue);
+  font-size: 1.12rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.label-lieu {
+  margin: 0 0 3px;
+  color: #151515;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.label-time {
+  margin: 0;
+  color: var(--red);
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.label-no-schedule {
+  margin: 10px 0 0;
+  color: #5f6884;
+  font-size: 1rem;
+  font-style: italic;
+}
+
+.volunteer-label.label-dense .label-volunteer-name {
+  margin-bottom: 11px;
+  font-size: 1.65rem;
+}
+
+.volunteer-label.label-dense .label-day + .label-day {
+  margin-top: 10px;
+}
+
+.volunteer-label.label-dense .label-day-title {
+  margin-bottom: 5px;
+  font-size: 1.15rem;
+}
+
+.volunteer-label.label-dense .label-shift-group + .label-shift-group {
+  margin-top: 6px;
+}
+
+.volunteer-label.label-dense .label-poste {
+  font-size: .98rem;
+}
+
+.volunteer-label.label-dense .label-lieu,
+.volunteer-label.label-dense .label-time {
+  font-size: .9rem;
+}
+
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  .labels-screen-only {
+    display: none !important;
+  }
+
+  .labels-main {
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .labels-pages {
+    display: block;
+  }
+
+  .label-sheet {
+    display: grid;
+    grid-template-columns: 105mm 105mm;
+    grid-template-rows: 148mm 148mm;
+    width: 210mm;
+    height: 296mm;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+    border: 0;
+    box-shadow: none;
+    background: #fff;
+    break-after: page;
+    page-break-after: always;
+  }
+
+  .label-sheet:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+
+  .volunteer-label {
+    box-sizing: border-box;
+    width: 105mm;
+    height: 148mm;
+    min-height: 0;
+    padding: 7mm 7.5mm;
+    overflow: hidden;
+    background: #fff;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .label-volunteer-name {
+    margin: 0 0 4.5mm;
+    font-size: 19pt;
+    line-height: 1.02;
+  }
+
+  .label-day + .label-day {
+    margin-top: 4.5mm;
+  }
+
+  .label-day-title {
+    margin: 0 0 2.2mm;
+    font-size: 14pt;
+    line-height: 1.05;
+  }
+
+  .label-shift-group + .label-shift-group {
+    margin-top: 2.5mm;
+  }
+
+  .label-poste {
+    margin: 0 0 .7mm;
+    font-size: 11.2pt;
+    line-height: 1.08;
+  }
+
+  .label-lieu {
+    margin: 0 0 .8mm;
+    font-size: 9.8pt;
+    line-height: 1.1;
+  }
+
+  .label-time {
+    margin: 0;
+    font-size: 10.2pt;
+    line-height: 1.08;
+  }
+
+  .label-no-schedule {
+    font-size: 10pt;
+  }
+
+  .volunteer-label.label-dense {
+    padding-top: 6mm;
+    padding-bottom: 6mm;
+  }
+
+  .volunteer-label.label-dense .label-volunteer-name {
+    margin-bottom: 3mm;
+    font-size: 16pt;
+  }
+
+  .volunteer-label.label-dense .label-day + .label-day {
+    margin-top: 2.7mm;
+  }
+
+  .volunteer-label.label-dense .label-day-title {
+    margin-bottom: 1.4mm;
+    font-size: 11.5pt;
+  }
+
+  .volunteer-label.label-dense .label-shift-group + .label-shift-group {
+    margin-top: 1.5mm;
+  }
+
+  .volunteer-label.label-dense .label-poste {
+    font-size: 9.5pt;
+  }
+
+  .volunteer-label.label-dense .label-lieu,
+  .volunteer-label.label-dense .label-time {
+    font-size: 8.5pt;
+  }
+}
+
+@media (max-width: 700px) {
+  .labels-main {
+    padding: 22px 14px 36px;
+  }
+
+  .labels-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .labels-primary-button {
+    width: 100%;
+  }
+
+  .label-sheet {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .volunteer-label {
+    min-height: 0;
+  }
+}
