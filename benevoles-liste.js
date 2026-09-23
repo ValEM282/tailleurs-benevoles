@@ -7,6 +7,7 @@ const countElement = document.getElementById("volunteers-count");
 const errorElement = document.getElementById("volunteers-error");
 const logoutButton = document.getElementById("logout-button");
 const printButton = document.getElementById("print-volunteers-button");
+const activityFilterButton = document.getElementById("activity-filter-button");
 const sortButtons = [...document.querySelectorAll(".sort-button")];
 
 const searchParams = new URLSearchParams(window.location.search);
@@ -18,6 +19,7 @@ let volunteers = [];
 let currentUser = null;
 let sortField = "nom";
 let sortDirection = "asc";
+let activityFilter = "all"; // all -> active -> inactive -> all
 
 function unlockStorageKey() {
   return currentUser ? `portalAdminUnlockedUntil:${currentUser.id}` : "";
@@ -57,6 +59,12 @@ function matchesSearch(volunteer) {
   return firstnameMatches && lastnameMatches;
 }
 
+function matchesActivityFilter(volunteer) {
+  if (activityFilter === "active") return Boolean(volunteer.en_poste);
+  if (activityFilter === "inactive") return !volunteer.en_poste;
+  return true;
+}
+
 function compareFrench(a, b) {
   return normalizeText(a).localeCompare(normalizeText(b), "fr", {
     sensitivity: "base",
@@ -65,7 +73,9 @@ function compareFrench(a, b) {
 }
 
 function filteredVolunteers() {
-  return volunteers.filter(matchesSearch);
+  return volunteers.filter(volunteer =>
+    matchesSearch(volunteer) && matchesActivityFilter(volunteer)
+  );
 }
 
 function sortedVolunteers() {
@@ -135,6 +145,43 @@ function updateSortIndicators() {
   });
 }
 
+function updateActivityFilterButton() {
+  if (!activityFilterButton) return;
+
+  activityFilterButton.classList.remove(
+    "activity-filter-all",
+    "activity-filter-active",
+    "activity-filter-inactive"
+  );
+
+  if (activityFilter === "active") {
+    activityFilterButton.classList.add("activity-filter-active");
+    activityFilterButton.title = "Bénévoles actuellement en poste";
+    activityFilterButton.setAttribute(
+      "aria-label",
+      "Filtre actuel : bénévoles actuellement en poste. Cliquer pour afficher les bénévoles qui ne sont pas actuellement en poste."
+    );
+    return;
+  }
+
+  if (activityFilter === "inactive") {
+    activityFilterButton.classList.add("activity-filter-inactive");
+    activityFilterButton.title = "Bénévoles qui ne sont pas actuellement en poste";
+    activityFilterButton.setAttribute(
+      "aria-label",
+      "Filtre actuel : bénévoles qui ne sont pas actuellement en poste. Cliquer pour afficher tous les bénévoles."
+    );
+    return;
+  }
+
+  activityFilterButton.classList.add("activity-filter-all");
+  activityFilterButton.title = "Tous les bénévoles";
+  activityFilterButton.setAttribute(
+    "aria-label",
+    "Filtre actuel : tous les bénévoles. Cliquer pour afficher uniquement les bénévoles actuellement en poste."
+  );
+}
+
 function kitCheckbox(volunteer) {
   const checked = volunteer.kit_ok ? "checked" : "";
   const label = `${volunteer.prenom || ""} ${volunteer.nom || ""}`.trim() || "ce bénévole";
@@ -174,17 +221,36 @@ function scheduleButton(volunteer) {
   `;
 }
 
+function emptyMessage() {
+  if (activityFilter === "active") {
+    return hasSearch
+      ? "Aucun bénévole correspondant à cette recherche n'est actuellement en poste."
+      : "Aucun bénévole n'est actuellement en poste.";
+  }
+
+  if (activityFilter === "inactive") {
+    return hasSearch
+      ? "Aucun bénévole correspondant à cette recherche n'est actuellement hors poste."
+      : "Aucun bénévole hors poste à afficher.";
+  }
+
+  return hasSearch
+    ? "Aucun bénévole ne correspond à cette recherche."
+    : "Aucun bénévole à afficher.";
+}
+
 function renderTable() {
   const rows = sortedVolunteers();
 
   if (!rows.length) {
     tableBody.innerHTML = `
       <tr>
-        <td colspan="9" class="volunteers-empty">${hasSearch ? "Aucun bénévole ne correspond à cette recherche." : "Aucun bénévole à afficher."}</td>
+        <td colspan="9" class="volunteers-empty">${emptyMessage()}</td>
       </tr>
     `;
     countElement.textContent = "0 bénévole";
     updateSortIndicators();
+    updateActivityFilterButton();
     return;
   }
 
@@ -204,6 +270,7 @@ function renderTable() {
 
   countElement.textContent = `${rows.length} bénévole${rows.length > 1 ? "s" : ""}`;
   updateSortIndicators();
+  updateActivityFilterButton();
 }
 
 async function updateKitStatus(checkbox) {
@@ -286,6 +353,20 @@ sortButtons.forEach(button => {
     renderTable();
   });
 });
+
+if (activityFilterButton) {
+  activityFilterButton.addEventListener("click", () => {
+    if (activityFilter === "all") {
+      activityFilter = "active";
+    } else if (activityFilter === "active") {
+      activityFilter = "inactive";
+    } else {
+      activityFilter = "all";
+    }
+
+    renderTable();
+  });
+}
 
 tableBody.addEventListener("change", event => {
   const checkbox = event.target.closest(".kit-checkbox");
