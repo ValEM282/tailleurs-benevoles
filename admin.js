@@ -12,7 +12,6 @@ const newPinInput = document.getElementById("new-admin-pin");
 const confirmPinInput = document.getElementById("confirm-admin-pin");
 const pinInput = document.getElementById("admin-pin");
 const lockMessage = document.getElementById("admin-lock-message");
-const lockButton = document.getElementById("admin-lock-button");
 const volunteerListButton = document.getElementById("admin-volunteer-list");
 
 let currentUser = null;
@@ -186,16 +185,6 @@ unlockForm.addEventListener("submit", async event => {
   pinInput.disabled = false;
   lockMessage.textContent = "PIN incorrect.";
   lockMessage.hidden = false;
-  pinInput.focus();
-});
-
-lockButton.addEventListener("click", () => {
-  clearUnlockedSession();
-  hideAllPanels();
-  unlockSection.hidden = false;
-  pinInput.disabled = false;
-  unlockForm.querySelector("button").disabled = false;
-  lockMessage.hidden = true;
   pinInput.focus();
 });
 
