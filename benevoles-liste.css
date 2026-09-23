@@ -17,14 +17,6 @@
   margin-bottom: 18px;
 }
 
-.volunteers-list-kicker {
-  margin: 0 0 3px;
-  color: var(--red);
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-
 .volunteers-list-heading h1 {
   margin: 0;
   color: var(--blue);
@@ -33,12 +25,49 @@
   line-height: 1.1;
 }
 
+.volunteers-list-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .volunteers-count {
   margin: 0;
   color: #4c5575;
   font-size: 0.98rem;
   font-weight: 600;
   white-space: nowrap;
+}
+
+.print-list-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 2px solid var(--blue);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--blue);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.print-list-button:hover {
+  background: var(--blue);
+  color: #fff;
+}
+
+.print-list-button:active {
+  transform: scale(0.97);
+}
+
+.print-list-button:focus-visible {
+  outline: 3px solid rgba(28, 46, 171, 0.25);
+  outline-offset: 3px;
 }
 
 .volunteers-table-card {
@@ -173,7 +202,10 @@
 
 .kit-ok-heading,
 .kit-ok-cell {
-  width: 68px;
+  width: 86px;
+  min-width: 86px;
+  padding-left: 18px !important;
+  padding-right: 26px !important;
   text-align: center !important;
 }
 
@@ -260,6 +292,166 @@
   border: 0;
 }
 
+@page {
+  size: A4 portrait;
+  margin: 10mm;
+}
+
+@media print {
+  body {
+    background: #fff !important;
+  }
+
+  .dashboard-header,
+  .print-list-button,
+  #logout-button,
+  .back-button,
+  #volunteers-error {
+    display: none !important;
+  }
+
+  .volunteers-list-main {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .volunteers-list-heading {
+    display: block;
+    margin: 0 0 8mm;
+  }
+
+  .volunteers-list-heading h1 {
+    margin: 0;
+    color: #000;
+    font-family: "Titillium Web", sans-serif;
+    font-size: 17pt;
+  }
+
+  .volunteers-list-actions {
+    display: none !important;
+  }
+
+  .volunteers-table-card {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .volunteers-table-scroll {
+    overflow: visible;
+  }
+
+  .volunteers-table {
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-size: 7.6pt;
+  }
+
+  .volunteers-table th,
+  .volunteers-table td {
+    padding: 3.2mm 1.6mm;
+    border: 1px solid #bfc3ce;
+    color: #000 !important;
+    background: #fff !important;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+
+  .volunteers-table th {
+    font-size: 7.7pt;
+    font-weight: 700;
+  }
+
+  .volunteers-table tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .sort-button {
+    color: #000;
+    cursor: default;
+  }
+
+  .sort-indicator {
+    display: none;
+  }
+
+  .volunteer-phone,
+  .volunteer-email {
+    color: #000 !important;
+    text-decoration: none !important;
+  }
+
+  .schedule-view-heading,
+  .schedule-view-cell {
+    display: none !important;
+  }
+
+  .logistics-cell,
+  .kit-ok-heading,
+  .kit-ok-cell {
+    text-align: center !important;
+  }
+
+  .kit-ok-heading,
+  .kit-ok-cell {
+    width: auto;
+    min-width: 0;
+    padding-left: 1.4mm !important;
+    padding-right: 1.4mm !important;
+  }
+
+  .kit-checkbox-wrap {
+    width: 18px;
+    height: 18px;
+    cursor: default;
+  }
+
+  .kit-checkbox-mark {
+    width: 17px;
+    height: 17px;
+    border-width: 1.5px;
+    border-radius: 3px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .kit-checkbox:checked + .kit-checkbox-mark::after {
+    font-size: 12px;
+    line-height: 14px;
+  }
+
+  /* Largeurs optimisées pour tenir sur une page A4 portrait */
+  .volunteers-table th:nth-child(2),
+  .volunteers-table td:nth-child(2) { width: 10%; }
+
+  .volunteers-table th:nth-child(3),
+  .volunteers-table td:nth-child(3) { width: 12%; }
+
+  .volunteers-table th:nth-child(4),
+  .volunteers-table td:nth-child(4) { width: 13%; }
+
+  .volunteers-table th:nth-child(5),
+  .volunteers-table td:nth-child(5) { width: 28%; }
+
+  .volunteers-table th:nth-child(6),
+  .volunteers-table td:nth-child(6) { width: 7%; }
+
+  .volunteers-table th:nth-child(7),
+  .volunteers-table td:nth-child(7) { width: 7%; }
+
+  .volunteers-table th:nth-child(8),
+  .volunteers-table td:nth-child(8) { width: 15%; }
+
+  .volunteers-table th:nth-child(9),
+  .volunteers-table td:nth-child(9) { width: 8%; }
+}
+
 @media (max-width: 700px) {
   .volunteers-list-main {
     padding: 24px 14px 36px;
@@ -268,11 +460,16 @@
   .volunteers-list-heading {
     align-items: flex-start;
     flex-direction: column;
-    gap: 7px;
+    gap: 10px;
   }
 
   .volunteers-list-heading h1 {
     font-size: 1.7rem;
+  }
+
+  .volunteers-list-actions {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .volunteers-count {
