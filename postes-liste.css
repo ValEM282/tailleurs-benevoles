@@ -133,6 +133,11 @@
   outline: 2px solid rgba(28, 46, 171, .15);
 }
 
+/* La recherche interne sera réactivée quand elle conservera les sélections masquées. */
+.post-editor-search {
+  display: none;
+}
+
 .post-editor-actions {
   display: flex;
   justify-content: flex-end;
@@ -243,4 +248,16 @@
   .posts-table td {
     font-size: 8pt;
   }
+
+  .posts-table th:nth-child(1),
+  .posts-table td:nth-child(1) { width: 22% !important; }
+
+  .posts-table th:nth-child(2),
+  .posts-table td:nth-child(2) { width: 23% !important; }
+
+  .posts-table th:nth-child(3),
+  .posts-table td:nth-child(3) { width: 30% !important; }
+
+  .posts-table th:nth-child(4),
+  .posts-table td:nth-child(4) { width: 25% !important; }
 }
