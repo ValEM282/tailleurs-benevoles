@@ -3,6 +3,9 @@
    ========================================================= */
 
 let currentUser = null;
+let currentVolunteerId = null;
+let currentShifts = [];
+let editOptions = { postes: [], lieux: [] };
 
 function unlockStorageKey() {
   return currentUser ? `portalAdminUnlockedUntil:${currentUser.id}` : "";
@@ -19,6 +22,33 @@ function capitalizeFirst(text) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
+function brusselsDateParts(value) {
+  const parts = new Intl.DateTimeFormat("fr-CA", {
+    timeZone: "Europe/Brussels",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  }).formatToParts(new Date(value));
+
+  const get = type => parts.find(part => part.type === type)?.value || "";
+
+  return {
+    year: Number(get("year")),
+    month: Number(get("month")),
+    day: Number(get("day")),
+    hour: Number(get("hour")) % 24,
+    minute: Number(get("minute"))
+  };
+}
+
+function dayKeyFor(value) {
+  const { year, month, day } = brusselsDateParts(value);
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
 function formatDayTitle(value) {
   return capitalizeFirst(
     new Intl.DateTimeFormat("fr-BE", {
@@ -30,17 +60,20 @@ function formatDayTitle(value) {
   );
 }
 
-function formatCompactTime(value) {
-  const parts = new Intl.DateTimeFormat("fr-BE", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-    timeZone: "Europe/Brussels"
-  }).formatToParts(new Date(value));
+function formatClockMinutes(minutes) {
+  const normalized = ((Number(minutes) % 1440) + 1440) % 1440;
+  const hour = Math.floor(normalized / 60);
+  const minute = normalized % 60;
+  return minute === 0 ? `${hour}h` : `${hour}h${String(minute).padStart(2, "0")}`;
+}
 
-  const hour = Number(parts.find(part => part.type === "hour")?.value || "0");
-  const minute = parts.find(part => part.type === "minute")?.value || "00";
-  return minute === "00" ? `${hour}h` : `${hour}h${minute}`;
+function clockMinutesFor(value) {
+  const { hour, minute } = brusselsDateParts(value);
+  return hour * 60 + minute;
+}
+
+function formatCompactTime(value) {
+  return formatClockMinutes(clockMinutesFor(value));
 }
 
 function formatShiftRange(shift) {
@@ -61,13 +94,7 @@ function groupByDay(shifts) {
   [...shifts]
     .sort((a, b) => new Date(a.debut) - new Date(b.debut))
     .forEach(shift => {
-      const key = new Intl.DateTimeFormat("fr-CA", {
-        timeZone: "Europe/Brussels",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit"
-      }).format(new Date(shift.debut));
-
+      const key = dayKeyFor(shift.debut);
       if (!grouped.has(key)) grouped.set(key, []);
       grouped.get(key).push(shift);
     });
@@ -83,12 +110,14 @@ function groupDayShiftsByPost(dayShifts) {
     .forEach(shift => {
       const poste = shift.poste || "Poste à confirmer";
       const location = getLocationName(shift);
-      const key = `${poste}|||${location}`;
+      const key = `${shift.poste_id || poste}|||${shift.lieu_id || location}`;
 
       if (!grouped.has(key)) {
         grouped.set(key, {
           poste,
+          poste_id: shift.poste_id,
           location,
+          lieu_id: shift.lieu_id,
           shifts: []
         });
       }
@@ -103,11 +132,107 @@ function groupDayShiftsByPost(dayShifts) {
   });
 
   groups.sort((a, b) => new Date(a.shifts[0].debut) - new Date(b.shifts[0].debut));
-
   return groups;
 }
 
-function createShiftCard(group) {
+function buildTimeValues() {
+  const values = [];
+
+  for (let minutes = 7 * 60; minutes < 24 * 60; minutes += 15) {
+    values.push(minutes);
+  }
+
+  for (let minutes = 0; minutes <= 3 * 60; minutes += 15) {
+    values.push(minutes);
+  }
+
+  return values;
+}
+
+const standardTimeValues = buildTimeValues();
+
+function selectOptions(items, selectedId, emptyLabel) {
+  const options = [];
+
+  if (emptyLabel) {
+    options.push(`<option value="">${escapeHtml(emptyLabel)}</option>`);
+  }
+
+  items.forEach(item => {
+    const selected = String(item.id) === String(selectedId ?? "") ? " selected" : "";
+    options.push(`<option value="${escapeHtml(item.id)}"${selected}>${escapeHtml(item.nom)}</option>`);
+  });
+
+  return options.join("");
+}
+
+function timeOptions(selectedMinutes) {
+  const values = [...standardTimeValues];
+  const numericSelected = Number(selectedMinutes);
+
+  if (Number.isFinite(numericSelected) && !values.includes(numericSelected)) {
+    values.unshift(numericSelected);
+  }
+
+  return values.map(minutes => {
+    const selected = minutes === numericSelected ? " selected" : "";
+    return `<option value="${minutes}"${selected}>${formatClockMinutes(minutes)}</option>`;
+  }).join("");
+}
+
+function makeLocalDate(dayKey, minutes, addDay = false) {
+  const [year, month, day] = dayKey.split("-").map(Number);
+  const date = new Date(year, month - 1, day, 0, 0, 0, 0);
+
+  if (addDay) date.setDate(date.getDate() + 1);
+
+  const hour = Math.floor(minutes / 60);
+  const minute = minutes % 60;
+  date.setHours(hour, minute, 0, 0);
+
+  return date;
+}
+
+function proposedDates(dayKey, startMinutes, endMinutes) {
+  const start = makeLocalDate(dayKey, startMinutes, false);
+  const end = makeLocalDate(dayKey, endMinutes, endMinutes <= startMinutes);
+  return { start, end };
+}
+
+function intervalsOverlap(aStart, aEnd, bStart, bEnd) {
+  return aStart < bEnd && bStart < aEnd;
+}
+
+function findOverlapWarning(group, proposedSlots) {
+  const groupIds = new Set(group.shifts.map(shift => shift.affectation_id));
+
+  for (let i = 0; i < proposedSlots.length; i += 1) {
+    for (let j = i + 1; j < proposedSlots.length; j += 1) {
+      if (intervalsOverlap(
+        proposedSlots[i].start,
+        proposedSlots[i].end,
+        proposedSlots[j].start,
+        proposedSlots[j].end
+      )) {
+        return "Deux plages de ce même bloc se chevauchent. Clique à nouveau sur ✓ si tu souhaites malgré tout enregistrer.";
+      }
+    }
+  }
+
+  const otherShifts = currentShifts.filter(shift => !groupIds.has(shift.affectation_id));
+
+  for (const slot of proposedSlots) {
+    for (const other of otherShifts) {
+      if (intervalsOverlap(slot.start, slot.end, new Date(other.debut), new Date(other.fin))) {
+        return `Cette modification chevauche une autre prestation (${other.poste || "poste"}, ${formatShiftRange(other)}). Clique à nouveau sur ✓ si tu souhaites malgré tout enregistrer.`;
+      }
+    }
+  }
+
+  return "";
+}
+
+function createShiftCard(group, dayKey) {
   const card = document.createElement("article");
   card.className = "schedule-shift-card";
 
@@ -117,9 +242,22 @@ function createShiftCard(group) {
   const content = document.createElement("div");
   content.className = "schedule-shift-content";
 
+  const heading = document.createElement("div");
+  heading.className = "schedule-card-heading";
+
+  const editButton = document.createElement("button");
+  editButton.type = "button";
+  editButton.className = "schedule-edit-button";
+  editButton.textContent = "✏️";
+  editButton.title = "Modifier cette affectation";
+  editButton.setAttribute("aria-label", `Modifier ${group.poste}`);
+  editButton.addEventListener("click", () => enterEditMode(card, group, dayKey));
+
   const poste = document.createElement("h3");
   poste.textContent = group.poste;
-  content.appendChild(poste);
+
+  heading.append(editButton, poste);
+  content.appendChild(heading);
 
   if (group.location) {
     const location = document.createElement("p");
@@ -137,6 +275,220 @@ function createShiftCard(group) {
   return card;
 }
 
+function createSlotEditorHtml(shift = null, index = 0) {
+  const startMinutes = shift ? clockMinutesFor(shift.debut) : 7 * 60;
+  const endMinutes = shift ? clockMinutesFor(shift.fin) : 8 * 60;
+  const affectationId = shift?.affectation_id || "";
+
+  return `
+    <div class="schedule-edit-slot" data-affectation-id="${escapeHtml(affectationId)}">
+      <span class="schedule-edit-slot-label">Plage ${index + 1}</span>
+      <label>
+        <span>Début</span>
+        <select class="schedule-edit-start">${timeOptions(startMinutes)}</select>
+      </label>
+      <label>
+        <span>Fin</span>
+        <select class="schedule-edit-end">${timeOptions(endMinutes)}</select>
+      </label>
+    </div>
+  `;
+}
+
+function enterEditMode(card, group, dayKey) {
+  const firstShift = group.shifts[0];
+
+  card.classList.remove("schedule-shift-card-past");
+  card.classList.add("schedule-shift-card-editing");
+  card.innerHTML = `
+    <div class="schedule-edit-form">
+      <div class="schedule-edit-field">
+        <label>Poste</label>
+        <select class="schedule-edit-poste">
+          ${selectOptions(editOptions.postes, group.poste_id, "Choisir un poste")}
+        </select>
+      </div>
+
+      <div class="schedule-edit-field">
+        <label>Lieu</label>
+        <select class="schedule-edit-lieu">
+          ${selectOptions(editOptions.lieux, group.lieu_id, "Choisir un lieu")}
+        </select>
+      </div>
+
+      <div class="schedule-edit-slots">
+        ${group.shifts.map((shift, index) => createSlotEditorHtml(shift, index)).join("")}
+      </div>
+
+      <button type="button" class="schedule-add-slot-button">+ Ajouter une plage</button>
+
+      <p class="schedule-edit-message" hidden></p>
+
+      <div class="schedule-edit-actions">
+        <button type="button" class="schedule-edit-confirm" title="Enregistrer" aria-label="Enregistrer les modifications">✓</button>
+        <button type="button" class="schedule-edit-cancel" title="Annuler" aria-label="Annuler les modifications">✕</button>
+      </div>
+    </div>
+  `;
+
+  const slotsContainer = card.querySelector(".schedule-edit-slots");
+  const addButton = card.querySelector(".schedule-add-slot-button");
+  const confirmButton = card.querySelector(".schedule-edit-confirm");
+  const cancelButton = card.querySelector(".schedule-edit-cancel");
+  const message = card.querySelector(".schedule-edit-message");
+
+  addButton.addEventListener("click", () => {
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = createSlotEditorHtml(null, slotsContainer.children.length);
+    slotsContainer.appendChild(wrapper.firstElementChild);
+    message.hidden = true;
+    confirmButton.dataset.overlapConfirmed = "";
+  });
+
+  card.querySelectorAll("select").forEach(select => {
+    select.addEventListener("change", () => {
+      message.hidden = true;
+      confirmButton.dataset.overlapConfirmed = "";
+    });
+  });
+
+  cancelButton.addEventListener("click", () => renderSchedule());
+
+  confirmButton.addEventListener("click", async () => {
+    const posteId = Number(card.querySelector(".schedule-edit-poste").value);
+    const lieuValue = card.querySelector(".schedule-edit-lieu").value;
+    const lieuId = lieuValue ? Number(lieuValue) : null;
+    const slotElements = [...card.querySelectorAll(".schedule-edit-slot")];
+
+    if (!posteId || !lieuId) {
+      message.textContent = "Choisis un poste et un lieu avant d'enregistrer.";
+      message.className = "schedule-edit-message schedule-edit-message-error";
+      message.hidden = false;
+      return;
+    }
+
+    const proposedSlots = slotElements.map(slot => {
+      const startMinutes = Number(slot.querySelector(".schedule-edit-start").value);
+      const endMinutes = Number(slot.querySelector(".schedule-edit-end").value);
+      const { start, end } = proposedDates(dayKey, startMinutes, endMinutes);
+
+      return {
+        affectationId: slot.dataset.affectationId || null,
+        start,
+        end,
+        startMinutes,
+        endMinutes
+      };
+    });
+
+    const overlapWarning = findOverlapWarning(group, proposedSlots);
+
+    if (overlapWarning && confirmButton.dataset.overlapConfirmed !== "yes") {
+      message.textContent = overlapWarning;
+      message.className = "schedule-edit-message schedule-edit-message-warning";
+      message.hidden = false;
+      confirmButton.dataset.overlapConfirmed = "yes";
+      return;
+    }
+
+    confirmButton.disabled = true;
+    cancelButton.disabled = true;
+    addButton.disabled = true;
+    message.textContent = "Enregistrement…";
+    message.className = "schedule-edit-message";
+    message.hidden = false;
+
+    try {
+      for (const slot of proposedSlots) {
+        if (slot.affectationId) {
+          const { error } = await PortalAuth.client.rpc("admin_update_affectation_horaire", {
+            p_affectation_id: slot.affectationId,
+            p_poste_id: posteId,
+            p_lieu_id: lieuId,
+            p_debut: slot.start.toISOString(),
+            p_fin: slot.end.toISOString()
+          });
+
+          if (error) throw error;
+        } else {
+          const { error } = await PortalAuth.client.rpc("admin_add_affectation_horaire", {
+            p_source_affectation_id: firstShift.affectation_id,
+            p_poste_id: posteId,
+            p_lieu_id: lieuId,
+            p_debut: slot.start.toISOString(),
+            p_fin: slot.end.toISOString()
+          });
+
+          if (error) throw error;
+        }
+      }
+
+      await loadSchedule(currentVolunteerId);
+    } catch (error) {
+      console.error("Impossible de modifier les horaires :", error);
+      message.textContent = "La modification n'a pas pu être enregistrée.";
+      message.className = "schedule-edit-message schedule-edit-message-error";
+      message.hidden = false;
+      confirmButton.disabled = false;
+      cancelButton.disabled = false;
+      addButton.disabled = false;
+    }
+  });
+}
+
+function renderSchedule() {
+  const loadingElement = document.getElementById("schedule-loading");
+  const emptyElement = document.getElementById("schedule-empty");
+  const errorElement = document.getElementById("schedule-error");
+  const scheduleList = document.getElementById("schedule-list");
+
+  loadingElement.hidden = true;
+  errorElement.hidden = true;
+  scheduleList.innerHTML = "";
+
+  if (!currentShifts.length) {
+    emptyElement.hidden = false;
+    return;
+  }
+
+  emptyElement.hidden = true;
+  const grouped = groupByDay(currentShifts);
+
+  grouped.forEach((dayShifts, dayKey) => {
+    const daySection = document.createElement("section");
+    daySection.className = "schedule-day";
+
+    const heading = document.createElement("h2");
+    heading.className = "schedule-day-title";
+    heading.textContent = formatDayTitle(dayShifts[0].debut);
+    daySection.appendChild(heading);
+
+    const cards = document.createElement("div");
+    cards.className = "schedule-day-cards";
+
+    groupDayShiftsByPost(dayShifts).forEach(group => {
+      cards.appendChild(createShiftCard(group, dayKey));
+    });
+
+    daySection.appendChild(cards);
+    scheduleList.appendChild(daySection);
+  });
+}
+
+async function loadEditOptions() {
+  const { data, error } = await PortalAuth.client.rpc("admin_get_schedule_edit_options");
+
+  if (error) {
+    console.error("Impossible de charger les postes et lieux :", error);
+    throw error;
+  }
+
+  editOptions = {
+    postes: Array.isArray(data?.postes) ? data.postes : [],
+    lieux: Array.isArray(data?.lieux) ? data.lieux : []
+  };
+}
+
 async function loadSchedule(volunteerId) {
   const loadingElement = document.getElementById("schedule-loading");
   const emptyElement = document.getElementById("schedule-empty");
@@ -152,40 +504,24 @@ async function loadSchedule(volunteerId) {
     p_benevole_id: volunteerId
   });
 
-  loadingElement.hidden = true;
-
   if (error) {
     console.error("Erreur horaires admin :", error);
+    loadingElement.hidden = true;
     errorElement.hidden = false;
     return;
   }
 
-  if (!shifts || !shifts.length) {
-    emptyElement.hidden = false;
-    return;
-  }
+  currentShifts = Array.isArray(shifts) ? shifts : [];
+  renderSchedule();
+}
 
-  const grouped = groupByDay(shifts);
-
-  grouped.forEach(dayShifts => {
-    const daySection = document.createElement("section");
-    daySection.className = "schedule-day";
-
-    const heading = document.createElement("h2");
-    heading.className = "schedule-day-title";
-    heading.textContent = formatDayTitle(dayShifts[0].debut);
-    daySection.appendChild(heading);
-
-    const cards = document.createElement("div");
-    cards.className = "schedule-day-cards";
-
-    groupDayShiftsByPost(dayShifts).forEach(group => {
-      cards.appendChild(createShiftCard(group));
-    });
-
-    daySection.appendChild(cards);
-    scheduleList.appendChild(daySection);
-  });
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
 async function initPage() {
@@ -213,6 +549,8 @@ async function initPage() {
     window.location.replace("benevoles-liste.html");
     return;
   }
+
+  currentVolunteerId = volunteerId;
 
   const displayName = [prenom, nom].filter(Boolean).join(" ");
   const title = document.getElementById("volunteer-schedule-title");
@@ -242,7 +580,13 @@ async function initPage() {
     }
   });
 
-  await loadSchedule(volunteerId);
+  try {
+    await loadEditOptions();
+    await loadSchedule(volunteerId);
+  } catch (error) {
+    document.getElementById("schedule-loading").hidden = true;
+    document.getElementById("schedule-error").hidden = false;
+  }
 }
 
 initPage();
