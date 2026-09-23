@@ -13,6 +13,9 @@ const confirmPinInput = document.getElementById("confirm-admin-pin");
 const pinInput = document.getElementById("admin-pin");
 const lockMessage = document.getElementById("admin-lock-message");
 const volunteerListButton = document.getElementById("admin-volunteer-list");
+const volunteerSearchButton = document.getElementById("admin-volunteer-search");
+const volunteerSearchFirstname = document.getElementById("volunteer-search-firstname");
+const volunteerSearchLastname = document.getElementById("volunteer-search-lastname");
 
 let currentUser = null;
 const unlockDurationMs = 30 * 60 * 1000;
@@ -61,6 +64,20 @@ function formatLockedUntil(value) {
     minute: "2-digit",
     timeZone: "Europe/Brussels"
   }).format(new Date(value));
+}
+
+function openVolunteerSearch() {
+  const prenom = (volunteerSearchFirstname?.value || "").trim();
+  const nom = (volunteerSearchLastname?.value || "").trim();
+
+  const params = new URLSearchParams();
+  if (prenom) params.set("prenom", prenom);
+  if (nom) params.set("nom", nom);
+
+  const query = params.toString();
+  window.location.href = query
+    ? `benevoles-liste.html?${query}`
+    : "benevoles-liste.html";
 }
 
 async function loadAdminPage() {
@@ -193,6 +210,19 @@ if (volunteerListButton) {
     window.location.href = "benevoles-liste.html";
   });
 }
+
+if (volunteerSearchButton) {
+  volunteerSearchButton.addEventListener("click", openVolunteerSearch);
+}
+
+[volunteerSearchFirstname, volunteerSearchLastname].forEach(input => {
+  if (!input) return;
+  input.addEventListener("keydown", event => {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    openVolunteerSearch();
+  });
+});
 
 logoutButton.addEventListener("click", async () => {
   clearUnlockedSession();
