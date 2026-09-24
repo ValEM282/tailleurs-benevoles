@@ -159,6 +159,10 @@
             cellPadding: { top: 2.3, right: 3, bottom: 5.4, left: 3 },
             minCellHeight: 13.5
           },
+          bodyStyles: {
+            valign: "top",
+            cellPadding: { top: 2.5, right: 3, bottom: 3, left: 3 }
+          },
           didDrawCell: hookData => {
             if (hookData.section !== "head") return;
             const count = data.counts[hookData.column.index];
