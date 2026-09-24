@@ -74,6 +74,35 @@
     return { times, counts, cells };
   }
 
+  function estimateBlockHeight(data) {
+    const maxLines = Math.max(
+      1,
+      ...data.cells.map(cell => String(cell || "").split("\n").length)
+    );
+
+    const titleAndGap = 23;
+    const headerHeight = 13.5;
+    const bodyPadding = 5.5;
+    const bodyLineHeight = 3.7;
+    const safety = 3;
+    const gapAfterBlock = 10;
+
+    return titleAndGap + headerHeight + bodyPadding + (maxLines * bodyLineHeight) + safety + gapAfterBlock;
+  }
+
+  function drawStamp(doc, stamp, pageWidth) {
+    doc.setTextColor(40, 40, 40);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.text(stamp, pageWidth / 2, 9, { align: "center" });
+  }
+
+  function addPlanningPage(doc, stamp, pageWidth) {
+    doc.addPage("a4", "landscape");
+    drawStamp(doc, stamp, pageWidth);
+    return 16;
+  }
+
   async function createPdf(event) {
     event.preventDefault();
     event.stopImmediatePropagation();
@@ -104,12 +133,10 @@
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
       const margin = 10;
+      const printableBottom = pageHeight - margin;
       const stamp = formatStamp();
 
-      doc.setTextColor(40, 40, 40);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(9);
-      doc.text(stamp, pageWidth / 2, 9, { align: "center" });
+      drawStamp(doc, stamp, pageWidth);
 
       doc.setTextColor(28, 46, 171);
       doc.setFont("helvetica", "bold");
@@ -118,17 +145,15 @@
 
       let y = 25;
 
-      blocks.forEach((block, index) => {
+      blocks.forEach(block => {
         const data = tableData(block);
         if (!data) return;
 
-        if (index > 0 && y > pageHeight - 58) {
-          doc.addPage("a4", "landscape");
-          doc.setTextColor(40, 40, 40);
-          doc.setFont("helvetica", "normal");
-          doc.setFontSize(9);
-          doc.text(stamp, pageWidth / 2, 9, { align: "center" });
-          y = 16;
+        const requiredHeight = estimateBlockHeight(data);
+        const fullFreshPageHeight = printableBottom - 16;
+
+        if (y + requiredHeight > printableBottom && requiredHeight <= fullFreshPageHeight) {
+          y = addPlanningPage(doc, stamp, pageWidth);
         }
 
         y = drawTitleCard(doc, block, y, pageWidth, margin);
@@ -137,7 +162,9 @@
           startY: y,
           head: [data.times],
           body: [data.cells],
-          margin: { left: margin, right: margin },
+          margin: { top: 16, left: margin, right: margin, bottom: margin },
+          pageBreak: "avoid",
+          rowPageBreak: "avoid",
           theme: "grid",
           styles: {
             font: "helvetica",
@@ -179,10 +206,7 @@
             );
           },
           didDrawPage: () => {
-            doc.setTextColor(40, 40, 40);
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(9);
-            doc.text(stamp, pageWidth / 2, 9, { align: "center" });
+            drawStamp(doc, stamp, pageWidth);
           }
         });
 
