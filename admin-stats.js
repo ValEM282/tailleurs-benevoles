@@ -19,12 +19,23 @@ const mealGrid = document.getElementById("meal-grid");
 const volunteerHoursPeriod = document.getElementById("volunteer-hours-period");
 const volunteerHoursHead = document.getElementById("volunteer-hours-head");
 const volunteerHoursBody = document.getElementById("volunteer-hours-body");
+const volunteerHoursFirstname = document.getElementById("volunteer-hours-firstname");
+const volunteerHoursLastname = document.getElementById("volunteer-hours-lastname");
+const volunteerHoursSearchButton = document.getElementById("volunteer-hours-search-button");
 const postPeriod = document.getElementById("post-stats-period");
 const postBody = document.getElementById("post-stats-body");
 const dailyBody = document.getElementById("daily-stats-body");
 
 let currentUser = null;
 let daysInitialized = false;
+let volunteerHoursData = { days: [], rows: [] };
+let volunteerHoursFilters = { prenom: "", nom: "" };
+let volunteerHoursSort = { key: "nom", direction: "asc" };
+
+const volunteerHoursCollator = new Intl.Collator("fr", {
+  sensitivity: "base",
+  numeric: true
+});
 
 function unlockStorageKey() {
   return currentUser ? `portalAdminUnlockedUntil:${currentUser.id}` : "";
@@ -57,19 +68,14 @@ function formatDate(value, includeYear = false) {
   }).format(date);
 }
 
-function formatShortDate(value) {
+function formatDayMonth(value) {
   if (!value) return "";
   const date = new Date(`${value}T12:00:00`);
-  const parts = new Intl.DateTimeFormat("fr-BE", {
-    weekday: "short",
-    day: "numeric",
-    month: "numeric",
+  return new Intl.DateTimeFormat("fr-BE", {
+    day: "2-digit",
+    month: "2-digit",
     timeZone: "Europe/Brussels"
-  }).formatToParts(date);
-  const weekday = (parts.find(part => part.type === "weekday")?.value || "").replace(".", "");
-  const day = parts.find(part => part.type === "day")?.value || "";
-  const month = parts.find(part => part.type === "month")?.value || "";
-  return `${weekday} ${day}/${month}`;
+  }).format(date);
 }
 
 function capitalize(value) {
@@ -90,6 +96,14 @@ function formatDurationHours(value) {
   const minutes = totalMinutes % 60;
   if (!minutes) return `${hours} h`;
   return `${hours} h ${String(minutes).padStart(2, "0")}`;
+}
+
+function normalizeSearchText(value) {
+  return String(value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("fr")
+    .trim();
 }
 
 function initializeDays(days) {
@@ -146,38 +160,82 @@ function renderMeals(rows) {
   }).join("");
 }
 
-function renderVolunteerHours(data, selectedDay) {
-  const days = Array.isArray(data?.days) ? data.days : [];
-  const rows = Array.isArray(data?.rows) ? data.rows : [];
+function volunteerHoursSortIndicator(key) {
+  if (volunteerHoursSort.key !== key) return "";
+  return volunteerHoursSort.direction === "asc" ? "▲" : "▼";
+}
 
-  volunteerHoursPeriod.textContent = selectedDay
-    ? capitalize(formatDate(selectedDay, false))
-    : "Toute l’édition";
+function getFilteredVolunteerHourRows() {
+  const rows = Array.isArray(volunteerHoursData?.rows) ? [...volunteerHoursData.rows] : [];
+  const prenomFilter = normalizeSearchText(volunteerHoursFilters.prenom);
+  const nomFilter = normalizeSearchText(volunteerHoursFilters.nom);
+
+  const filtered = rows.filter(row => {
+    if (prenomFilter && !normalizeSearchText(row.prenom).includes(prenomFilter)) return false;
+    if (nomFilter && !normalizeSearchText(row.nom).includes(nomFilter)) return false;
+    return true;
+  });
+
+  const key = volunteerHoursSort.key;
+  const direction = volunteerHoursSort.direction === "desc" ? -1 : 1;
+  const secondaryKey = key === "prenom" ? "nom" : "prenom";
+
+  filtered.sort((a, b) => {
+    const primary = volunteerHoursCollator.compare(a[key] || "", b[key] || "");
+    if (primary !== 0) return primary * direction;
+    return volunteerHoursCollator.compare(a[secondaryKey] || "", b[secondaryKey] || "");
+  });
+
+  return filtered;
+}
+
+function renderVolunteerHoursTable() {
+  const days = Array.isArray(volunteerHoursData?.days) ? volunteerHoursData.days : [];
+  const rows = getFilteredVolunteerHourRows();
+
+  volunteerHoursPeriod.textContent = "01/10 au 05/10";
 
   volunteerHoursHead.innerHTML = `
     <tr>
-      <th scope="col" class="volunteer-hours-name">Bénévole</th>
-      ${days.map(day => `<th scope="col" class="volunteer-hours-number">${escapeHtml(capitalize(formatShortDate(day)))}</th>`).join("")}
+      <th scope="col" class="volunteer-hours-person-column">
+        <button type="button" class="volunteer-hours-sort-button" data-sort-key="prenom">
+          Prénom <span aria-hidden="true">${volunteerHoursSortIndicator("prenom")}</span>
+        </button>
+      </th>
+      <th scope="col" class="volunteer-hours-person-column">
+        <button type="button" class="volunteer-hours-sort-button" data-sort-key="nom">
+          NOM <span aria-hidden="true">${volunteerHoursSortIndicator("nom")}</span>
+        </button>
+      </th>
       <th scope="col" class="volunteer-hours-number volunteer-hours-total">Total</th>
+      ${days.map(day => `<th scope="col" class="volunteer-hours-number">${escapeHtml(formatDayMonth(day))}</th>`).join("")}
     </tr>
   `;
 
   if (!rows.length) {
-    volunteerHoursBody.innerHTML = `<tr><td colspan="${Math.max(2, days.length + 2)}" class="stats-empty-row">Aucun bénévole actif pour cette période.</td></tr>`;
+    volunteerHoursBody.innerHTML = `<tr><td colspan="${Math.max(3, days.length + 3)}" class="stats-empty-row">Aucun bénévole ne correspond à la recherche.</td></tr>`;
     return;
   }
 
   volunteerHoursBody.innerHTML = rows.map(row => {
     const dayValues = row.jours && typeof row.jours === "object" ? row.jours : {};
-    const fullName = `${row.prenom || ""} ${(row.nom || "").toUpperCase()}`.trim();
     return `
       <tr>
-        <td class="volunteer-hours-name"><strong>${escapeHtml(fullName)}</strong></td>
-        ${days.map(day => `<td class="volunteer-hours-number">${escapeHtml(formatDurationHours(dayValues[day]))}</td>`).join("")}
+        <td class="volunteer-hours-person-column">${escapeHtml(row.prenom || "")}</td>
+        <td class="volunteer-hours-person-column"><strong>${escapeHtml((row.nom || "").toUpperCase())}</strong></td>
         <td class="volunteer-hours-number volunteer-hours-total"><strong>${escapeHtml(formatDurationHours(row.total))}</strong></td>
+        ${days.map(day => `<td class="volunteer-hours-number">${escapeHtml(formatDurationHours(dayValues[day]))}</td>`).join("")}
       </tr>
     `;
   }).join("");
+}
+
+function renderVolunteerHours(data) {
+  volunteerHoursData = {
+    days: Array.isArray(data?.days) ? data.days : [],
+    rows: Array.isArray(data?.rows) ? data.rows : []
+  };
+  renderVolunteerHoursTable();
 }
 
 function renderPosts(rows, selectedDay) {
@@ -238,11 +296,11 @@ function renderDaily(rows, vacancyRows) {
   }).join("");
 }
 
-function renderStats(data, vacancyData, volunteerHoursData, selectedDay) {
+function renderStats(data, vacancyData, volunteerHoursResult, selectedDay) {
   initializeDays(data?.days);
   renderSummary(data?.summary, vacancyData?.summary);
   renderMeals(data?.meals);
-  renderVolunteerHours(volunteerHoursData, selectedDay);
+  renderVolunteerHours(volunteerHoursResult);
   renderPosts(data?.by_post, selectedDay);
   renderDaily(data?.daily, vacancyData?.daily);
 
@@ -259,7 +317,7 @@ async function loadStats(selectedDay = "") {
   const [statsResult, vacancyResult, volunteerHoursResult] = await Promise.all([
     PortalAuth.client.rpc("admin_get_stats", { p_day: selectedDay || null }),
     PortalAuth.client.rpc("admin_get_vacancy_stats", { p_day: selectedDay || null }),
-    PortalAuth.client.rpc("admin_get_volunteer_hours", { p_day: selectedDay || null })
+    PortalAuth.client.rpc("admin_get_volunteer_hours", { p_day: null })
   ]);
 
   const error = statsResult.error || vacancyResult.error || volunteerHoursResult.error;
@@ -277,6 +335,14 @@ async function loadStats(selectedDay = "") {
     volunteerHoursResult.data || {},
     selectedDay
   );
+}
+
+function applyVolunteerHoursSearch() {
+  volunteerHoursFilters = {
+    prenom: volunteerHoursFirstname.value.trim(),
+    nom: volunteerHoursLastname.value.trim()
+  };
+  renderVolunteerHoursTable();
 }
 
 async function initStatsPage() {
@@ -311,6 +377,32 @@ dailyBody.addEventListener("click", event => {
   daySelect.value = day;
   loadStats(day);
   window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+volunteerHoursSearchButton.addEventListener("click", applyVolunteerHoursSearch);
+
+[volunteerHoursFirstname, volunteerHoursLastname].forEach(input => {
+  input.addEventListener("keydown", event => {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    applyVolunteerHoursSearch();
+  });
+});
+
+volunteerHoursHead.addEventListener("click", event => {
+  const button = event.target.closest(".volunteer-hours-sort-button");
+  if (!button) return;
+
+  const key = button.dataset.sortKey;
+  if (!key || !["prenom", "nom"].includes(key)) return;
+
+  if (volunteerHoursSort.key === key) {
+    volunteerHoursSort.direction = volunteerHoursSort.direction === "asc" ? "desc" : "asc";
+  } else {
+    volunteerHoursSort = { key, direction: "asc" };
+  }
+
+  renderVolunteerHoursTable();
 });
 
 logoutButton.addEventListener("click", async () => {
