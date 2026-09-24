@@ -16,7 +16,7 @@ const vacantPlacesStat = document.getElementById("stat-vacant-places");
 const vacantHoursStat = document.getElementById("stat-vacant-hours");
 const mealGrid = document.getElementById("meal-grid");
 
-const volunteerHoursPeriod = document.getElementById("volunteer-hours-period");
+const volunteerHoursResults = document.getElementById("volunteer-hours-results");
 const volunteerHoursHead = document.getElementById("volunteer-hours-head");
 const volunteerHoursBody = document.getElementById("volunteer-hours-body");
 const volunteerHoursFirstname = document.getElementById("volunteer-hours-firstname");
@@ -31,6 +31,7 @@ let daysInitialized = false;
 let volunteerHoursData = { days: [], rows: [] };
 let volunteerHoursFilters = { prenom: "", nom: "" };
 let volunteerHoursSort = { key: "nom", direction: "asc" };
+let volunteerHoursHasSearched = false;
 
 const volunteerHoursCollator = new Intl.Collator("fr", {
   sensitivity: "base",
@@ -165,6 +166,13 @@ function volunteerHoursSortIndicator(key) {
   return volunteerHoursSort.direction === "asc" ? "▲" : "▼";
 }
 
+function volunteerHoursTotalClass(value) {
+  const total = numberValue(value);
+  if (total > 8) return "volunteer-hours-total-high";
+  if (total >= 0 && total <= 7) return "volunteer-hours-total-low";
+  return "";
+}
+
 function getFilteredVolunteerHourRows() {
   const rows = Array.isArray(volunteerHoursData?.rows) ? [...volunteerHoursData.rows] : [];
   const prenomFilter = normalizeSearchText(volunteerHoursFilters.prenom);
@@ -190,10 +198,17 @@ function getFilteredVolunteerHourRows() {
 }
 
 function renderVolunteerHoursTable() {
+  if (!volunteerHoursHasSearched) {
+    volunteerHoursResults.hidden = true;
+    volunteerHoursHead.innerHTML = "";
+    volunteerHoursBody.innerHTML = "";
+    return;
+  }
+
   const days = Array.isArray(volunteerHoursData?.days) ? volunteerHoursData.days : [];
   const rows = getFilteredVolunteerHourRows();
 
-  volunteerHoursPeriod.textContent = "01/10 au 05/10";
+  volunteerHoursResults.hidden = false;
 
   volunteerHoursHead.innerHTML = `
     <tr>
@@ -219,11 +234,12 @@ function renderVolunteerHoursTable() {
 
   volunteerHoursBody.innerHTML = rows.map(row => {
     const dayValues = row.jours && typeof row.jours === "object" ? row.jours : {};
+    const totalClass = volunteerHoursTotalClass(row.total);
     return `
       <tr>
         <td class="volunteer-hours-person-column">${escapeHtml(row.prenom || "")}</td>
         <td class="volunteer-hours-person-column"><strong>${escapeHtml((row.nom || "").toUpperCase())}</strong></td>
-        <td class="volunteer-hours-number volunteer-hours-total"><strong>${escapeHtml(formatDurationHours(row.total))}</strong></td>
+        <td class="volunteer-hours-number volunteer-hours-total ${totalClass}"><strong>${escapeHtml(formatDurationHours(row.total))}</strong></td>
         ${days.map(day => `<td class="volunteer-hours-number">${escapeHtml(formatDurationHours(dayValues[day]))}</td>`).join("")}
       </tr>
     `;
@@ -342,6 +358,7 @@ function applyVolunteerHoursSearch() {
     prenom: volunteerHoursFirstname.value.trim(),
     nom: volunteerHoursLastname.value.trim()
   };
+  volunteerHoursHasSearched = true;
   renderVolunteerHoursTable();
 }
 
@@ -390,6 +407,8 @@ volunteerHoursSearchButton.addEventListener("click", applyVolunteerHoursSearch);
 });
 
 volunteerHoursHead.addEventListener("click", event => {
+  if (!volunteerHoursHasSearched) return;
+
   const button = event.target.closest(".volunteer-hours-sort-button");
   if (!button) return;
 
