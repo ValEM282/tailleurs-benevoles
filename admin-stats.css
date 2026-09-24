@@ -259,6 +259,30 @@
   text-align: center;
 }
 
+.volunteer-hours-table {
+  min-width: 760px;
+}
+
+.volunteer-hours-table .volunteer-hours-name {
+  min-width: 220px;
+  text-align: left;
+}
+
+.volunteer-hours-table .volunteer-hours-number {
+  min-width: 92px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.volunteer-hours-table .volunteer-hours-total {
+  background: rgba(28, 46, 171, 0.05);
+  color: var(--blue);
+}
+
+.volunteer-hours-table tbody .volunteer-hours-total {
+  font-weight: 700;
+}
+
 .stats-day-button {
   padding: 0;
   border: 0;
