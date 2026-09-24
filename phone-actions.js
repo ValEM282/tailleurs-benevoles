@@ -28,8 +28,33 @@
     });
   }
 
+  function replacePastPhoneWithStatic(link) {
+    const displayText = link.textContent.replace(/^\s*📞\s*/, "").trim();
+
+    const wrapper = document.createElement("span");
+    wrapper.className = "phone-actions phone-actions-static";
+
+    const icon = document.createElement("span");
+    icon.className = "phone-actions-icon";
+    icon.textContent = "📞";
+    icon.setAttribute("aria-hidden", "true");
+
+    const text = document.createElement("span");
+    text.className = `${[...link.classList].join(" ")} phone-actions-static-number`.trim();
+    text.textContent = displayText;
+
+    wrapper.append(icon, text);
+    link.replaceWith(wrapper);
+  }
+
   function enhancePhone(link) {
     if (!link || link.dataset.phoneActionsReady === "true") return;
+
+    if (link.closest(".schedule-shift-card-past")) {
+      replacePastPhoneWithStatic(link);
+      return;
+    }
+
     link.dataset.phoneActionsReady = "true";
 
     const displayText = link.textContent.replace(/^\s*📞\s*/, "").trim();
