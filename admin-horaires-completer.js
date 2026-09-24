@@ -46,7 +46,7 @@ function formatDate(value) {
 }
 
 function postLabel(need) {
-  return need.sous_poste ? `${need.poste} — ${need.sous_poste}` : need.poste;
+  return need.sous_poste || need.poste;
 }
 
 function urgencyInfo(value) {
@@ -74,6 +74,10 @@ function defaultStart(need) {
   return need.debut_heure;
 }
 
+function rpcTime(value) {
+  return /^\d{2}:\d{2}$/.test(value || "") ? `${value}:00` : value;
+}
+
 function filteredNeeds() {
   return needs.filter(need => {
     if (dayFilter.value && need.jour !== dayFilter.value) return false;
@@ -88,9 +92,9 @@ function formatHours(minutes) {
 }
 
 function updateSummary(rows) {
-  summaryPlaces.textContent = rows.length;
-  summaryPosts.textContent = new Set(rows.map(row => String(row.poste_id))).size;
-  summaryHours.textContent = formatHours(rows.reduce((sum, row) => sum + Number(row.minutes || 0), 0));
+  if (summaryPlaces) summaryPlaces.textContent = rows.length;
+  if (summaryPosts) summaryPosts.textContent = new Set(rows.map(row => String(row.poste_id))).size;
+  if (summaryHours) summaryHours.textContent = formatHours(rows.reduce((sum, row) => sum + Number(row.minutes || 0), 0));
 }
 
 function populateFilters() {
@@ -139,8 +143,8 @@ async function loadCandidates(card, need) {
 
   const { data, error } = await PortalAuth.client.rpc("admin_get_need_candidates", {
     p_besoin_id: need.besoin_id,
-    p_debut: startInput.value,
-    p_fin: endInput.value
+    p_debut: rpcTime(startInput.value),
+    p_fin: rpcTime(endInput.value)
   });
 
   select.dataset.loading = "0";
@@ -207,14 +211,14 @@ async function assignVolunteer(event, need) {
   }
 
   button.disabled = true;
-  button.textContent = "Affectation…";
+  button.textContent = "…";
   message.textContent = "";
 
   const { error } = await PortalAuth.client.rpc("admin_assign_need_volunteer", {
     p_besoin_id: need.besoin_id,
     p_personne_id: select.value,
-    p_debut: startInput.value,
-    p_fin: endInput.value
+    p_debut: rpcTime(startInput.value),
+    p_fin: rpcTime(endInput.value)
   });
 
   if (error) {
@@ -222,7 +226,7 @@ async function assignVolunteer(event, need) {
     message.textContent = error.message || "Impossible d’enregistrer l’affectation.";
     message.className = "open-card-message error";
     button.disabled = false;
-    button.textContent = "Affecter";
+    button.textContent = "✓";
     return;
   }
 
@@ -239,19 +243,19 @@ function createCard(need) {
   card.dataset.needId = need.besoin_id;
 
   const startValue = defaultStart(need);
+  const title = need.sous_poste || need.poste;
 
   card.innerHTML = `
     <div class="open-shift-top">
       <div class="open-shift-title">
-        <strong>${escapeHtml(need.poste)}</strong>
-        ${need.sous_poste ? `<span class="open-shift-subpost">${escapeHtml(need.sous_poste)}</span>` : ""}
+        <strong>${escapeHtml(title)}</strong>
       </div>
       <span class="open-urgency">${escapeHtml(urgency.label)}</span>
     </div>
     <div class="open-shift-meta">
       <span><strong>${escapeHtml(formatDate(need.jour))}</strong> · ${escapeHtml(need.debut_heure)}–${escapeHtml(need.fin_heure)}</span>
       <span>📍 ${escapeHtml(need.lieu || "Lieu à confirmer")}</span>
-      <span>${formatHours(Number(need.minutes || 0))} h à couvrir</span>
+      <span>(${formatHours(Number(need.minutes || 0))} h à couvrir)</span>
     </div>
     <form class="open-assign-form">
       <div class="open-assign-field">
@@ -268,7 +272,7 @@ function createCard(need) {
         <label>À</label>
         <input class="open-end-time" type="time" step="60" min="${escapeHtml(need.debut_heure)}" max="${escapeHtml(need.fin_heure)}" value="${escapeHtml(need.fin_heure)}" required>
       </div>
-      <button type="submit" class="open-assign-button">Affecter</button>
+      <button type="submit" class="open-assign-button" aria-label="Affecter" title="Affecter">✓</button>
       <p class="open-card-message"></p>
     </form>
   `;
