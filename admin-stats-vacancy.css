@@ -1,0 +1,23 @@
+.stats-cards {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.stats-card-vacancy {
+  border-top-color: #d98500;
+}
+
+.stats-card-vacancy strong {
+  color: #a76400;
+}
+
+@media (max-width: 980px) {
+  .stats-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .stats-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
