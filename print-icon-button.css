@@ -1,0 +1,51 @@
+/* Bouton impression uniforme */
+.complete-print-button,
+.volunteer-hours-print-button,
+.print-list-button,
+.schedule-print-button {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px !important;
+  min-width: 54px !important;
+  height: 54px !important;
+  min-height: 54px !important;
+  flex: 0 0 54px;
+  padding: 0 !important;
+  border: 2px solid var(--blue) !important;
+  border-radius: 14px !important;
+  background: #fff !important;
+  color: var(--blue) !important;
+  font-size: 1.35rem !important;
+  line-height: 1 !important;
+  cursor: pointer;
+  transition: background-color .2s ease, color .2s ease, transform .15s ease;
+}
+
+.complete-print-button:hover,
+.volunteer-hours-print-button:hover,
+.print-list-button:hover,
+.schedule-print-button:hover {
+  background: rgba(28, 46, 171, .06) !important;
+  color: var(--blue) !important;
+}
+
+.complete-print-button:active,
+.volunteer-hours-print-button:active,
+.print-list-button:active,
+.schedule-print-button:active {
+  transform: scale(.97);
+}
+
+.complete-print-button:focus-visible,
+.volunteer-hours-print-button:focus-visible,
+.print-list-button:focus-visible,
+.schedule-print-button:focus-visible {
+  outline: 3px solid rgba(28, 46, 171, .25);
+  outline-offset: 3px;
+}
+
+.volunteer-hours-print-button[hidden] {
+  display: none !important;
+}
