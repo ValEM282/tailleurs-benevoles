@@ -11,11 +11,7 @@ const postStat = document.getElementById("stat-posts");
 const placeStat = document.getElementById("stat-places");
 const absentStat = document.getElementById("stat-absent");
 const availableStat = document.getElementById("stat-available");
-
-const saturdayLabel = document.getElementById("sandwich-saturday-label");
-const saturdayStat = document.getElementById("sandwich-saturday");
-const sundayLabel = document.getElementById("sandwich-sunday-label");
-const sundayStat = document.getElementById("sandwich-sunday");
+const mealGrid = document.getElementById("meal-grid");
 
 const postPeriod = document.getElementById("post-stats-period");
 const postBody = document.getElementById("post-stats-body");
@@ -86,17 +82,32 @@ function renderSummary(summary = {}) {
   availableStat.textContent = numberValue(summary.disponibles);
 }
 
-function renderSandwiches(sandwiches = {}) {
-  saturdayStat.textContent = numberValue(sandwiches.samedi);
-  sundayStat.textContent = numberValue(sandwiches.dimanche);
+function renderMeals(rows) {
+  const meals = Array.isArray(rows) ? rows : [];
 
-  saturdayLabel.textContent = sandwiches.samedi_date
-    ? capitalize(formatDate(sandwiches.samedi_date, false))
-    : "Samedi";
+  if (!meals.length) {
+    mealGrid.innerHTML = '<p class="stats-empty-row">Aucun jour de repas configuré.</p>';
+    return;
+  }
 
-  sundayLabel.textContent = sandwiches.dimanche_date
-    ? capitalize(formatDate(sandwiches.dimanche_date, false))
-    : "Dimanche";
+  mealGrid.innerHTML = meals.map(row => {
+    const isSandwich = String(row.type || "").toLocaleLowerCase("fr").includes("sandwich");
+    const dateLabel = row.date ? capitalize(formatDate(row.date, false)) : escapeHtml(row.label || "—");
+    const typeLabel = escapeHtml(row.type || "Repas");
+
+    return `
+      <article class="meal-card ${isSandwich ? "meal-card-sandwich" : "meal-card-common"}">
+        <div class="meal-card-copy">
+          <strong class="meal-card-date">${escapeHtml(dateLabel)}</strong>
+          <span class="meal-card-type">${typeLabel}</span>
+        </div>
+        <div class="meal-card-count">
+          <strong>${numberValue(row.personnes)}</strong>
+          <span>personne${numberValue(row.personnes) > 1 ? "s" : ""}</span>
+        </div>
+      </article>
+    `;
+  }).join("");
 }
 
 function renderPosts(rows, selectedDay) {
@@ -149,7 +160,7 @@ function renderDaily(rows) {
 function renderStats(data, selectedDay) {
   initializeDays(data?.days);
   renderSummary(data?.summary);
-  renderSandwiches(data?.sandwiches);
+  renderMeals(data?.meals);
   renderPosts(data?.by_post, selectedDay);
   renderDaily(data?.daily);
 
