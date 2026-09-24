@@ -281,7 +281,8 @@
   font-weight: 700;
 }
 
-.volunteer-hours-search-field input {
+.volunteer-hours-search-field input,
+.volunteer-hours-search-field select {
   width: 100%;
   min-height: 44px;
   box-sizing: border-box;
@@ -291,6 +292,11 @@
   background: var(--white);
   color: var(--text);
   font: inherit;
+}
+
+.volunteer-hours-search-field select {
+  padding-right: 36px;
+  cursor: pointer;
 }
 
 .volunteer-hours-search-button {
