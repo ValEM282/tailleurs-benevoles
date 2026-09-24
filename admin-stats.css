@@ -259,17 +259,67 @@
   text-align: center;
 }
 
-.volunteer-hours-table {
-  min-width: 760px;
+.volunteer-hours-search {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+  margin: 4px 0 18px;
+  padding: 14px;
+  border-radius: 13px;
+  background: rgba(28, 46, 171, 0.035);
+  border: 1px solid rgba(28, 46, 171, 0.12);
 }
 
-.volunteer-hours-table .volunteer-hours-name {
-  min-width: 220px;
+.volunteer-hours-search-field {
+  display: grid;
+  gap: 5px;
+}
+
+.volunteer-hours-search-field label {
+  color: var(--blue);
+  font-weight: 700;
+}
+
+.volunteer-hours-search-field input {
+  width: 100%;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 8px 11px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--white);
+  color: var(--text);
+  font: inherit;
+}
+
+.volunteer-hours-search-button {
+  min-height: 44px;
+  padding: 8px 20px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--blue);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.volunteer-hours-search-button:hover {
+  filter: brightness(0.96);
+}
+
+.volunteer-hours-table {
+  min-width: 900px;
+}
+
+.volunteer-hours-table .volunteer-hours-person-column {
+  min-width: 145px;
   text-align: left;
 }
 
 .volunteer-hours-table .volunteer-hours-number {
-  min-width: 92px;
+  min-width: 86px;
   text-align: center;
   white-space: nowrap;
 }
@@ -281,6 +331,24 @@
 
 .volunteer-hours-table tbody .volunteer-hours-total {
   font-weight: 700;
+}
+
+.volunteer-hours-sort-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--blue);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.volunteer-hours-sort-button:hover,
+.volunteer-hours-sort-button:focus-visible {
+  text-decoration: underline;
 }
 
 .stats-day-button {
@@ -349,6 +417,14 @@
   .meal-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .volunteer-hours-search {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .volunteer-hours-search-button {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 430px) {
@@ -367,5 +443,13 @@
 
   .meal-card-date {
     font-size: 0.94rem;
+  }
+
+  .volunteer-hours-search {
+    grid-template-columns: 1fr;
+  }
+
+  .volunteer-hours-search-button {
+    grid-column: auto;
   }
 }
