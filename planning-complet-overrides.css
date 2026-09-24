@@ -1,0 +1,52 @@
+/* Ajustements visuels planning complet — écran + impression */
+
+.complete-title-day {
+  font-size: 1.72rem;
+  line-height: 1;
+}
+
+.complete-column-time {
+  font-size: 1.24rem;
+  font-weight: 700;
+  line-height: 1.05;
+}
+
+.complete-column-count {
+  margin-top: 4px;
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+@media (max-width: 760px) {
+  .complete-title-day {
+    font-size: 1.52rem;
+  }
+
+  .complete-column-time {
+    font-size: 1.12rem;
+  }
+
+  .complete-column-count {
+    font-size: 0.72rem;
+  }
+}
+
+@media print {
+  .complete-title-day {
+    font-size: 18pt !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+  }
+
+  .complete-column-time {
+    font-size: 11.5pt !important;
+    font-weight: 700 !important;
+  }
+
+  .complete-column-count {
+    margin-top: 1.2mm !important;
+    font-size: 8.5pt !important;
+    font-weight: 400 !important;
+  }
+}
