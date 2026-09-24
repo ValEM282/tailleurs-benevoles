@@ -110,13 +110,16 @@ function renderPosts(rows, selectedDay) {
     return;
   }
 
-  postBody.innerHTML = postRows.map(row => `
-    <tr>
-      <td>${escapeHtml(row.poste || "—")}</td>
-      <td>${escapeHtml(row.sous_poste || "—")}</td>
-      <td class="stats-number">${numberValue(row.benevoles)}</td>
-    </tr>
-  `).join("");
+  postBody.innerHTML = postRows.map(row => {
+    const isTotal = row.is_total === true;
+    return `
+      <tr${isTotal ? ' class="stats-post-total"' : ''}>
+        <td>${isTotal ? `<strong>${escapeHtml(row.poste || "—")}</strong>` : escapeHtml(row.poste || "—")}</td>
+        <td>${isTotal ? "<strong>Total du poste</strong>" : escapeHtml(row.sous_poste || "—")}</td>
+        <td class="stats-number">${isTotal ? `<strong>${numberValue(row.benevoles)}</strong>` : numberValue(row.benevoles)}</td>
+      </tr>
+    `;
+  }).join("");
 }
 
 function renderDaily(rows) {
