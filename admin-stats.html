@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statistiques — Administration</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css?v=20260921-2">
+  <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
+  <link rel="stylesheet" href="admin-stats.css?v=20260924-1">
+</head>
+<body class="dashboard-page">
+  <header class="dashboard-header">
+    <div class="subpage-header-inner">
+      <a href="admin.html" class="back-button">← Accueil ADMIN</a>
+      <div class="dashboard-title">🎪 PORTAIL BÉNÉVOLES 🎪</div>
+      <button type="button" id="logout-button" class="logout-button">Se déconnecter</button>
+    </div>
+  </header>
+
+  <main class="subpage-main stats-main">
+    <section class="stats-heading">
+      <div>
+        <h1>Statistiques</h1>
+        <p>Une personne n’est comptée qu’une fois par jour, même si elle a plusieurs horaires.</p>
+      </div>
+
+      <div class="stats-filter">
+        <label for="stats-day">Afficher</label>
+        <select id="stats-day" disabled>
+          <option value="">Toute l’édition</option>
+        </select>
+      </div>
+    </section>
+
+    <div id="stats-loading" class="stats-message">Chargement des statistiques…</div>
+    <div id="stats-error" class="stats-message stats-error" hidden></div>
+
+    <div id="stats-content" hidden>
+      <section class="stats-cards" aria-label="Chiffres clés">
+        <article class="stats-card">
+          <span class="stats-card-label">Bénévoles avec horaire</span>
+          <strong id="stat-volunteers">0</strong>
+        </article>
+        <article class="stats-card">
+          <span class="stats-card-label">Postes avec horaire</span>
+          <strong id="stat-posts">0</strong>
+        </article>
+        <article class="stats-card">
+          <span class="stats-card-label">Lieux avec horaire</span>
+          <strong id="stat-places">0</strong>
+        </article>
+        <article class="stats-card stats-card-alert">
+          <span class="stats-card-label">Bénévoles absent·es</span>
+          <strong id="stat-absent">0</strong>
+        </article>
+        <article class="stats-card stats-card-available">
+          <span class="stats-card-label">Se sont rendu·es disponibles</span>
+          <strong id="stat-available">0</strong>
+        </article>
+      </section>
+
+      <section class="stats-section sandwich-section" aria-labelledby="sandwich-title">
+        <div class="stats-section-heading">
+          <h2 id="sandwich-title">🥪 Sandwichs</h2>
+          <p>1 personne planifiée = 1 sandwich pour la journée.</p>
+        </div>
+        <div class="sandwich-grid">
+          <article class="sandwich-card">
+            <span id="sandwich-saturday-label">Samedi</span>
+            <strong id="sandwich-saturday">0</strong>
+          </article>
+          <article class="sandwich-card">
+            <span id="sandwich-sunday-label">Dimanche</span>
+            <strong id="sandwich-sunday">0</strong>
+          </article>
+        </div>
+      </section>
+
+      <section class="stats-section" aria-labelledby="post-stats-title">
+        <div class="stats-section-heading">
+          <h2 id="post-stats-title">Bénévoles par poste</h2>
+          <p id="post-stats-period"></p>
+        </div>
+        <div class="stats-table-scroll">
+          <table class="stats-table">
+            <thead>
+              <tr>
+                <th scope="col">Poste</th>
+                <th scope="col">Sous-poste</th>
+                <th scope="col" class="stats-number-column">Bénévoles</th>
+              </tr>
+            </thead>
+            <tbody id="post-stats-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="stats-section" aria-labelledby="daily-stats-title">
+        <div class="stats-section-heading">
+          <h2 id="daily-stats-title">Vue par jour</h2>
+        </div>
+        <div class="stats-table-scroll">
+          <table class="stats-table stats-daily-table">
+            <thead>
+              <tr>
+                <th scope="col">Jour</th>
+                <th scope="col">Bénévoles</th>
+                <th scope="col">Postes</th>
+                <th scope="col">Lieux</th>
+                <th scope="col">Absent·es</th>
+                <th scope="col">Disponibles</th>
+              </tr>
+            </thead>
+            <tbody id="daily-stats-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="portal-auth.js"></script>
+  <script src="admin-stats.js?v=20260924-1"></script>
+</body>
+</html>
