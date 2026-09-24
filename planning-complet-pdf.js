@@ -36,7 +36,7 @@
 
     doc.setFillColor(244, 245, 252);
     doc.setDrawColor(215, 220, 242);
-    doc.roundedRect(margin, y, width, 16, 4, 4, "FD");
+    doc.roundedRect(margin, y, width, 19, 4, 4, "FD");
 
     doc.setTextColor(28, 46, 171);
     doc.setFont("helvetica", "bold");
@@ -45,31 +45,33 @@
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8.5);
-    doc.text(place, margin + 4, y + 11.5);
+    doc.text(place, margin + 4, y + 12);
 
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(9);
-    doc.text(day, pageWidth - margin - 4, y + 10, { align: "right" });
+    doc.setFontSize(18);
+    doc.text(day, pageWidth - margin - 4, y + 12.5, { align: "right" });
 
-    return y + 20;
+    return y + 23;
   }
 
   function tableData(block) {
     const table = block.querySelector("table.complete-grid");
     if (!table) return null;
 
-    const headers = [...table.querySelectorAll("thead th")].map(th => {
-      const time = th.querySelector(".complete-column-time")?.textContent?.trim() || "";
-      const count = th.querySelector(".complete-column-count")?.textContent?.trim() || "";
-      return count ? `${time}\n${count}` : time;
-    });
+    const headerCells = [...table.querySelectorAll("thead th")];
+    const times = headerCells.map(th =>
+      th.querySelector(".complete-column-time")?.textContent?.trim() || ""
+    );
+    const counts = headerCells.map(th =>
+      th.querySelector(".complete-column-count")?.textContent?.trim() || ""
+    );
 
     const cells = [...table.querySelectorAll("tbody td")].map(td => {
       const names = [...td.querySelectorAll(".complete-volunteer-name")].map(el => el.textContent.trim());
       return names.length ? names.join("\n") : "—";
     });
 
-    return { headers, cells };
+    return { times, counts, cells };
   }
 
   async function createPdf(event) {
@@ -120,7 +122,7 @@
         const data = tableData(block);
         if (!data) return;
 
-        if (index > 0 && y > pageHeight - 55) {
+        if (index > 0 && y > pageHeight - 58) {
           doc.addPage("a4", "landscape");
           doc.setTextColor(40, 40, 40);
           doc.setFont("helvetica", "normal");
@@ -133,7 +135,7 @@
 
         doc.autoTable({
           startY: y,
-          head: [data.headers],
+          head: [data.times],
           body: [data.cells],
           margin: { left: margin, right: margin },
           theme: "grid",
@@ -152,7 +154,25 @@
             fillColor: [244, 245, 252],
             textColor: [28, 46, 171],
             fontStyle: "bold",
-            fontSize: 9
+            fontSize: 11.5,
+            valign: "top",
+            cellPadding: { top: 2.3, right: 3, bottom: 5.4, left: 3 },
+            minCellHeight: 13.5
+          },
+          didDrawCell: hookData => {
+            if (hookData.section !== "head") return;
+            const count = data.counts[hookData.column.index];
+            if (!count) return;
+
+            doc.setTextColor(28, 46, 171);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(8.5);
+            doc.text(
+              count,
+              hookData.cell.x + hookData.cell.width / 2,
+              hookData.cell.y + hookData.cell.height - 2.2,
+              { align: "center" }
+            );
           },
           didDrawPage: () => {
             doc.setTextColor(40, 40, 40);
