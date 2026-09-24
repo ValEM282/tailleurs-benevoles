@@ -16,6 +16,9 @@ const vacantPlacesStat = document.getElementById("stat-vacant-places");
 const vacantHoursStat = document.getElementById("stat-vacant-hours");
 const mealGrid = document.getElementById("meal-grid");
 
+const volunteerHoursPeriod = document.getElementById("volunteer-hours-period");
+const volunteerHoursHead = document.getElementById("volunteer-hours-head");
+const volunteerHoursBody = document.getElementById("volunteer-hours-body");
 const postPeriod = document.getElementById("post-stats-period");
 const postBody = document.getElementById("post-stats-body");
 const dailyBody = document.getElementById("daily-stats-body");
@@ -54,6 +57,21 @@ function formatDate(value, includeYear = false) {
   }).format(date);
 }
 
+function formatShortDate(value) {
+  if (!value) return "";
+  const date = new Date(`${value}T12:00:00`);
+  const parts = new Intl.DateTimeFormat("fr-BE", {
+    weekday: "short",
+    day: "numeric",
+    month: "numeric",
+    timeZone: "Europe/Brussels"
+  }).formatToParts(date);
+  const weekday = (parts.find(part => part.type === "weekday")?.value || "").replace(".", "");
+  const day = parts.find(part => part.type === "day")?.value || "";
+  const month = parts.find(part => part.type === "month")?.value || "";
+  return `${weekday} ${day}/${month}`;
+}
+
 function capitalize(value) {
   return value ? value.charAt(0).toUpperCase() + value.slice(1) : value;
 }
@@ -64,6 +82,14 @@ function numberValue(value) {
 
 function formattedNumber(value, maximumFractionDigits = 1) {
   return new Intl.NumberFormat("fr-BE", { maximumFractionDigits }).format(numberValue(value));
+}
+
+function formatDurationHours(value) {
+  const totalMinutes = Math.max(0, Math.round(numberValue(value) * 60));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  if (!minutes) return `${hours} h`;
+  return `${hours} h ${String(minutes).padStart(2, "0")}`;
 }
 
 function initializeDays(days) {
@@ -116,6 +142,40 @@ function renderMeals(rows) {
           <span>personne${numberValue(row.personnes) > 1 ? "s" : ""}</span>
         </div>
       </article>
+    `;
+  }).join("");
+}
+
+function renderVolunteerHours(data, selectedDay) {
+  const days = Array.isArray(data?.days) ? data.days : [];
+  const rows = Array.isArray(data?.rows) ? data.rows : [];
+
+  volunteerHoursPeriod.textContent = selectedDay
+    ? capitalize(formatDate(selectedDay, false))
+    : "Toute l’édition";
+
+  volunteerHoursHead.innerHTML = `
+    <tr>
+      <th scope="col" class="volunteer-hours-name">Bénévole</th>
+      ${days.map(day => `<th scope="col" class="volunteer-hours-number">${escapeHtml(capitalize(formatShortDate(day)))}</th>`).join("")}
+      <th scope="col" class="volunteer-hours-number volunteer-hours-total">Total</th>
+    </tr>
+  `;
+
+  if (!rows.length) {
+    volunteerHoursBody.innerHTML = `<tr><td colspan="${Math.max(2, days.length + 2)}" class="stats-empty-row">Aucun bénévole actif pour cette période.</td></tr>`;
+    return;
+  }
+
+  volunteerHoursBody.innerHTML = rows.map(row => {
+    const dayValues = row.jours && typeof row.jours === "object" ? row.jours : {};
+    const fullName = `${row.prenom || ""} ${(row.nom || "").toUpperCase()}`.trim();
+    return `
+      <tr>
+        <td class="volunteer-hours-name"><strong>${escapeHtml(fullName)}</strong></td>
+        ${days.map(day => `<td class="volunteer-hours-number">${escapeHtml(formatDurationHours(dayValues[day]))}</td>`).join("")}
+        <td class="volunteer-hours-number volunteer-hours-total"><strong>${escapeHtml(formatDurationHours(row.total))}</strong></td>
+      </tr>
     `;
   }).join("");
 }
@@ -178,10 +238,11 @@ function renderDaily(rows, vacancyRows) {
   }).join("");
 }
 
-function renderStats(data, vacancyData, selectedDay) {
+function renderStats(data, vacancyData, volunteerHoursData, selectedDay) {
   initializeDays(data?.days);
   renderSummary(data?.summary, vacancyData?.summary);
   renderMeals(data?.meals);
+  renderVolunteerHours(volunteerHoursData, selectedDay);
   renderPosts(data?.by_post, selectedDay);
   renderDaily(data?.daily, vacancyData?.daily);
 
@@ -195,12 +256,13 @@ async function loadStats(selectedDay = "") {
   loadingElement.textContent = "Chargement des statistiques…";
   errorElement.hidden = true;
 
-  const [statsResult, vacancyResult] = await Promise.all([
+  const [statsResult, vacancyResult, volunteerHoursResult] = await Promise.all([
     PortalAuth.client.rpc("admin_get_stats", { p_day: selectedDay || null }),
-    PortalAuth.client.rpc("admin_get_vacancy_stats", { p_day: selectedDay || null })
+    PortalAuth.client.rpc("admin_get_vacancy_stats", { p_day: selectedDay || null }),
+    PortalAuth.client.rpc("admin_get_volunteer_hours", { p_day: selectedDay || null })
   ]);
 
-  const error = statsResult.error || vacancyResult.error;
+  const error = statsResult.error || vacancyResult.error || volunteerHoursResult.error;
   if (error) {
     console.error("Impossible de charger les statistiques :", error);
     loadingElement.hidden = true;
@@ -209,7 +271,12 @@ async function loadStats(selectedDay = "") {
     return;
   }
 
-  renderStats(statsResult.data || {}, vacancyResult.data || {}, selectedDay);
+  renderStats(
+    statsResult.data || {},
+    vacancyResult.data || {},
+    volunteerHoursResult.data || {},
+    selectedDay
+  );
 }
 
 async function initStatsPage() {
