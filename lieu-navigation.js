@@ -24,10 +24,24 @@
     return href === "plan.html" || href.endsWith("/plan.html");
   }
 
+  function makePastLocationStatic(anchor) {
+    const span = document.createElement("span");
+    span.className = `${anchor.className || ""} schedule-shift-location-static`.trim();
+    span.textContent = anchor.textContent;
+    anchor.replaceWith(span);
+  }
+
   function applyLinks(root = document) {
     if (!loaded) return;
 
     root.querySelectorAll?.('a[href]').forEach(anchor => {
+      if (!isPlanLink(anchor) && anchor.dataset.googleMapsLieu !== "true") return;
+
+      if (anchor.closest(".schedule-shift-card-past")) {
+        makePastLocationStatic(anchor);
+        return;
+      }
+
       if (!isPlanLink(anchor)) return;
 
       const url = linksByName.get(normalize(anchor.textContent));
