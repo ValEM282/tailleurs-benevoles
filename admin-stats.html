@@ -11,7 +11,7 @@
 
   <link rel="stylesheet" href="styles.css?v=20260921-2">
   <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
-  <link rel="stylesheet" href="admin-stats.css?v=20260924-1">
+  <link rel="stylesheet" href="admin-stats.css?v=20260924-2">
 </head>
 <body class="dashboard-page">
   <header class="dashboard-header">
@@ -64,21 +64,15 @@
         </article>
       </section>
 
-      <section class="stats-section sandwich-section" aria-labelledby="sandwich-title">
+      <section class="stats-section meal-section" aria-labelledby="meal-title">
         <div class="stats-section-heading">
-          <h2 id="sandwich-title">🥪 Sandwichs</h2>
-          <p>1 personne planifiée = 1 sandwich pour la journée.</p>
+          <div>
+            <h2 id="meal-title">🍽️ Repas de midi</h2>
+            <p class="meal-rule">Jeudi, vendredi et lundi : repas commun · Samedi et dimanche : sandwich.</p>
+          </div>
+          <p>Comptage des horaires recouvrant 11h30–14h00.</p>
         </div>
-        <div class="sandwich-grid">
-          <article class="sandwich-card">
-            <span id="sandwich-saturday-label">Samedi</span>
-            <strong id="sandwich-saturday">0</strong>
-          </article>
-          <article class="sandwich-card">
-            <span id="sandwich-sunday-label">Dimanche</span>
-            <strong id="sandwich-sunday">0</strong>
-          </article>
-        </div>
+        <div id="meal-grid" class="meal-grid" aria-live="polite"></div>
       </section>
 
       <section class="stats-section" aria-labelledby="post-stats-title">
@@ -125,6 +119,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="portal-auth.js"></script>
-  <script src="admin-stats.js?v=20260924-2"></script>
+  <script src="admin-stats.js?v=20260924-3"></script>
 </body>
 </html>
