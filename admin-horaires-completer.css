@@ -106,21 +106,15 @@
   padding: 18px 20px;
   background: var(--white);
   border: 1px solid rgba(28, 46, 171, 0.1);
-  border-left: 6px solid var(--blue);
+  border-left: 6px solid #d98500;
   border-radius: 16px;
   box-shadow: 0 8px 24px rgba(20, 28, 80, 0.07);
 }
 
-.open-shift-card.urgency-now {
-  border-left-color: var(--red);
-}
-
-.open-shift-card.urgency-soon {
-  border-left-color: #d98500;
-}
-
+.open-shift-card.urgency-now,
+.open-shift-card.urgency-soon,
 .open-shift-card.urgency-future {
-  border-left-color: var(--blue);
+  border-left-color: #d98500;
 }
 
 .open-shift-top {
