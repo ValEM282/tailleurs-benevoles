@@ -411,6 +411,15 @@
 }
 
 @media (max-width: 700px) {
+  #volunteer-next-shift-section > .next-shift-heading {
+    justify-content: center;
+  }
+
+  .next-shift-heading-block {
+    width: 100%;
+    text-align: center;
+  }
+
   .presence-actions,
   .delay-control {
     width: 100%;
