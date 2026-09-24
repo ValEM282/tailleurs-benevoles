@@ -26,7 +26,7 @@
 
   function makePastLocationStatic(anchor) {
     const span = document.createElement("span");
-    span.className = `${anchor.className || ""} schedule-shift-location-static`.trim();
+    span.className = "schedule-shift-location-static";
     span.textContent = anchor.textContent;
     anchor.replaceWith(span);
   }
