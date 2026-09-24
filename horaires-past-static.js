@@ -6,7 +6,7 @@
   function makeStaticLocation(link) {
     const text = link.textContent;
     const span = document.createElement("span");
-    span.className = "schedule-shift-location-link schedule-shift-location-static";
+    span.className = "schedule-shift-location-static";
     span.textContent = text;
     link.replaceWith(span);
   }
