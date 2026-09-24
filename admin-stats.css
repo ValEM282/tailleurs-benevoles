@@ -333,6 +333,16 @@
   font-weight: 700;
 }
 
+.volunteer-hours-table tbody .volunteer-hours-total-low,
+.volunteer-hours-table tbody .volunteer-hours-total-low strong {
+  color: #237a44;
+}
+
+.volunteer-hours-table tbody .volunteer-hours-total-high,
+.volunteer-hours-table tbody .volunteer-hours-total-high strong {
+  color: var(--red);
+}
+
 .volunteer-hours-sort-button {
   display: inline-flex;
   align-items: center;
