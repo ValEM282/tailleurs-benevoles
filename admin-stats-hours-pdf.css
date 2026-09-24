@@ -1,0 +1,25 @@
+/* Bouton PDF — heures prestées par bénévole */
+
+.volunteer-hours-print-button {
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 2px solid var(--blue);
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--blue);
+  display: inline-grid;
+  place-items: center;
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.volunteer-hours-print-button:hover {
+  background: rgba(28, 46, 171, 0.06);
+}
+
+.volunteer-hours-print-button[hidden] {
+  display: none !important;
+}
