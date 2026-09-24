@@ -201,19 +201,27 @@
 }
 
 .open-assign-button {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
   min-height: 44px;
-  padding: 8px 16px;
-  border: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 2px solid #56c978;
   border-radius: 10px;
-  background: #2e9d57;
-  color: #fff;
+  background: #fff;
+  color: #21853f;
   font: inherit;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1;
   cursor: pointer;
 }
 
 .open-assign-button:hover {
-  filter: brightness(0.96);
+  background: #effcf3;
 }
 
 .open-assign-button:disabled {
@@ -253,6 +261,7 @@
 
   .open-assign-button {
     grid-column: 1 / -1;
+    justify-self: end;
   }
 }
 
@@ -274,6 +283,10 @@
   .open-assign-field:first-child,
   .open-assign-button {
     grid-column: auto;
+  }
+
+  .open-assign-button {
+    justify-self: end;
   }
 
   .open-shift-card {
