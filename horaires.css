@@ -116,6 +116,13 @@
   color: #747983 !important;
 }
 
+/* Les emojis des cartes passées doivent eux aussi paraître désactivés. */
+.schedule-shift-card-past .schedule-shift-location,
+.schedule-shift-card-past .phone-actions-icon,
+.schedule-shift-card-past .schedule-past-phone {
+  filter: grayscale(1);
+}
+
 .schedule-status-actions {
   margin-top: 17px;
   padding-top: 15px;
