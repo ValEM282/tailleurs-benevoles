@@ -11,6 +11,9 @@ const postStat = document.getElementById("stat-posts");
 const placeStat = document.getElementById("stat-places");
 const absentStat = document.getElementById("stat-absent");
 const availableStat = document.getElementById("stat-available");
+const vacantPostsStat = document.getElementById("stat-vacant-posts");
+const vacantPlacesStat = document.getElementById("stat-vacant-places");
+const vacantHoursStat = document.getElementById("stat-vacant-hours");
 const mealGrid = document.getElementById("meal-grid");
 
 const postPeriod = document.getElementById("post-stats-period");
@@ -59,6 +62,10 @@ function numberValue(value) {
   return Number(value || 0);
 }
 
+function formattedNumber(value, maximumFractionDigits = 1) {
+  return new Intl.NumberFormat("fr-BE", { maximumFractionDigits }).format(numberValue(value));
+}
+
 function initializeDays(days) {
   if (daysInitialized) return;
 
@@ -74,12 +81,15 @@ function initializeDays(days) {
   daysInitialized = true;
 }
 
-function renderSummary(summary = {}) {
+function renderSummary(summary = {}, vacancySummary = {}) {
   volunteerStat.textContent = numberValue(summary.benevoles);
   postStat.textContent = numberValue(summary.postes);
   placeStat.textContent = numberValue(summary.lieux);
   absentStat.textContent = numberValue(summary.absents);
   availableStat.textContent = numberValue(summary.disponibles);
+  vacantPostsStat.textContent = numberValue(vacancySummary.postes);
+  vacantPlacesStat.textContent = numberValue(vacancySummary.places);
+  vacantHoursStat.textContent = formattedNumber(vacancySummary.heures);
 }
 
 function renderMeals(rows) {
@@ -133,36 +143,47 @@ function renderPosts(rows, selectedDay) {
   }).join("");
 }
 
-function renderDaily(rows) {
+function renderDaily(rows, vacancyRows) {
   const dailyRows = Array.isArray(rows) ? rows : [];
+  const vacancies = Array.isArray(vacancyRows) ? vacancyRows : [];
+  const dailyMap = new Map(dailyRows.map(row => [row.jour, row]));
+  const vacancyMap = new Map(vacancies.map(row => [row.jour, row]));
+  const days = [...new Set([...dailyMap.keys(), ...vacancyMap.keys()])].sort();
 
-  if (!dailyRows.length) {
-    dailyBody.innerHTML = '<tr><td colspan="6" class="stats-empty-row">Aucune journée configurée.</td></tr>';
+  if (!days.length) {
+    dailyBody.innerHTML = '<tr><td colspan="9" class="stats-empty-row">Aucune journée configurée.</td></tr>';
     return;
   }
 
-  dailyBody.innerHTML = dailyRows.map(row => `
-    <tr>
-      <td>
-        <button type="button" class="stats-day-button" data-day="${escapeHtml(row.jour)}">
-          ${escapeHtml(capitalize(formatDate(row.jour, false)))}
-        </button>
-      </td>
-      <td>${numberValue(row.benevoles)}</td>
-      <td>${numberValue(row.postes)}</td>
-      <td>${numberValue(row.lieux)}</td>
-      <td>${numberValue(row.absents)}</td>
-      <td>${numberValue(row.disponibles)}</td>
-    </tr>
-  `).join("");
+  dailyBody.innerHTML = days.map(day => {
+    const row = dailyMap.get(day) || {};
+    const vacancy = vacancyMap.get(day) || {};
+    return `
+      <tr>
+        <td>
+          <button type="button" class="stats-day-button" data-day="${escapeHtml(day)}">
+            ${escapeHtml(capitalize(formatDate(day, false)))}
+          </button>
+        </td>
+        <td>${numberValue(row.benevoles)}</td>
+        <td>${numberValue(row.postes)}</td>
+        <td>${numberValue(row.lieux)}</td>
+        <td>${numberValue(row.absents)}</td>
+        <td>${numberValue(row.disponibles)}</td>
+        <td>${numberValue(vacancy.postes)}</td>
+        <td>${numberValue(vacancy.places)}</td>
+        <td>${formattedNumber(vacancy.heures)}</td>
+      </tr>
+    `;
+  }).join("");
 }
 
-function renderStats(data, selectedDay) {
+function renderStats(data, vacancyData, selectedDay) {
   initializeDays(data?.days);
-  renderSummary(data?.summary);
+  renderSummary(data?.summary, vacancyData?.summary);
   renderMeals(data?.meals);
   renderPosts(data?.by_post, selectedDay);
-  renderDaily(data?.daily);
+  renderDaily(data?.daily, vacancyData?.daily);
 
   loadingElement.hidden = true;
   errorElement.hidden = true;
@@ -174,10 +195,12 @@ async function loadStats(selectedDay = "") {
   loadingElement.textContent = "Chargement des statistiques…";
   errorElement.hidden = true;
 
-  const { data, error } = await PortalAuth.client.rpc("admin_get_stats", {
-    p_day: selectedDay || null
-  });
+  const [statsResult, vacancyResult] = await Promise.all([
+    PortalAuth.client.rpc("admin_get_stats", { p_day: selectedDay || null }),
+    PortalAuth.client.rpc("admin_get_vacancy_stats", { p_day: selectedDay || null })
+  ]);
 
+  const error = statsResult.error || vacancyResult.error;
   if (error) {
     console.error("Impossible de charger les statistiques :", error);
     loadingElement.hidden = true;
@@ -186,7 +209,7 @@ async function loadStats(selectedDay = "") {
     return;
   }
 
-  renderStats(data || {}, selectedDay);
+  renderStats(statsResult.data || {}, vacancyResult.data || {}, selectedDay);
 }
 
 async function initStatsPage() {
