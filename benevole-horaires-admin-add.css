@@ -1,0 +1,63 @@
+/* Ajout manuel d'un nouvel horaire depuis la fiche bénévole */
+.schedule-add-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 0 14px;
+}
+
+.schedule-add-button {
+  display: inline-grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 2px solid #2aa352;
+  border-radius: 50%;
+  background: #fff;
+  color: #239348;
+  font: inherit;
+  font-size: 1.65rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.schedule-add-button:hover,
+.schedule-add-button:focus-visible {
+  background: #effcf3;
+  outline: none;
+}
+
+.schedule-add-button[aria-expanded="true"] {
+  background: #effcf3;
+}
+
+.schedule-add-panel {
+  margin: 0 0 22px;
+  padding: 18px;
+  border: 2px solid rgba(28, 46, 171, .16);
+  border-radius: 16px;
+  background: #fff;
+}
+
+.schedule-add-panel[hidden] {
+  display: none;
+}
+
+.schedule-add-panel .schedule-edit-form {
+  margin: 0;
+}
+
+.schedule-add-panel .schedule-edit-message[hidden] {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .schedule-add-toolbar {
+    margin-bottom: 12px;
+  }
+
+  .schedule-add-panel {
+    padding: 14px;
+  }
+}
