@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Horaires à compléter — Administration</title>
+  <title>Horaires vacants — Administration</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,7 +11,7 @@
 
   <link rel="stylesheet" href="styles.css?v=20260921-2">
   <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
-  <link rel="stylesheet" href="admin-horaires-completer.css?v=20260924-1">
+  <link rel="stylesheet" href="admin-horaires-completer.css?v=20260924-2">
 </head>
 <body class="dashboard-page">
   <header class="dashboard-header">
@@ -25,8 +25,7 @@
   <main class="subpage-main open-shifts-main">
     <section class="open-shifts-heading">
       <div>
-        <h1>HORAIRES A COMPLETER</h1>
-        <p>Les créneaux marqués X dans les plannings Excel apparaissent ici tant qu’ils ne sont pas couverts.</p>
+        <h1>HORAIRES VACANTS</h1>
       </div>
     </section>
 
@@ -45,21 +44,6 @@
       </div>
     </section>
 
-    <section class="open-shifts-summary" aria-label="Résumé des besoins">
-      <article class="open-summary-card">
-        <span>Places à pourvoir</span>
-        <strong id="open-summary-places">0</strong>
-      </article>
-      <article class="open-summary-card">
-        <span>Postes concernés</span>
-        <strong id="open-summary-posts">0</strong>
-      </article>
-      <article class="open-summary-card">
-        <span>Heures bénévoles manquantes</span>
-        <strong id="open-summary-hours">0</strong>
-      </article>
-    </section>
-
     <div id="open-shifts-loading" class="open-shifts-message">Chargement des créneaux à pourvoir…</div>
     <div id="open-shifts-error" class="open-shifts-message open-shifts-error" hidden></div>
     <div id="open-shifts-list" class="open-shifts-list" aria-live="polite"></div>
@@ -67,6 +51,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="portal-auth.js"></script>
-  <script src="admin-horaires-completer.js?v=20260924-1"></script>
+  <script src="admin-horaires-completer.js?v=20260924-2"></script>
 </body>
 </html>
