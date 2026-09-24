@@ -11,7 +11,7 @@
 
   <link rel="stylesheet" href="styles.css?v=20260921-2">
   <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
-  <link rel="stylesheet" href="admin-stats.css?v=20260924-2">
+  <link rel="stylesheet" href="admin-stats.css?v=20260924-3">
   <link rel="stylesheet" href="admin-stats-vacancy.css?v=20260924-1">
 </head>
 <body class="dashboard-page">
@@ -88,6 +88,22 @@
         <div id="meal-grid" class="meal-grid" aria-live="polite"></div>
       </section>
 
+      <section class="stats-section" aria-labelledby="volunteer-hours-title">
+        <div class="stats-section-heading">
+          <div>
+            <h2 id="volunteer-hours-title">Heures prestées par bénévole</h2>
+            <p>Calculées à partir des horaires planifiés actifs.</p>
+          </div>
+          <p id="volunteer-hours-period"></p>
+        </div>
+        <div class="stats-table-scroll">
+          <table class="stats-table volunteer-hours-table">
+            <thead id="volunteer-hours-head"></thead>
+            <tbody id="volunteer-hours-body"></tbody>
+          </table>
+        </div>
+      </section>
+
       <section class="stats-section" aria-labelledby="post-stats-title">
         <div class="stats-section-heading">
           <h2 id="post-stats-title">Bénévoles par poste</h2>
@@ -135,6 +151,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="portal-auth.js"></script>
-  <script src="admin-stats.js?v=20260924-4"></script>
+  <script src="admin-stats.js?v=20260924-5"></script>
 </body>
 </html>
