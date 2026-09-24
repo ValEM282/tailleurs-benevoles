@@ -28,7 +28,6 @@
     <section class="stats-heading">
       <div>
         <h1>Statistiques</h1>
-        <p>Une personne n’est comptée qu’une fois par jour, même si elle a plusieurs horaires.</p>
       </div>
 
       <div class="stats-filter">
@@ -81,10 +80,8 @@
       <section class="stats-section meal-section" aria-labelledby="meal-title">
         <div class="stats-section-heading">
           <div>
-            <h2 id="meal-title">🍽️ Repas de midi</h2>
-            <p class="meal-rule">Jeudi, vendredi et lundi : repas commun · Samedi et dimanche : sandwich.</p>
+            <h2 id="meal-title">Catering bénévole</h2>
           </div>
-          <p>Comptage des horaires recouvrant 11h30–14h00.</p>
         </div>
         <div id="meal-grid" class="meal-grid" aria-live="polite"></div>
       </section>
@@ -125,7 +122,7 @@
       <section class="stats-section" aria-labelledby="post-stats-title">
         <div class="stats-section-heading">
           <h2 id="post-stats-title">Bénévoles par poste</h2>
-          <p id="post-stats-period"></p>
+          <p id="post-stats-period" hidden></p>
         </div>
         <div class="stats-table-scroll">
           <table class="stats-table">
@@ -172,6 +169,7 @@
   <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
   <script src="portal-auth.js"></script>
   <script src="admin-stats.js?v=20260924-7"></script>
+  <script src="admin-stats-ui-cleanup.js?v=20260924-1"></script>
   <script src="admin-stats-hours-pdf.js?v=20260924-1"></script>
 </body>
 </html>
