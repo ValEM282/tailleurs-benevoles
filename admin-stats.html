@@ -11,7 +11,7 @@
 
   <link rel="stylesheet" href="styles.css?v=20260921-2">
   <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
-  <link rel="stylesheet" href="admin-stats.css?v=20260924-4">
+  <link rel="stylesheet" href="admin-stats.css?v=20260924-5">
   <link rel="stylesheet" href="admin-stats-vacancy.css?v=20260924-1">
 </head>
 <body class="dashboard-page">
@@ -90,11 +90,7 @@
 
       <section class="stats-section" aria-labelledby="volunteer-hours-title">
         <div class="stats-section-heading">
-          <div>
-            <h2 id="volunteer-hours-title">Heures prestées par bénévole</h2>
-            <p>Calculées à partir des horaires planifiés actifs du 1er au 5 octobre.</p>
-          </div>
-          <p id="volunteer-hours-period">01/10 au 05/10</p>
+          <h2 id="volunteer-hours-title">Heures prestées par bénévole</h2>
         </div>
 
         <div class="volunteer-hours-search" role="search" aria-label="Rechercher un bénévole dans les heures prestées">
@@ -109,7 +105,7 @@
           <button type="button" id="volunteer-hours-search-button" class="volunteer-hours-search-button">Rechercher</button>
         </div>
 
-        <div class="stats-table-scroll">
+        <div id="volunteer-hours-results" class="stats-table-scroll" hidden>
           <table class="stats-table volunteer-hours-table">
             <thead id="volunteer-hours-head"></thead>
             <tbody id="volunteer-hours-body"></tbody>
@@ -164,6 +160,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="portal-auth.js"></script>
-  <script src="admin-stats.js?v=20260924-6"></script>
+  <script src="admin-stats.js?v=20260924-7"></script>
 </body>
 </html>
