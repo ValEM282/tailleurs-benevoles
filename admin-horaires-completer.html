@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Horaires à compléter — Administration</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css?v=20260921-2">
+  <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
+  <link rel="stylesheet" href="admin-horaires-completer.css?v=20260924-1">
+</head>
+<body class="dashboard-page">
+  <header class="dashboard-header">
+    <div class="subpage-header-inner">
+      <a href="admin.html" class="back-button">← Accueil ADMIN</a>
+      <div class="dashboard-title">🎪 PORTAIL BÉNÉVOLES 🎪</div>
+      <button type="button" id="logout-button" class="logout-button">Se déconnecter</button>
+    </div>
+  </header>
+
+  <main class="subpage-main open-shifts-main">
+    <section class="open-shifts-heading">
+      <div>
+        <h1>HORAIRES A COMPLETER</h1>
+        <p>Les créneaux marqués X dans les plannings Excel apparaissent ici tant qu’ils ne sont pas couverts.</p>
+      </div>
+    </section>
+
+    <section class="open-shifts-filters" aria-label="Filtres">
+      <div class="open-filter-field">
+        <label for="open-day-filter">Jour</label>
+        <select id="open-day-filter">
+          <option value="">Tous les jours</option>
+        </select>
+      </div>
+      <div class="open-filter-field">
+        <label for="open-post-filter">Poste</label>
+        <select id="open-post-filter">
+          <option value="">Tous les postes</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="open-shifts-summary" aria-label="Résumé des besoins">
+      <article class="open-summary-card">
+        <span>Places à pourvoir</span>
+        <strong id="open-summary-places">0</strong>
+      </article>
+      <article class="open-summary-card">
+        <span>Postes concernés</span>
+        <strong id="open-summary-posts">0</strong>
+      </article>
+      <article class="open-summary-card">
+        <span>Heures bénévoles manquantes</span>
+        <strong id="open-summary-hours">0</strong>
+      </article>
+    </section>
+
+    <div id="open-shifts-loading" class="open-shifts-message">Chargement des créneaux à pourvoir…</div>
+    <div id="open-shifts-error" class="open-shifts-message open-shifts-error" hidden></div>
+    <div id="open-shifts-list" class="open-shifts-list" aria-live="polite"></div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="portal-auth.js"></script>
+  <script src="admin-horaires-completer.js?v=20260924-1"></script>
+</body>
+</html>
