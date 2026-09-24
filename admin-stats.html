@@ -11,7 +11,7 @@
 
   <link rel="stylesheet" href="styles.css?v=20260921-2">
   <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
-  <link rel="stylesheet" href="admin-stats.css?v=20260924-5">
+  <link rel="stylesheet" href="admin-stats.css?v=20260924-6">
   <link rel="stylesheet" href="admin-stats-vacancy.css?v=20260924-1">
   <link rel="stylesheet" href="admin-stats-hours-pdf.css?v=20260924-1">
 </head>
@@ -128,11 +128,15 @@
         <div class="volunteer-hours-search" role="search" aria-label="Rechercher dans les bénévoles par poste">
           <div class="volunteer-hours-search-field">
             <label for="post-stats-post-search">Poste</label>
-            <input id="post-stats-post-search" type="text" autocomplete="off">
+            <select id="post-stats-post-search">
+              <option value="">Tous les postes</option>
+            </select>
           </div>
           <div class="volunteer-hours-search-field">
             <label for="post-stats-subpost-search">Sous-poste</label>
-            <input id="post-stats-subpost-search" type="text" autocomplete="off">
+            <select id="post-stats-subpost-search">
+              <option value="">Tous les sous-postes</option>
+            </select>
           </div>
           <button type="button" id="post-stats-search-button" class="volunteer-hours-search-button">Rechercher</button>
         </div>
@@ -183,7 +187,7 @@
   <script src="portal-auth.js"></script>
   <script src="admin-stats.js?v=20260924-7"></script>
   <script src="admin-stats-ui-cleanup.js?v=20260924-2"></script>
-  <script src="admin-stats-post-search.js?v=20260924-1"></script>
+  <script src="admin-stats-post-search.js?v=20260924-2"></script>
   <script src="admin-stats-hours-pdf.js?v=20260924-1"></script>
 </body>
 </html>
