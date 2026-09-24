@@ -12,6 +12,22 @@
   <link rel="stylesheet" href="styles.css?v=20260921-2">
   <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
   <link rel="stylesheet" href="admin-horaires-completer.css?v=20260924-2">
+  <style>
+    .open-shifts-filters {
+      position: relative;
+      z-index: 100;
+      overflow: visible;
+    }
+    .open-filter-field {
+      position: relative;
+      z-index: 101;
+    }
+    .open-shifts-list,
+    .open-shifts-message {
+      position: relative;
+      z-index: 1;
+    }
+  </style>
 </head>
 <body class="dashboard-page">
   <header class="dashboard-header">
@@ -43,6 +59,12 @@
         </select>
       </div>
     </section>
+
+    <div hidden aria-hidden="true">
+      <span id="open-summary-places">0</span>
+      <span id="open-summary-posts">0</span>
+      <span id="open-summary-hours">0</span>
+    </div>
 
     <div id="open-shifts-loading" class="open-shifts-message">Chargement des créneaux à pourvoir…</div>
     <div id="open-shifts-error" class="open-shifts-message open-shifts-error" hidden></div>
