@@ -12,6 +12,11 @@
   min-width: 104px;
 }
 
+/* Administration — ordre des encadrés */
+.admin-management-section[aria-labelledby="admin-open-shifts-title"] {
+  order: -1;
+}
+
 @media (max-width: 900px) {
   .admin-post-create-panel .admin-post-create-columns {
     grid-template-columns: 1fr;
