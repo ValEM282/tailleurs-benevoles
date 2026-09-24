@@ -211,28 +211,39 @@
   document.body.appendChild(script);
 })();
 
-// Ajoute l'encadré HORAIRES A COMPLETER juste avant STATS.
+// Ajoute l'encadré HORAIRES VACANTS juste avant STATS si nécessaire.
 (() => {
   const management = document.querySelector(".admin-management");
   const statsSection = document.querySelector('[aria-labelledby="admin-stats-title"]');
-  if (!management || document.getElementById("admin-open-shifts-title")) return;
 
-  const section = document.createElement("section");
-  section.className = "admin-management-section";
-  section.setAttribute("aria-labelledby", "admin-open-shifts-title");
-  section.innerHTML = `
-    <div class="admin-section-heading">
-      <h2 id="admin-open-shifts-title">HORAIRES A COMPLETER</h2>
-    </div>
-    <a
-      href="admin-horaires-completer.html"
-      class="admin-search-button"
-      style="display:flex;align-items:center;justify-content:center;width:100%;text-decoration:none;box-sizing:border-box;"
-    >
-      Voir les places à pourvoir
-    </a>
-  `;
+  if (management && !document.getElementById("admin-open-shifts-title")) {
+    const section = document.createElement("section");
+    section.className = "admin-management-section";
+    section.setAttribute("aria-labelledby", "admin-open-shifts-title");
+    section.innerHTML = `
+      <div class="admin-section-heading">
+        <h2 id="admin-open-shifts-title">HORAIRES VACANTS</h2>
+      </div>
+      <a
+        href="admin-horaires-completer.html"
+        class="admin-search-button"
+        style="display:flex;align-items:center;justify-content:center;width:100%;text-decoration:none;box-sizing:border-box;"
+      >
+        Voir
+      </a>
+    `;
 
-  if (statsSection) management.insertBefore(section, statsSection);
-  else management.appendChild(section);
+    if (statsSection) management.insertBefore(section, statsSection);
+    else management.appendChild(section);
+  }
+
+  const openShiftsTitle = document.getElementById("admin-open-shifts-title");
+  if (openShiftsTitle) openShiftsTitle.textContent = "HORAIRES VACANTS";
+
+  const openShiftsSection = openShiftsTitle?.closest(".admin-management-section");
+  const openShiftsLink = openShiftsSection?.querySelector('a[href="admin-horaires-completer.html"]');
+  if (openShiftsLink) openShiftsLink.textContent = "Voir";
+
+  const statsLink = document.querySelector('a[href="admin-stats.html"]');
+  if (statsLink) statsLink.textContent = "Voir";
 })();
