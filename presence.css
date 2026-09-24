@@ -4,13 +4,26 @@
   color: var(--red);
 }
 
+.next-shift-heading {
+  margin-bottom: 8px;
+}
+
+.next-shift-heading-block {
+  display: inline-block;
+}
+
+.next-shift-heading-block h2 {
+  line-height: 1.05;
+}
+
 .next-shift-heading-subtitle {
-  margin: 3px 0 0;
+  margin: -1px 0 0;
   color: var(--text);
   font-family: "Titillium Web", Arial, sans-serif;
   font-size: 1rem;
   font-weight: 400;
-  line-height: 1.35;
+  line-height: 1.2;
+  text-align: center;
 }
 
 .next-shift-poste {
