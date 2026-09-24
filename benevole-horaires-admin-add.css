@@ -1,11 +1,13 @@
 /* Ajout manuel d'un nouvel horaire depuis la fiche bénévole */
 .schedule-add-button {
-  display: inline-grid;
-  place-items: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex: 0 0 42px;
   width: 42px;
   height: 42px;
-  padding: 0;
+  box-sizing: border-box;
+  padding: 0 0 2px;
   border: 2px solid #2aa352;
   border-radius: 50%;
   background: #fff;
@@ -14,6 +16,7 @@
   font-size: 1.5rem;
   font-weight: 700;
   line-height: 1;
+  text-align: center;
   cursor: pointer;
 }
 
@@ -53,6 +56,7 @@
     width: 38px;
     height: 38px;
     font-size: 1.35rem;
+    padding-bottom: 2px;
   }
 
   .schedule-add-panel {
