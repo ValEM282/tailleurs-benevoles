@@ -265,19 +265,12 @@
 
 .admin-search-actions {
   display: grid;
-  grid-template-columns: 1fr 1.15fr;
+  grid-template-columns: 1fr;
   gap: 8px;
 }
 
 .admin-list-button {
-  min-width: 0;
-  border: 2px solid var(--blue);
-  background: var(--white);
-  color: var(--blue);
-}
-
-.admin-list-button:hover {
-  background: rgba(28, 46, 171, 0.06);
+  display: none;
 }
 
 .admin-search-button {
@@ -313,7 +306,7 @@
   }
 
   .admin-search-actions {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
   }
 }
 
