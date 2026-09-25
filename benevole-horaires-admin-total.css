@@ -1,0 +1,20 @@
+/* Total d'heures prévu à côté du nom du bénévole. */
+.schedule-total-hours {
+  flex: 0 0 auto;
+  color: var(--text-light);
+  font-family: "Titillium Web", Arial, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.schedule-total-hours[hidden] {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .schedule-total-hours {
+    font-size: .95rem;
+  }
+}
