@@ -28,18 +28,21 @@
 body,
 input,
 select,
-textarea,
+textarea {
+  font-family: "Titillium Web", Arial, sans-serif;
+}
+
 button,
 .button,
 [class*="-button"] {
-  font-family: "Titillium Web", Arial, sans-serif;
+  font-family: "Titillium Web", Arial, sans-serif !important;
 }
 
 /* Titre principal du portail : seul usage de Macho Black. */
 .dashboard-title,
 .brand p {
-  font-family: "Macho Black Title", "Macho", "Titillium Web", sans-serif;
-  font-weight: 900;
+  font-family: "Macho Black Title", "Macho", "Titillium Web", sans-serif !important;
+  font-weight: 900 !important;
   text-transform: uppercase;
 }
 
