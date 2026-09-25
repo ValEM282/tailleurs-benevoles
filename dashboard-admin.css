@@ -16,9 +16,9 @@
   justify-content: center;
   min-height: 42px;
   padding: 8px 16px;
-  border: 2px solid var(--red);
+  border: 2px solid #891E82;
   border-radius: 11px;
-  background: var(--red);
+  background: #891E82;
   color: var(--white);
   font-family: "Macho", "Titillium Web", sans-serif;
   font-weight: 700;
@@ -26,8 +26,8 @@
 }
 
 .admin-portal-button:hover {
-  background: #c80029;
-  border-color: #c80029;
+  background: #74196f;
+  border-color: #74196f;
 }
 
 @media (max-width: 600px) {
