@@ -36,8 +36,7 @@ button,
 }
 
 /* Titre principal du portail : seul usage de Macho Black. */
-.dashboard-title,
-.brand p {
+.dashboard-title {
   font-family: "Macho Black Title", "Macho", "Titillium Web", sans-serif;
   font-weight: 900;
   text-transform: uppercase;
