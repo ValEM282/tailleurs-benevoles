@@ -24,7 +24,12 @@
   font-display: swap;
 }
 
-/* Texte courant et commandes : Titillium Web. */
+:root {
+  --title-main-size: clamp(2rem, 4.5vw, 2.6rem);
+  --title-secondary-size: clamp(1.35rem, 3vw, 1.7rem);
+}
+
+/* Texte courant : Titillium Web. */
 body,
 input,
 select,
@@ -38,7 +43,7 @@ button,
   font-family: "Titillium Web", Arial, sans-serif !important;
 }
 
-/* Titre principal du portail : seul usage de Macho Black. */
+/* Titre identitaire du portail. */
 .dashboard-title,
 .brand p {
   font-family: "Macho Black Title", "Macho", "Titillium Web", sans-serif !important;
@@ -46,5 +51,26 @@ button,
   text-transform: uppercase;
 }
 
-/* Les titres déjà déclarés en Macho dans les feuilles existantes utilisent
-   désormais automatiquement Macho Regular (400) ou Macho Medium (600–800). */
+/* Grands titres de page. */
+h1 {
+  font-family: "Macho Black Title", "Macho", "Titillium Web", sans-serif !important;
+  font-weight: 900 !important;
+  font-size: var(--title-main-size) !important;
+  line-height: 1.05 !important;
+}
+
+/* Titres secondaires / titres de section. */
+h2 {
+  font-family: "Macho Black Title", "Macho", "Titillium Web", sans-serif !important;
+  font-weight: 900 !important;
+  font-size: var(--title-secondary-size) !important;
+  line-height: 1.1 !important;
+}
+
+/* Les titres de niveau inférieur restent volontairement plus discrets. */
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Macho", "Titillium Web", sans-serif;
+}
