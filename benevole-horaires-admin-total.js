@@ -20,12 +20,26 @@
     return element;
   }
 
+  function totalHoursClass(value) {
+    const total = Number(value || 0);
+    if (total < 8) return "schedule-total-hours-low";
+    if (total > 8) return "schedule-total-hours-high";
+    return "schedule-total-hours-equal";
+  }
+
   function displayTotal(value) {
     const element = ensureTotalElement();
     if (!element) return;
 
     const numericValue = Number(value || 0);
     const safeValue = Number.isFinite(numericValue) ? numericValue : 0;
+
+    element.classList.remove(
+      "schedule-total-hours-low",
+      "schedule-total-hours-equal",
+      "schedule-total-hours-high"
+    );
+    element.classList.add(totalHoursClass(safeValue));
     element.textContent = `· ${numberFormatter.format(safeValue)} h`;
     element.hidden = false;
   }
