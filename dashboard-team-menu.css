@@ -1,0 +1,11 @@
+.team-menu-button-active {
+  background: var(--white);
+  color: var(--red);
+  border-color: var(--red);
+}
+
+.team-menu-button-active:hover {
+  background: rgba(228, 2, 48, 0.06);
+  color: var(--red);
+  border-color: var(--red);
+}
