@@ -126,6 +126,11 @@ function resetCandidateSelect(select) {
   select.innerHTML = '<option value="">Cliquer pour charger les bénévoles…</option>';
 }
 
+function compareCandidates(a, b) {
+  return collator.compare(String(a.nom || ""), String(b.nom || ""))
+    || collator.compare(String(a.prenom || ""), String(b.prenom || ""));
+}
+
 async function loadCandidates(card, need) {
   const form = card.querySelector(".open-assign-form");
   const select = form.querySelector(".open-candidate-select");
@@ -167,8 +172,12 @@ async function loadCandidates(card, need) {
   const candidates = Array.isArray(data) ? data : [];
   select.innerHTML = '<option value="">Choisir un·e bénévole</option>';
 
-  const live = candidates.filter(row => row.disponible_live === true);
-  const free = candidates.filter(row => row.disponible_live !== true);
+  const live = candidates
+    .filter(row => row.disponible_live === true)
+    .sort(compareCandidates);
+  const free = candidates
+    .filter(row => row.disponible_live !== true)
+    .sort(compareCandidates);
 
   const addGroup = (label, rows) => {
     if (!rows.length) return;
@@ -177,7 +186,7 @@ async function loadCandidates(card, need) {
     rows.forEach(row => {
       const option = document.createElement("option");
       option.value = row.personne_id;
-      option.textContent = `${row.prenom} ${(row.nom || "").toUpperCase()}${row.telephone ? ` · ${row.telephone}` : ""}`;
+      option.textContent = `${String(row.nom || "").trim().toUpperCase()} ${String(row.prenom || "").trim()}`.trim();
       group.appendChild(option);
     });
     select.appendChild(group);
@@ -259,7 +268,7 @@ function createCard(need) {
       <span class="open-urgency">${escapeHtml(urgency.label)}</span>
     </div>
     <div class="open-shift-meta">
-      <span><strong>${escapeHtml(formatDate(need.jour))}</strong> · ${escapeHtml(formatDisplayTime(need.debut_heure))}-${escapeHtml(formatDisplayTime(need.fin_heure))} (${escapeHtml(formatHours(Number(need.minutes || 0)))}h)</span>
+      <span><strong>${escapeHtml(formatDate(need.jour))}</strong> · ${escapeHtml(formatDisplayTime(need.debut_heure))}-${escapeHtml(formatDisplayTime(need.fin_heure))} <span class="open-shift-duration" style="color:var(--text-light)">(${escapeHtml(formatHours(Number(need.minutes || 0)))}h)</span></span>
       <span>📍 ${escapeHtml(need.lieu || "Lieu à confirmer")}</span>
     </div>
     <form class="open-assign-form">
