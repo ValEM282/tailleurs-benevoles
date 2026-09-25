@@ -280,6 +280,23 @@
   color: var(--white);
 }
 
+#admin-volunteer-search,
+#admin-responsible-search,
+#admin-post-search,
+#admin-place-search {
+  font-size: 0;
+}
+
+#admin-volunteer-search::after,
+#admin-responsible-search::after,
+#admin-post-search::after,
+#admin-place-search::after {
+  content: "Rechercher";
+  font-family: "Titillium Web", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
 .admin-search-button:hover {
   background: #142389;
   border-color: #142389;
