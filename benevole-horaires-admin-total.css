@@ -31,17 +31,17 @@
   }
 }
 
-/* Smartphone en mode portrait : le total reste juste sous le bouton +,
-   dans la même hauteur visuelle qu'un prénom + nom sur deux lignes. */
+/* Smartphone en mode portrait : le + correspond visuellement à la ligne du prénom,
+   et le total d'heures à la ligne du nom lorsque celui-ci passe sur deux lignes. */
 @media (max-width: 600px) and (orientation: portrait) {
   .schedule-volunteer-identity {
     flex: 1 1 auto;
     display: grid;
     grid-template-columns: 38px minmax(0, 1fr) 20px;
-    grid-template-rows: 38px auto;
+    grid-template-rows: 38px 16px;
     align-items: start;
     column-gap: 10px;
-    row-gap: 1px;
+    row-gap: 5px;
     min-width: 0;
   }
 
@@ -69,7 +69,7 @@
     grid-column: 1;
     grid-row: 2;
     justify-self: center;
-    align-self: start;
+    align-self: center;
     width: max-content;
     margin-top: 0;
     font-size: .82rem;
