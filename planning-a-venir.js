@@ -107,6 +107,30 @@ function visibleRowsForDay() {
   return filterRows.filter(row => row.jour === dayFilter.value);
 }
 
+function appendAllFilterOption(container, labelText, selectedIds) {
+  const label = document.createElement("label");
+  label.className = "multi-option multi-option-all";
+
+  const input = document.createElement("input");
+  input.type = "checkbox";
+  input.value = "";
+  input.checked = selectedIds.size === 0;
+  input.addEventListener("change", () => {
+    if (!input.checked) {
+      input.checked = selectedIds.size === 0;
+      return;
+    }
+    selectedIds.clear();
+    renderFilterOptions();
+    loadUpcoming();
+  });
+
+  const span = document.createElement("span");
+  span.textContent = labelText;
+  label.append(input, span);
+  container.appendChild(label);
+}
+
 function renderFilterOptions() {
   const rows = visibleRowsForDay();
   const posts = uniqueBy(rows, row => String(row.poste_id))
@@ -118,6 +142,7 @@ function renderFilterOptions() {
   selectedPlaceIds = new Set([...selectedPlaceIds].filter(id => places.some(p => String(p.lieu_id) === id)));
 
   postOptions.innerHTML = "";
+  appendAllFilterOption(postOptions, "Tous les postes", selectedPostIds);
   posts.forEach(post => {
     const label = document.createElement("label");
     label.className = "multi-option";
@@ -128,7 +153,7 @@ function renderFilterOptions() {
     input.addEventListener("change", () => {
       const id = String(post.poste_id);
       input.checked ? selectedPostIds.add(id) : selectedPostIds.delete(id);
-      updateFilterSummaries();
+      renderFilterOptions();
       loadUpcoming();
     });
     const span = document.createElement("span");
@@ -138,6 +163,7 @@ function renderFilterOptions() {
   });
 
   placeOptions.innerHTML = "";
+  appendAllFilterOption(placeOptions, "Tous les lieux", selectedPlaceIds);
   places.forEach(place => {
     const label = document.createElement("label");
     label.className = "multi-option";
@@ -148,7 +174,7 @@ function renderFilterOptions() {
     input.addEventListener("change", () => {
       const id = String(place.lieu_id);
       input.checked ? selectedPlaceIds.add(id) : selectedPlaceIds.delete(id);
-      updateFilterSummaries();
+      renderFilterOptions();
       loadUpcoming();
     });
     const span = document.createElement("span");
