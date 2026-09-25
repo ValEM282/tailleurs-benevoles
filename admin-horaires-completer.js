@@ -91,6 +91,12 @@ function formatHours(minutes) {
   return new Intl.NumberFormat("fr-BE", { maximumFractionDigits: 1 }).format(hours);
 }
 
+function formatDisplayTime(value) {
+  const [hours = "0", minutes = "00"] = String(value ?? "").split(":");
+  const hour = String(Number(hours));
+  return minutes && minutes !== "00" ? `${hour}h${minutes}` : `${hour}h`;
+}
+
 function updateSummary(rows) {
   if (summaryPlaces) summaryPlaces.textContent = rows.length;
   if (summaryPosts) summaryPosts.textContent = new Set(rows.map(row => String(row.poste_id))).size;
@@ -253,9 +259,8 @@ function createCard(need) {
       <span class="open-urgency">${escapeHtml(urgency.label)}</span>
     </div>
     <div class="open-shift-meta">
-      <span><strong>${escapeHtml(formatDate(need.jour))}</strong> · ${escapeHtml(need.debut_heure)}–${escapeHtml(need.fin_heure)}</span>
+      <span><strong>${escapeHtml(formatDate(need.jour))}</strong> · ${escapeHtml(formatDisplayTime(need.debut_heure))}-${escapeHtml(formatDisplayTime(need.fin_heure))} (${escapeHtml(formatHours(Number(need.minutes || 0)))}h)</span>
       <span>📍 ${escapeHtml(need.lieu || "Lieu à confirmer")}</span>
-      <span>(${formatHours(Number(need.minutes || 0))} h à couvrir)</span>
     </div>
     <form class="open-assign-form">
       <div class="open-assign-field">
