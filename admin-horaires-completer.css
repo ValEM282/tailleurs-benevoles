@@ -173,6 +173,11 @@
   color: var(--text);
 }
 
+.open-shift-meta > span:first-child,
+.open-shift-meta > span:first-child strong {
+  color: var(--red);
+}
+
 .open-assign-form {
   display: grid;
   grid-template-columns: minmax(260px, 2fr) minmax(120px, 0.6fr) minmax(120px, 0.6fr) auto;
