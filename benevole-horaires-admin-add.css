@@ -65,11 +65,96 @@
 }
 
 
-.schedule-edit-locations{display:grid;gap:8px}
-.schedule-edit-location-row{display:grid;grid-template-columns:minmax(0,1fr) 34px;gap:8px;align-items:end}
-.schedule-edit-location-row:first-child{grid-template-columns:minmax(0,1fr)}
-.schedule-edit-location-row label{display:grid;gap:4px}
-.schedule-edit-location-row select{width:100%}
-.schedule-add-location-button{justify-self:start;border:0;background:transparent;color:var(--blue);font:inherit;font-weight:700;cursor:pointer;padding:4px 0}
-.schedule-add-location-button:hover{text-decoration:underline}
-.schedule-remove-location-button{width:34px;height:34px;border:2px solid #ef768f;border-radius:8px;background:#fff;color:#c82043;font-size:1.2rem;font-weight:800;cursor:pointer}
+/* Lieux : même conception visuelle que les blocs Plage */
+.schedule-edit-locations {
+  display: grid;
+  gap: 10px;
+}
+
+.schedule-edit-location-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  padding: 11px 12px;
+  border: 1px solid #e3e6ef;
+  border-radius: 12px;
+  background: #fafbff;
+  position: relative;
+}
+
+.schedule-edit-location-row label {
+  display: grid;
+  gap: 5px;
+}
+
+.schedule-edit-location-row label > span {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  padding-right: 42px;
+  font-weight: 700;
+  color: var(--blue);
+}
+
+.schedule-edit-location-row select {
+  min-height: 42px;
+  width: 100%;
+  border: 1px solid #cfd5e6;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  padding: 7px 32px 7px 10px;
+}
+
+.schedule-edit-location-row select:focus {
+  border-color: var(--blue);
+  outline: 3px solid rgba(28, 46, 171, .13);
+}
+
+.schedule-add-location-button {
+  justify-self: start;
+  padding: 8px 12px;
+  border: 1px solid var(--blue);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--blue);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.schedule-add-location-button:hover {
+  background: #f2f4ff;
+}
+
+.schedule-remove-location-button {
+  position: absolute;
+  top: 11px;
+  right: 12px;
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 2px solid #ef657f;
+  border-radius: 9px;
+  background: #fff;
+  color: #d41437;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.schedule-remove-location-button:hover {
+  background: #fff1f4;
+}
+
+.schedule-add-location-button:disabled,
+.schedule-remove-location-button:disabled {
+  opacity: .55;
+  cursor: wait;
+}
