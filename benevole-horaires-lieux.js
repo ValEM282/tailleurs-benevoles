@@ -36,36 +36,24 @@ function linkedLocationsForPost(posteId) {
 
 function filterLocationSelect(postSelect, keepCurrent = false) {
   if (!postSelect) return;
-
   const form = postSelect.closest(".schedule-edit-form");
-  const lieuSelect = form?.querySelector(".schedule-edit-lieu");
-  if (!lieuSelect) return;
+  const lieuSelects = [...(form?.querySelectorAll(".schedule-edit-lieu") || [])];
+  if (!lieuSelects.length) return;
 
   const posteId = postSelect.value;
-  const previousValue = keepCurrent ? lieuSelect.value : "";
   const linkedLocations = linkedLocationsForPost(posteId);
 
-  const options = [
-    `<option value="">${linkedLocations.length ? "Choisir un lieu" : "Aucun lieu lié à ce poste"}</option>`
-  ];
-
-  linkedLocations.forEach(lieu => {
-    const selected = String(lieu.id) === String(previousValue) ? " selected" : "";
-    options.push(
-      `<option value="${escapeOptionText(lieu.id)}"${selected}>${escapeOptionText(lieu.nom)}</option>`
-    );
+  lieuSelects.forEach(lieuSelect => {
+    const previousValue = keepCurrent ? lieuSelect.value : "";
+    const options = [`<option value="">${linkedLocations.length ? "Choisir un lieu" : "Aucun lieu lié à ce poste"}</option>`];
+    linkedLocations.forEach(lieu => {
+      const selected = String(lieu.id) === String(previousValue) ? " selected" : "";
+      options.push(`<option value="${escapeOptionText(lieu.id)}"${selected}>${escapeOptionText(lieu.nom)}</option>`);
+    });
+    lieuSelect.innerHTML = options.join("");
+    lieuSelect.disabled = linkedLocations.length === 0;
+    if (!keepCurrent && linkedLocations.length === 1) lieuSelect.value = String(linkedLocations[0].id);
   });
-
-  lieuSelect.innerHTML = options.join("");
-  lieuSelect.disabled = linkedLocations.length === 0;
-
-  // Si un seul lieu est possible après un changement de poste,
-  // on le sélectionne automatiquement pour accélérer la correction.
-  if (!keepCurrent && linkedLocations.length === 1) {
-    lieuSelect.value = String(linkedLocations[0].id);
-  }
-
-  lieuSelect.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
 // Quand on clique sur le crayon, le formulaire est créé par le script principal.
