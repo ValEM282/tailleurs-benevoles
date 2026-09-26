@@ -37,6 +37,34 @@ function formatTime(dateValue) {
   return minute === "00" ? `${hour}h` : `${hour}h${minute}`;
 }
 
+function mergeConsecutiveRanges(rows) {
+  const sorted = [...rows].sort((a, b) => new Date(a.debut) - new Date(b.debut));
+  const ranges = [];
+
+  sorted.forEach(row => {
+    const start = new Date(row.debut).getTime();
+    const end = new Date(row.fin).getTime();
+    const previous = ranges[ranges.length - 1];
+
+    // Deux plages qui se touchent exactement sont un seul horaire visuel.
+    // Les lignes restent distinctes en DB : cette fusion ne concerne que l'affichage.
+    if (previous && start === previous.end) {
+      previous.end = Math.max(previous.end, end);
+      previous.fin = row.fin;
+      return;
+    }
+
+    ranges.push({
+      start,
+      end,
+      debut: row.debut,
+      fin: row.fin
+    });
+  });
+
+  return ranges;
+}
+
 function formatDayLabel(isoDate) {
   const [year, month, day] = isoDate.split("-").map(Number);
   const date = new Date(Date.UTC(year, month - 1, day, 12));
@@ -417,8 +445,8 @@ function renderGroups(rows) {
 
         const range = document.createElement("div");
         range.className = "volunteer-end";
-        range.textContent = entry.rows
-          .map(row => `${formatTime(row.debut)}-${formatTime(row.fin)}`)
+        range.textContent = mergeConsecutiveRanges(entry.rows)
+          .map(item => `${formatTime(item.debut)}-${formatTime(item.fin)}`)
           .join(" | ");
         item.appendChild(range);
         list.appendChild(item);
