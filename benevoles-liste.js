@@ -293,7 +293,19 @@ async function saveLogisticsEditor(button) {
   if(error){ saveButton.disabled=false; cancelButton.disabled=false; input.disabled=false; showContactEditError(editor,error.message||"La modification n'a pas pu être enregistrée."); return; }
   const updated=Array.isArray(data)?data[0]:data;
   const volunteer=volunteers.find(item=>item.id===editor.dataset.benevoleId);
-  if(volunteer&&updated){ volunteer.tshirt=updated.tshirt; volunteer.tailloux=updated.tailloux; volunteer.sandwich=updated.sandwich; }
+  if(volunteer&&updated){
+    volunteer.tshirt=updated.tshirt;
+    volunteer.tailloux=updated.tailloux;
+    if (editor.dataset.field !== "sandwich") volunteer.sandwich=updated.sandwich;
+  }
+
+  if (editor.dataset.field === "sandwich") {
+    const { data: refreshed, error: refreshError } = await PortalAuth.client.rpc("admin_list_benevoles");
+    if (!refreshError && Array.isArray(refreshed)) {
+      volunteers = refreshed;
+    }
+  }
+
   errorElement.hidden=true; renderTable();
 }
 
