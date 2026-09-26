@@ -593,14 +593,34 @@ function youthUnitMatches(unit) {
   return true;
 }
 
-function youthFestivalDay(iso) {
+function youthFestivalDate(iso) {
   const d = new Date(iso);
   d.setHours(d.getHours() - 4);
-  return d.toLocaleDateString("fr-BE", { weekday:"long", day:"numeric", month:"long" });
+  return d.toLocaleDateString("sv-SE");
 }
 
-function youthTime(iso) {
-  return new Date(iso).toLocaleTimeString("fr-BE", { hour:"2-digit", minute:"2-digit" }).replace(":","h");
+function youthFestivalDayLabel(iso) {
+  const d = new Date(iso);
+  d.setHours(d.getHours() - 4);
+  return d.toLocaleDateString("fr-BE", { weekday:"long", day:"numeric", month:"long" }).toUpperCase();
+}
+
+function youthMinutes(iso) {
+  const d = new Date(iso);
+  return d.getHours() * 60 + d.getMinutes();
+}
+
+function youthSlotLabel(minutes) {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return m ? `${h}h30` : `${h}h`;
+}
+
+function youthAssignmentCoversSlot(row, slotStart) {
+  let start = youthMinutes(row.debut);
+  let end = youthMinutes(row.fin);
+  if (end <= start) end += 24 * 60;
+  return start < slotStart + 30 && end > slotStart;
 }
 
 async function printYouthPlanning(event) {
@@ -610,37 +630,56 @@ async function printYouthPlanning(event) {
 
   const rows = (data || []).filter(row => youthUnitMatches(row.unite));
   const order = ["Guides","Patro","Pionniers"];
-  const groups = order.map(name => [name, rows.filter(r => r.unite === name)]).filter(([,r]) => r.length);
-  const leaders = groups.map(([name,r]) => `<div><strong>${escapeHtml(name)}</strong> — Chef : ${escapeHtml(r[0].chef_prenom || "—")} · ${escapeHtml(r[0].chef_telephone || "—")}</div>`).join("");
-
+  const units = order.map(name => [name, rows.filter(r => r.unite === name)]).filter(([,r]) => r.length);
+  const slots = Array.from({length:25}, (_,i) => 9 * 60 + i * 30);
   let body = "";
-  for (const [name, unitRows] of groups) {
+
+  for (const [unitName, unitRows] of units) {
     const assigned = unitRows.filter(r => r.debut && r.fin);
-    const noSchedule = [...new Set(unitRows.filter(r => !r.debut).map(r => r.benevole_prenom))];
-    body += `<section class="yp-unit"><h2>${escapeHtml(name)}</h2>
-      <div class="yp-chef">Chef : ${escapeHtml(unitRows[0].chef_prenom || "—")} · ${escapeHtml(unitRows[0].chef_telephone || "—")}</div>`;
-    const days = [...new Set(assigned.map(r => youthFestivalDay(r.debut)))];
-    for (const day of days) {
-      const dr = assigned.filter(r => youthFestivalDay(r.debut) === day).sort((a,b)=>new Date(a.debut)-new Date(b.debut) || compareFrench(a.benevole_prenom,b.benevole_prenom));
-      body += `<h3>${escapeHtml(day.toUpperCase())}</h3><table><thead><tr><th>Horaire</th><th>Bénévole</th><th>Poste</th><th>Lieu</th></tr></thead><tbody>` +
-        dr.map(r => `<tr><td>${youthTime(r.debut)}–${youthTime(r.fin)}</td><td><strong>${escapeHtml(r.benevole_prenom)}</strong></td><td>${escapeHtml(r.poste || "—")}</td><td>${escapeHtml(r.lieu || "—")}</td></tr>`).join("") +
-        `</tbody></table>`;
+    const dates = [...new Set(assigned.map(r => youthFestivalDate(r.debut)))].sort();
+
+    if (!dates.length) {
+      body += `<section class="yp-sheet"><h1>PLANNING HORAIRE — ${escapeHtml(unitName.toUpperCase())}</h1>
+        <div class="yp-chef">Chef : ${escapeHtml(unitRows[0].chef_prenom || "—")} · ${escapeHtml(unitRows[0].chef_telephone || "—")}</div>
+        <p>Aucun horaire attribué.</p></section>`;
+      continue;
     }
-    if (noSchedule.length) body += `<div class="yp-none"><strong>Sans horaire attribué :</strong> ${noSchedule.map(escapeHtml).join(", ")}</div>`;
-    body += `</section>`;
+
+    for (const date of dates) {
+      const dayRows = assigned.filter(r => youthFestivalDate(r.debut) === date);
+      const groups = new Map();
+      dayRows.forEach(r => {
+        const key = `${r.poste || "—"}|${r.lieu || "—"}`;
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(r);
+      });
+
+      const first = dayRows[0];
+      body += `<section class="yp-sheet"><h1>PLANNING HORAIRE — ${escapeHtml(unitName.toUpperCase())}</h1>
+        <div class="yp-top"><div class="yp-chef">Chef : ${escapeHtml(unitRows[0].chef_prenom || "—")} · ${escapeHtml(unitRows[0].chef_telephone || "—")}</div>
+        <div class="yp-day">${escapeHtml(youthFestivalDayLabel(first.debut))}</div></div>
+        <table><thead><tr><th class="yp-post">Poste · Lieu</th>${slots.map(s=>`<th>${youthSlotLabel(s)}</th>`).join("")}</tr></thead><tbody>`;
+
+      [...groups.entries()].sort((a,b)=>compareFrench(a[0],b[0])).forEach(([key, groupRows]) => {
+        const [post, place] = key.split("|");
+        body += `<tr><td class="yp-post"><strong>${escapeHtml(post)}</strong><small>${escapeHtml(place)}</small></td>`;
+        slots.forEach(slot => {
+          const ids = new Set(groupRows.filter(r => youthAssignmentCoversSlot(r, slot)).map(r => r.personne_id));
+          const count = ids.size;
+          body += `<td class="${count ? "yp-filled" : ""}">${count ? `<strong>${count}</strong><span>animé·e${count>1?"·s":""}</span>` : ""}</td>`;
+        });
+        body += `</tr>`;
+      });
+      body += `</tbody></table></section>`;
+    }
   }
 
   const w = window.open("", "_blank");
   if (!w) { showError("Autorise les fenêtres pop-up pour imprimer le planning."); return; }
   w.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Planning horaire — Mouvements de jeunesse</title>
-  <style>@page{size:A4 landscape;margin:10mm}body{font-family:"Titillium Web",Arial,sans-serif;color:#17204a;margin:0}h1{color:#1C2EAB;margin:0 0 10px;font-size:24px}.yp-leaders{border:1px solid #cdd3ef;border-radius:10px;padding:10px 14px;margin-bottom:18px;display:grid;gap:3px}.yp-unit{break-before:auto;margin-top:22px}.yp-unit+ .yp-unit{break-before:page}.yp-unit h2{color:#1C2EAB;margin:0}.yp-chef{margin:2px 0 12px;font-weight:600}.yp-unit h3{color:#E40230;font-size:15px;margin:14px 0 5px}table{width:100%;border-collapse:collapse;margin-bottom:10px}th,td{border:1px solid #ccd2e8;padding:6px 8px;text-align:left}th{background:#f1f3fb;color:#1C2EAB}.yp-none{margin-top:10px;padding:8px 10px;background:#f5f5f7;border-radius:8px}@media print{.no-print{display:none}}</style></head><body>
-  <h1>PLANNING HORAIRE — ${groups.length===1 ? escapeHtml(groups[0][0].toUpperCase()) : "MOUVEMENTS DE JEUNESSE"}</h1>
-  ${groups.length>1 ? `<div class="yp-leaders">${leaders}</div>` : ""}
-  ${body}
-  <script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);
+  <style>@page{size:A4 landscape;margin:7mm}*{box-sizing:border-box}body{font-family:"Titillium Web",Arial,sans-serif;color:#17204a;margin:0}.yp-sheet{break-after:page}.yp-sheet:last-child{break-after:auto}h1{color:#1C2EAB;margin:0 0 3px;font-size:18px}.yp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.yp-chef{font-weight:600}.yp-day{color:#E40230;font-weight:700}table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:1px solid #cbd1e6;padding:3px 1px;text-align:center;font-size:8px;height:31px}th{background:#f1f3fb;color:#1C2EAB;font-weight:700}.yp-post{width:105px;text-align:left;padding-left:5px}.yp-post small{display:block;font-size:7px;font-weight:400;color:#555}.yp-filled{background:#f2f4fb}.yp-filled strong{display:block;color:#1C2EAB;font-size:10px;line-height:10px}.yp-filled span{display:block;font-size:6.5px;line-height:8px;white-space:nowrap}@media print{body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}</style></head><body>${body}<script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);
   w.document.close();
 }
-
 if (youthMovement && printAllLabelsButton) {
   printAllLabelsButton.addEventListener("click", printYouthPlanning);
 }
