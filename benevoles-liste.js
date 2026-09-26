@@ -252,6 +252,51 @@ function editableContact(volunteer, field) {
   `;
 }
 
+function editableLogistics(volunteer, field) {
+  const value = volunteer[field] == null ? "" : String(volunteer[field]);
+  const labels = { tshirt: "T-shirt", tailloux: "Tailloux", sandwich: "Sandwich" };
+  return `
+    <div class="contact-display">
+      <button type="button" class="logistics-edit-button" data-benevole-id="${escapeHtml(volunteer.id)}" data-participation-id="${escapeHtml(volunteer.participation_id)}" data-field="${field}" title="Modifier ${labels[field]}" aria-label="Modifier ${labels[field]}">✏️</button>
+      <span class="contact-value">${escapeHtml(value || "—")}</span>
+    </div>`;
+}
+
+function openLogisticsEditor(button) {
+  const volunteerId = button.dataset.benevoleId;
+  const participationId = button.dataset.participationId;
+  const field = button.dataset.field;
+  const volunteer = volunteers.find(item => item.id === volunteerId);
+  const cell = button.closest("td");
+  if (!volunteer || !cell) return;
+  const current = volunteer[field] == null ? "" : String(volunteer[field]);
+  let options = "";
+  if (field === "tshirt") options = ["","0","XS","S","M","L","XL","2XL","3XL","4XL"].map(v => `<option value="${v}" ${v===current?"selected":""}>${v || "—"}</option>`).join("");
+  if (field === "tailloux") options = ["",...Array.from({length:26},(_,i)=>String(i))].map(v => `<option value="${v}" ${v===current?"selected":""}>${v || "—"}</option>`).join("");
+  if (field === "sandwich") options = ["","Oui","Non"].map(v => `<option value="${v}" ${v===current?"selected":""}>${v || "—"}</option>`).join("");
+  cell.innerHTML = `<div class="contact-editor logistics-editor" data-benevole-id="${escapeHtml(volunteerId)}" data-participation-id="${escapeHtml(participationId)}" data-field="${field}">
+    <select class="contact-edit-input">${options}</select>
+    <button type="button" class="logistics-save-button" title="Valider" aria-label="Valider">✓</button>
+    <button type="button" class="contact-cancel-button" title="Annuler" aria-label="Annuler">✕</button>
+    <span class="contact-edit-error" aria-live="polite"></span></div>`;
+  cell.querySelector("select").focus();
+}
+
+async function saveLogisticsEditor(button) {
+  const editor = button.closest(".logistics-editor");
+  if (!editor) return;
+  const input = editor.querySelector(".contact-edit-input");
+  const saveButton = editor.querySelector(".logistics-save-button");
+  const cancelButton = editor.querySelector(".contact-cancel-button");
+  saveButton.disabled = true; cancelButton.disabled = true; input.disabled = true;
+  const {data,error}=await PortalAuth.client.rpc("admin_update_benevole_logistics",{p_participation_id:editor.dataset.participationId,p_field:editor.dataset.field,p_value:input.value});
+  if(error){ saveButton.disabled=false; cancelButton.disabled=false; input.disabled=false; showContactEditError(editor,error.message||"La modification n'a pas pu être enregistrée."); return; }
+  const updated=Array.isArray(data)?data[0]:data;
+  const volunteer=volunteers.find(item=>item.id===editor.dataset.benevoleId);
+  if(volunteer&&updated){ volunteer.tshirt=updated.tshirt; volunteer.tailloux=updated.tailloux; volunteer.sandwich=updated.sandwich; }
+  errorElement.hidden=true; renderTable();
+}
+
 function validateAndNormalizePhone(value) {
   const trimmed = normalizeText(value);
   if (!trimmed) return { ok: true, value: "" };
@@ -429,9 +474,9 @@ function renderTable() {
       <td class="volunteer-name">${escapeHtml(volunteer.nom || "—")}</td>
       <td class="contact-cell contact-phone-cell">${editableContact(volunteer, "telephone")}</td>
       <td class="contact-cell contact-email-cell">${editableContact(volunteer, "email")}</td>
-      <td class="logistics-cell">${formatValue(volunteer.tshirt)}</td>
-      <td class="logistics-cell">${formatValue(volunteer.tailloux)}</td>
-      <td class="logistics-cell sandwich-cell">${formatValue(volunteer.sandwich)}</td>
+      <td class="logistics-cell">${editableLogistics(volunteer, "tshirt")}</td>
+      <td class="logistics-cell">${editableLogistics(volunteer, "tailloux")}</td>
+      <td class="logistics-cell sandwich-cell">${editableLogistics(volunteer, "sandwich")}</td>
       <td class="kit-ok-cell">${kitCheckbox(volunteer)}</td>
     </tr>
   `).join("");
@@ -537,6 +582,11 @@ if (activityFilterButton) {
 }
 
 tableBody.addEventListener("click", event => {
+  const logisticsEditButton = event.target.closest(".logistics-edit-button");
+  if (logisticsEditButton) { openLogisticsEditor(logisticsEditButton); return; }
+  const logisticsSaveButton = event.target.closest(".logistics-save-button");
+  if (logisticsSaveButton) { saveLogisticsEditor(logisticsSaveButton); return; }
+
   const editButton = event.target.closest(".contact-edit-button");
   if (editButton) {
     openContactEditor(editButton);
