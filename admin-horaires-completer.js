@@ -274,6 +274,13 @@ async function assignVolunteer(event, need) {
     p_fin: rpcTime(endInput.value)
   });
 
+  if (!error) {
+    const { error: mergeError } = await PortalAuth.client.rpc("admin_merge_consecutive_affectations", {
+      p_personne_id: select.value
+    });
+    if (mergeError) console.error("Impossible de fusionner les plages consécutives :", mergeError);
+  }
+
   if (error) {
     console.error(error);
     message.textContent = error.message || "Impossible d’enregistrer l’affectation.";
