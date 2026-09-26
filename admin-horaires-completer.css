@@ -4,8 +4,6 @@
 .open-shifts-heading { margin-bottom: 20px; }
 .open-shifts-heading-row { display:flex; align-items:center; justify-content:space-between; gap:16px; }
 .open-shifts-heading h1 { margin:0; font-family:"Macho","Titillium Web",sans-serif; font-size:2rem; color:var(--blue); }
-.open-add-button { width:44px; height:44px; border:0; border-radius:10px; background:#28a745; color:#fff; font-size:2rem; font-weight:700; line-height:1; cursor:pointer; }
-.open-add-button:hover { background:#218838; }
 .open-create-panel { margin-top:16px; padding:18px; background:#fff; border-radius:16px; box-shadow:0 8px 22px rgba(20,28,80,.08); }
 .open-create-form { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; align-items:end; }
 .open-create-field { display:grid; gap:6px; }
@@ -50,3 +48,37 @@
 @media (max-width:950px){ .open-create-form{grid-template-columns:1fr 1fr;} }
 @media (max-width:850px){ .open-assign-form{grid-template-columns:1fr 1fr;} .open-assign-field:first-child{grid-column:1/-1;} .open-assign-button{grid-column:1/-1;justify-self:end;} }
 @media (max-width:650px){ .open-shifts-filters{grid-template-columns:1fr;} .open-shift-top{flex-direction:column;gap:8px;} .open-assign-form,.open-create-form{grid-template-columns:1fr;} .open-assign-field:first-child,.open-assign-button{grid-column:auto;} .open-assign-button{justify-self:end;} .open-shift-card{padding:16px 14px;} .open-shifts-heading-row{align-items:center;} }
+
+/* Même bouton + vert que sur admin.html */
+.open-add-button {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+  border: 2px solid #2e9d57;
+  border-radius: 50%;
+  background: var(--white);
+  color: #2e9d57;
+  display: inline-grid;
+  place-items: center;
+  box-sizing: border-box;
+  font: inherit;
+  cursor: pointer;
+}
+.open-add-button span {
+  display: block;
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1;
+  transform: translateY(-1px);
+}
+.open-add-button:hover {
+  border-color: #237a44;
+  background: rgba(46, 157, 87, 0.08);
+  color: #237a44;
+}
+@media (max-width: 600px) {
+  .open-add-button { width:32px; min-width:32px; height:32px; min-height:32px; }
+  .open-add-button span { font-size:1.25rem; }
+}
