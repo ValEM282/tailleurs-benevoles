@@ -283,14 +283,16 @@
 #admin-volunteer-search,
 #admin-responsible-search,
 #admin-post-search,
-#admin-place-search {
+#admin-place-search,
+#admin-youth-search {
   font-size: 0;
 }
 
 #admin-volunteer-search::after,
 #admin-responsible-search::after,
 #admin-post-search::after,
-#admin-place-search::after {
+#admin-place-search::after,
+#admin-youth-search::after {
   content: "Rechercher";
   font-family: "Titillium Web", sans-serif;
   font-size: 1rem;
