@@ -177,6 +177,26 @@ function selectOptions(items, selectedId, emptyLabel) {
   return options.join("");
 }
 
+function locationIdsForGroup(group) {
+  if (group.lieu_id) return [Number(group.lieu_id)];
+  const names = String(group.location || "").split(" · ").map(v => v.trim()).filter(Boolean);
+  return names.map(name => editOptions.lieux.find(l => l.nom === name)?.id).filter(Boolean).map(Number);
+}
+
+function createLocationEditorHtml(selectedId = "", index = 0) {
+  return `<div class="schedule-edit-location-row" data-location-row>
+    <label><span>Lieu ${index + 1}</span><select class="schedule-edit-lieu">${selectOptions(editOptions.lieux, selectedId, "Choisir un lieu")}</select></label>
+    ${index ? '<button type="button" class="schedule-remove-location-button" data-remove-location aria-label="Supprimer ce lieu">×</button>' : ""}
+  </div>`;
+}
+
+function renumberLocationRows(container) {
+  container.querySelectorAll("[data-location-row]").forEach((row,index) => {
+    const span=row.querySelector("label > span");
+    if(span) span.textContent=`Lieu ${index+1}`;
+  });
+}
+
 function timeOptions(selectedMinutes) {
   const values = [...standardTimeValues];
   const numericSelected = Number(selectedMinutes);
@@ -557,12 +577,12 @@ function enterEditMode(card, group, dayKey) {
         </select>
       </div>
 
-      <div class="schedule-edit-field">
-        <label>Lieu</label>
-        <select class="schedule-edit-lieu">
-          ${selectOptions(editOptions.lieux, group.lieu_id, "Choisir un lieu")}
-        </select>
+      <div class="schedule-edit-locations" data-location-rows>
+        ${locationIdsForGroup(group).length
+          ? locationIdsForGroup(group).map((id,index)=>createLocationEditorHtml(id,index)).join("")
+          : createLocationEditorHtml("",0)}
       </div>
+      <button type="button" class="schedule-add-location-button" data-add-location>+ Ajouter un lieu</button>
 
       <div class="schedule-edit-slots">
         ${editableShifts.map((shift, index) => createSlotEditorHtml(shift, index)).join("")}
@@ -582,10 +602,27 @@ function enterEditMode(card, group, dayKey) {
   `;
 
   const slotsContainer = card.querySelector(".schedule-edit-slots");
+  const locationsContainer = card.querySelector("[data-location-rows]");
+  const addLocationButton = card.querySelector("[data-add-location]");
   const addButton = card.querySelector(".schedule-add-slot-button");
   const confirmButton = card.querySelector(".schedule-edit-confirm");
   const cancelButton = card.querySelector(".schedule-edit-cancel");
   const message = card.querySelector(".schedule-edit-message");
+
+  addLocationButton.addEventListener("click", () => {
+    const wrapper=document.createElement("div");
+    wrapper.innerHTML=createLocationEditorHtml("",locationsContainer.children.length);
+    locationsContainer.appendChild(wrapper.firstElementChild);
+    message.hidden=true;
+  });
+
+  locationsContainer.addEventListener("click", event => {
+    const remove=event.target.closest("[data-remove-location]");
+    if(!remove) return;
+    remove.closest("[data-location-row]")?.remove();
+    renumberLocationRows(locationsContainer);
+    message.hidden=true;
+  });
 
   addButton.addEventListener("click", () => {
     const wrapper = document.createElement("div");
@@ -612,11 +649,12 @@ function enterEditMode(card, group, dayKey) {
       return;
     }
     const posteId = Number(card.querySelector(".schedule-edit-poste").value);
-    const lieuValue = card.querySelector(".schedule-edit-lieu").value;
-    const lieuId = lieuValue ? Number(lieuValue) : null;
+    const lieuIds = [...card.querySelectorAll("[data-location-row] .schedule-edit-lieu")].map(s=>Number(s.value)).filter(Boolean);
+    const uniqueLieuIds = [...new Set(lieuIds)];
+    const lieuId = uniqueLieuIds[0] || null;
     const slotElements = [...card.querySelectorAll(".schedule-edit-slot")];
 
-    if (!posteId || !lieuId) {
+    if (!posteId || !uniqueLieuIds.length) {
       message.textContent = "Choisis un poste et un lieu avant d'enregistrer.";
       message.className = "schedule-edit-message schedule-edit-message-error";
       message.hidden = false;
@@ -673,8 +711,10 @@ function enterEditMode(card, group, dayKey) {
           });
 
           if (error) throw error;
+          const { error: lieuxError } = await PortalAuth.client.rpc("admin_set_affectation_lieux", { p_affectation_id: slot.affectationId, p_lieu_ids: uniqueLieuIds });
+          if (lieuxError) throw lieuxError;
         } else {
-          const { error } = await PortalAuth.client.rpc("admin_add_affectation_horaire", {
+          const { data: newId, error } = await PortalAuth.client.rpc("admin_add_affectation_horaire", {
             p_source_affectation_id: firstShift.affectation_id,
             p_poste_id: posteId,
             p_lieu_id: lieuId,
@@ -683,6 +723,8 @@ function enterEditMode(card, group, dayKey) {
           });
 
           if (error) throw error;
+          const { error: lieuxError } = await PortalAuth.client.rpc("admin_set_affectation_lieux", { p_affectation_id: newId, p_lieu_ids: uniqueLieuIds });
+          if (lieuxError) throw lieuxError;
         }
       }
 
