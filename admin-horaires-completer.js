@@ -9,9 +9,20 @@ const summaryPlaces = document.getElementById("open-summary-places");
 const summaryPosts = document.getElementById("open-summary-posts");
 const summaryHours = document.getElementById("open-summary-hours");
 const logoutButton = document.getElementById("logout-button");
+const addButton = document.getElementById("open-add-button");
+const createPanel = document.getElementById("open-create-panel");
+const createForm = document.getElementById("open-create-form");
+const createCancel = document.getElementById("open-create-cancel");
+const createDay = document.getElementById("open-create-day");
+const createPost = document.getElementById("open-create-post");
+const createPlace = document.getElementById("open-create-place");
+const createStart = document.getElementById("open-create-start");
+const createEnd = document.getElementById("open-create-end");
+const createMessage = document.getElementById("open-create-message");
 
 let currentUser = null;
 let needs = [];
+let optionRows = [];
 
 const collator = new Intl.Collator("fr", { sensitivity: "base", numeric: true });
 
@@ -121,6 +132,23 @@ function populateFilters() {
   if (posts.some(post => post.id === selectedPost)) postFilter.value = selectedPost;
 }
 
+function populateCreateOptions() {
+  const posts = [...new Map(optionRows.map(row => [String(row.poste_id), {
+    id: String(row.poste_id),
+    label: row.sous_poste || row.poste
+  }])).values()].sort((a, b) => collator.compare(a.label, b.label));
+
+  const places = [...new Map(optionRows.map(row => [String(row.lieu_id), {
+    id: String(row.lieu_id),
+    label: row.lieu
+  }])).values()].sort((a, b) => collator.compare(a.label, b.label));
+
+  createPost.innerHTML = '<option value="">Choisir un poste</option>' + posts
+    .map(row => `<option value="${escapeHtml(row.id)}">${escapeHtml(row.label)}</option>`).join("");
+  createPlace.innerHTML = '<option value="">Choisir un lieu</option>' + places
+    .map(row => `<option value="${escapeHtml(row.id)}">${escapeHtml(row.label)}</option>`).join("");
+}
+
 function resetCandidateSelect(select) {
   select.dataset.loadedFor = "";
   select.innerHTML = '<option value="">Cliquer pour charger les bénévoles…</option>';
@@ -172,12 +200,8 @@ async function loadCandidates(card, need) {
   const candidates = Array.isArray(data) ? data : [];
   select.innerHTML = '<option value="">Choisir un·e bénévole</option>';
 
-  const live = candidates
-    .filter(row => row.disponible_live === true)
-    .sort(compareCandidates);
-  const free = candidates
-    .filter(row => row.disponible_live !== true)
-    .sort(compareCandidates);
+  const live = candidates.filter(row => row.disponible_live === true).sort(compareCandidates);
+  const free = candidates.filter(row => row.disponible_live !== true).sort(compareCandidates);
 
   const addGroup = (label, rows) => {
     if (!rows.length) return;
@@ -251,6 +275,24 @@ async function assignVolunteer(event, need) {
   window.scrollTo({ top: Math.max(0, card.offsetTop - 130), behavior: "smooth" });
 }
 
+async function deleteNeed(need, button) {
+  const title = need.sous_poste || need.poste;
+  const ok = window.confirm(`Supprimer l’horaire vacant « ${title} » du ${formatDate(need.jour)} de ${formatDisplayTime(need.debut_heure)} à ${formatDisplayTime(need.fin_heure)} ?`);
+  if (!ok) return;
+
+  button.disabled = true;
+  button.textContent = "…";
+  const { error } = await PortalAuth.client.rpc("admin_delete_open_need", { p_besoin_id: need.besoin_id });
+  if (error) {
+    console.error(error);
+    window.alert(error.message || "Impossible de supprimer cet horaire vacant.");
+    button.disabled = false;
+    button.textContent = "×";
+    return;
+  }
+  await loadNeeds();
+}
+
 function createCard(need) {
   const urgency = urgencyInfo(need.urgence);
   const card = document.createElement("article");
@@ -264,6 +306,7 @@ function createCard(need) {
     <div class="open-shift-top">
       <div class="open-shift-title">
         <strong>${escapeHtml(title)}</strong>
+        <button type="button" class="open-delete-button" aria-label="Supprimer cet horaire vacant" title="Supprimer cet horaire vacant">×</button>
       </div>
       <span class="open-urgency">${escapeHtml(urgency.label)}</span>
     </div>
@@ -295,6 +338,7 @@ function createCard(need) {
   const select = form.querySelector(".open-candidate-select");
   const startInput = form.querySelector(".open-start-time");
   const endInput = form.querySelector(".open-end-time");
+  const deleteButton = card.querySelector(".open-delete-button");
 
   const invalidate = () => resetCandidateSelect(select);
   startInput.addEventListener("change", invalidate);
@@ -302,6 +346,7 @@ function createCard(need) {
   select.addEventListener("focus", () => loadCandidates(card, need));
   select.addEventListener("click", () => loadCandidates(card, need));
   form.addEventListener("submit", event => assignVolunteer(event, need));
+  deleteButton.addEventListener("click", () => deleteNeed(need, deleteButton));
 
   return card;
 }
@@ -317,6 +362,16 @@ function renderNeeds() {
   }
 
   rows.forEach(need => listElement.appendChild(createCard(need)));
+}
+
+async function loadOptions() {
+  const { data, error } = await PortalAuth.client.rpc("admin_list_open_need_options");
+  if (error) {
+    console.error(error);
+    throw error;
+  }
+  optionRows = Array.isArray(data) ? data : [];
+  populateCreateOptions();
 }
 
 async function loadNeeds() {
@@ -338,6 +393,64 @@ async function loadNeeds() {
   renderNeeds();
 }
 
+function setCreateOpen(open) {
+  createPanel.hidden = !open;
+  addButton.setAttribute("aria-expanded", String(open));
+  createMessage.textContent = "";
+  createMessage.className = "open-card-message";
+  if (open) {
+    const firstDay = [...new Set(needs.map(need => need.jour))].sort()[0];
+    if (!createDay.value && firstDay) createDay.value = firstDay;
+    createDay.focus();
+  } else {
+    createForm.reset();
+    populateCreateOptions();
+    addButton.focus();
+  }
+}
+
+async function createNeed(event) {
+  event.preventDefault();
+  createMessage.textContent = "";
+  createMessage.className = "open-card-message";
+
+  if (!createDay.value || !createPost.value || !createPlace.value || !createStart.value || !createEnd.value) {
+    createMessage.textContent = "Complète tous les champs.";
+    createMessage.className = "open-card-message error";
+    return;
+  }
+  if (createEnd.value <= createStart.value) {
+    createMessage.textContent = "L’heure de fin doit être postérieure à l’heure de début.";
+    createMessage.className = "open-card-message error";
+    return;
+  }
+
+  const submit = createForm.querySelector('[type="submit"]');
+  submit.disabled = true;
+  createCancel.disabled = true;
+
+  const { error } = await PortalAuth.client.rpc("admin_create_open_need", {
+    p_jour: createDay.value,
+    p_poste_id: Number(createPost.value),
+    p_lieu_id: Number(createPlace.value),
+    p_debut: rpcTime(createStart.value),
+    p_fin: rpcTime(createEnd.value)
+  });
+
+  submit.disabled = false;
+  createCancel.disabled = false;
+
+  if (error) {
+    console.error(error);
+    createMessage.textContent = error.message || "Impossible de créer cet horaire vacant.";
+    createMessage.className = "open-card-message error";
+    return;
+  }
+
+  setCreateOpen(false);
+  await loadNeeds();
+}
+
 async function initPage() {
   const user = await PortalAuth.requireAuth();
   if (!user) return;
@@ -354,11 +467,21 @@ async function initPage() {
     return;
   }
 
-  await loadNeeds();
+  try {
+    await Promise.all([loadOptions(), loadNeeds()]);
+  } catch (error) {
+    console.error(error);
+    errorElement.textContent = "Impossible de préparer la gestion des horaires vacants.";
+    errorElement.hidden = false;
+  }
 }
 
 dayFilter.addEventListener("change", renderNeeds);
 postFilter.addEventListener("change", renderNeeds);
+addButton.setAttribute("aria-expanded", "false");
+addButton.addEventListener("click", () => setCreateOpen(createPanel.hidden));
+createCancel.addEventListener("click", () => setCreateOpen(false));
+createForm.addEventListener("submit", createNeed);
 
 logoutButton.addEventListener("click", async () => {
   if (currentUser) sessionStorage.removeItem(unlockStorageKey());
