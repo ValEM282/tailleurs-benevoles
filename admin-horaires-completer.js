@@ -61,8 +61,8 @@ function postLabel(need) {
 }
 
 function urgencyInfo(value) {
-  if (value === "maintenant") return { className: "urgency-now", label: "À pourvoir maintenant" };
-  if (value === "bientot") return { className: "urgency-soon", label: "Dans les prochaines heures" };
+  if (value === "maintenant") return { className: "urgency-now", label: "En cours" };
+  if (value === "bientot") return { className: "urgency-soon", label: "Dans moins de 4h" };
   return { className: "urgency-future", label: "À venir" };
 }
 
