@@ -11,7 +11,7 @@
 
   <link rel="stylesheet" href="styles.css?v=20260921-2">
   <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
-  <link rel="stylesheet" href="admin-horaires-completer.css?v=20260925-1">
+  <link rel="stylesheet" href="admin-horaires-completer.css?v=20260926-1">
   <style>
     .open-shifts-filters {
       position: relative;
@@ -40,8 +40,39 @@
 
   <main class="subpage-main open-shifts-main">
     <section class="open-shifts-heading">
-      <div>
+      <div class="open-shifts-heading-row">
         <h1>HORAIRES VACANTS</h1>
+        <button type="button" id="open-add-button" class="open-add-button" aria-label="Créer un horaire vacant" title="Créer un horaire vacant">+</button>
+      </div>
+
+      <div id="open-create-panel" class="open-create-panel" hidden>
+        <form id="open-create-form" class="open-create-form">
+          <div class="open-create-field">
+            <label for="open-create-day">Jour</label>
+            <input id="open-create-day" type="date" required>
+          </div>
+          <div class="open-create-field">
+            <label for="open-create-post">Poste</label>
+            <select id="open-create-post" required></select>
+          </div>
+          <div class="open-create-field">
+            <label for="open-create-place">Lieu</label>
+            <select id="open-create-place" required></select>
+          </div>
+          <div class="open-create-field">
+            <label for="open-create-start">Heure de début</label>
+            <input id="open-create-start" type="time" step="60" required>
+          </div>
+          <div class="open-create-field">
+            <label for="open-create-end">Heure de fin</label>
+            <input id="open-create-end" type="time" step="60" required>
+          </div>
+          <div class="open-create-actions">
+            <button type="button" id="open-create-cancel" class="open-cancel-button">Annuler</button>
+            <button type="submit" class="open-save-button">Valider</button>
+          </div>
+          <p id="open-create-message" class="open-card-message"></p>
+        </form>
       </div>
     </section>
 
@@ -73,6 +104,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="portal-auth.js"></script>
-  <script src="admin-horaires-completer.js?v=20260925-3"></script>
+  <script src="admin-horaires-completer.js?v=20260926-1"></script>
 </body>
 </html>
