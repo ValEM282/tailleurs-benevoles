@@ -9,6 +9,7 @@ const logoutButton = document.getElementById("logout-button");
 const printButton = document.getElementById("print-volunteers-button");
 const activityFilterButton = document.getElementById("activity-filter-button");
 const sortButtons = [...document.querySelectorAll(".sort-button")];
+const printAllLabelsButton = document.getElementById("print-all-labels-button");
 
 const searchParams = new URLSearchParams(window.location.search);
 const searchFirstname = (searchParams.get("prenom") || "").trim();
@@ -22,6 +23,11 @@ let currentUser = null;
 let sortField = "nom";
 let sortDirection = "asc";
 let activityFilter = "all"; // all -> active -> inactive -> all
+
+if (youthMovement && printAllLabelsButton) {
+  printAllLabelsButton.textContent = "Imprimer le planning horaire";
+  printAllLabelsButton.href = "#";
+}
 
 function unlockStorageKey() {
   return currentUser ? `portalAdminUnlockedUntil:${currentUser.id}` : "";
@@ -576,6 +582,67 @@ tableBody.addEventListener("change", event => {
 
 if (printButton) {
   printButton.addEventListener("click", printVolunteersList);
+}
+
+function youthUnitMatches(unit) {
+  if (!youthUnit) return true;
+  const key = normalizeSearch(unit);
+  if (youthUnit === "guide") return key === "guides";
+  if (youthUnit === "patro") return key === "patro";
+  if (youthUnit === "pionnier") return key === "pionniers";
+  return true;
+}
+
+function youthFestivalDay(iso) {
+  const d = new Date(iso);
+  d.setHours(d.getHours() - 4);
+  return d.toLocaleDateString("fr-BE", { weekday:"long", day:"numeric", month:"long" });
+}
+
+function youthTime(iso) {
+  return new Date(iso).toLocaleTimeString("fr-BE", { hour:"2-digit", minute:"2-digit" }).replace(":","h");
+}
+
+async function printYouthPlanning(event) {
+  event.preventDefault();
+  const { data, error } = await PortalAuth.client.rpc("admin_youth_planning");
+  if (error) { showError("Impossible de charger le planning des mouvements de jeunesse."); return; }
+
+  const rows = (data || []).filter(row => youthUnitMatches(row.unite));
+  const order = ["Guides","Patro","Pionniers"];
+  const groups = order.map(name => [name, rows.filter(r => r.unite === name)]).filter(([,r]) => r.length);
+  const leaders = groups.map(([name,r]) => `<div><strong>${escapeHtml(name)}</strong> — Chef : ${escapeHtml(r[0].chef_prenom || "—")} · ${escapeHtml(r[0].chef_telephone || "—")}</div>`).join("");
+
+  let body = "";
+  for (const [name, unitRows] of groups) {
+    const assigned = unitRows.filter(r => r.debut && r.fin);
+    const noSchedule = [...new Set(unitRows.filter(r => !r.debut).map(r => r.benevole_prenom))];
+    body += `<section class="yp-unit"><h2>${escapeHtml(name)}</h2>
+      <div class="yp-chef">Chef : ${escapeHtml(unitRows[0].chef_prenom || "—")} · ${escapeHtml(unitRows[0].chef_telephone || "—")}</div>`;
+    const days = [...new Set(assigned.map(r => youthFestivalDay(r.debut)))];
+    for (const day of days) {
+      const dr = assigned.filter(r => youthFestivalDay(r.debut) === day).sort((a,b)=>new Date(a.debut)-new Date(b.debut) || compareFrench(a.benevole_prenom,b.benevole_prenom));
+      body += `<h3>${escapeHtml(day.toUpperCase())}</h3><table><thead><tr><th>Horaire</th><th>Bénévole</th><th>Poste</th><th>Lieu</th></tr></thead><tbody>` +
+        dr.map(r => `<tr><td>${youthTime(r.debut)}–${youthTime(r.fin)}</td><td><strong>${escapeHtml(r.benevole_prenom)}</strong></td><td>${escapeHtml(r.poste || "—")}</td><td>${escapeHtml(r.lieu || "—")}</td></tr>`).join("") +
+        `</tbody></table>`;
+    }
+    if (noSchedule.length) body += `<div class="yp-none"><strong>Sans horaire attribué :</strong> ${noSchedule.map(escapeHtml).join(", ")}</div>`;
+    body += `</section>`;
+  }
+
+  const w = window.open("", "_blank");
+  if (!w) { showError("Autorise les fenêtres pop-up pour imprimer le planning."); return; }
+  w.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Planning horaire — Mouvements de jeunesse</title>
+  <style>@page{size:A4 landscape;margin:10mm}body{font-family:"Titillium Web",Arial,sans-serif;color:#17204a;margin:0}h1{color:#1C2EAB;margin:0 0 10px;font-size:24px}.yp-leaders{border:1px solid #cdd3ef;border-radius:10px;padding:10px 14px;margin-bottom:18px;display:grid;gap:3px}.yp-unit{break-before:auto;margin-top:22px}.yp-unit+ .yp-unit{break-before:page}.yp-unit h2{color:#1C2EAB;margin:0}.yp-chef{margin:2px 0 12px;font-weight:600}.yp-unit h3{color:#E40230;font-size:15px;margin:14px 0 5px}table{width:100%;border-collapse:collapse;margin-bottom:10px}th,td{border:1px solid #ccd2e8;padding:6px 8px;text-align:left}th{background:#f1f3fb;color:#1C2EAB}.yp-none{margin-top:10px;padding:8px 10px;background:#f5f5f7;border-radius:8px}@media print{.no-print{display:none}}</style></head><body>
+  <h1>PLANNING HORAIRE — ${groups.length===1 ? escapeHtml(groups[0][0].toUpperCase()) : "MOUVEMENTS DE JEUNESSE"}</h1>
+  ${groups.length>1 ? `<div class="yp-leaders">${leaders}</div>` : ""}
+  ${body}
+  <script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);
+  w.document.close();
+}
+
+if (youthMovement && printAllLabelsButton) {
+  printAllLabelsButton.addEventListener("click", printYouthPlanning);
 }
 
 logoutButton.addEventListener("click", async () => {
