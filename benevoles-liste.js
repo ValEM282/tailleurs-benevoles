@@ -620,8 +620,7 @@ function youthAssignmentCoversSlot(row, slotStart) {
   let start = youthMinutes(row.debut);
   let end = youthMinutes(row.fin);
   if (end <= start) end += 24 * 60;
-  const duration = slotStart >= 13*60 && slotStart < 20*60 ? 15 : 30;
-  return start < slotStart + duration && end > slotStart;
+  return start < slotStart + 15 && end > slotStart;
 }
 
 async function printYouthPlanning(event) {
@@ -632,10 +631,7 @@ async function printYouthPlanning(event) {
   const rows = (data || []).filter(row => youthUnitMatches(row.unite));
   const order = ["Guides","Patro","Pionniers"];
   const units = order.map(name => [name, rows.filter(r => r.unite === name)]).filter(([,r]) => r.length);
-  const slots = [];
-  for (let m=9*60; m<13*60; m+=30) slots.push(m);
-  for (let m=13*60; m<20*60; m+=15) slots.push(m);
-  for (let m=20*60; m<=21*60; m+=30) slots.push(m);
+  const slots = Array.from({length:49}, (_,i) => 9 * 60 + i * 15);
   let body = "";
 
   for (const [unitName, unitRows] of units) {
@@ -662,7 +658,7 @@ async function printYouthPlanning(event) {
       body += `<section class="yp-sheet"><h1>PLANNING HORAIRE — ${escapeHtml(unitName.toUpperCase())}</h1>
         <div class="yp-top"><div class="yp-chef">Chef : ${escapeHtml(unitRows[0].chef_prenom || "—")} · ${escapeHtml(unitRows[0].chef_telephone || "—")}</div>
         <div class="yp-day">${escapeHtml(youthFestivalDayLabel(first.debut))}</div></div>
-        <table><thead><tr><th class="yp-post">Poste · Lieu</th>${slots.map(s=>`<th>${youthSlotLabel(s)}</th>`).join("")}</tr></thead><tbody>`;
+        <table><thead><tr><th class="yp-post">POSTE</th>${slots.map(s=>`<th>${youthSlotLabel(s)}</th>`).join("")}</tr></thead><tbody>`;
 
       [...groups.entries()].sort((a,b)=>compareFrench(a[0],b[0])).forEach(([key, groupRows]) => {
         const [post, place] = key.split("|");
@@ -681,7 +677,7 @@ async function printYouthPlanning(event) {
   const w = window.open("", "_blank");
   if (!w) { showError("Autorise les fenêtres pop-up pour imprimer le planning."); return; }
   w.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Planning horaire — Mouvements de jeunesse</title>
-  <style>@page{size:A4 landscape;margin:5mm}*{box-sizing:border-box}body{font-family:"Titillium Web",Arial,sans-serif;color:#17204a;margin:0}.yp-sheet{break-after:page}.yp-sheet:last-child{break-after:auto}h1{color:#1C2EAB;margin:0 0 2px;font-size:16px}.yp-top{margin-bottom:6px}.yp-chef{font-weight:600;font-size:11px}.yp-date{color:#E40230;font-weight:700;font-size:10px;margin-top:1px}table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:1px solid #cbd1e6;padding:2px 0;text-align:center;font-size:5.5px;height:29px;overflow:hidden}th{background:#f1f3fb;color:#1C2EAB;font-weight:700;white-space:nowrap}.yp-full-hour{font-size:9px!important;background:#e7eaf8!important}.yp-post{width:128px!important;text-align:left;padding-left:4px;padding-right:2px}.yp-post small{display:block;font-size:6px;font-weight:400;color:#555;line-height:7px}.yp-post .yp-resp{margin-top:2px;color:#1C2EAB;font-weight:600}.yp-filled{background:#f2f4fb}.yp-filled strong{display:block;color:#1C2EAB;font-size:8px;line-height:8px}.yp-filled span{display:block;font-size:4.5px;line-height:6px;white-space:nowrap}@media print{body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}</style></head><body>${body}<script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);
+  <style>@page{size:A4 landscape;margin:5mm}*{box-sizing:border-box}body{font-family:"Titillium Web",Arial,sans-serif;color:#17204a;margin:0}.yp-sheet{break-after:page}.yp-sheet:last-child{break-after:auto}h1{color:#1C2EAB;margin:0 0 2px;font-size:16px}.yp-top{margin-bottom:6px}.yp-chef{font-weight:600;font-size:11px}.yp-date{color:#E40230;font-weight:700;font-size:11px;margin-top:1px}table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:1px solid #cbd1e6;padding:2px 0;text-align:center;font-size:5.5px;height:29px;overflow:hidden}th{background:#f1f3fb;color:#1C2EAB;font-weight:700;white-space:nowrap}.yp-full-hour{font-size:9px!important;background:#e7eaf8!important}.yp-post{width:150px!important;text-align:left;padding-left:4px;padding-right:2px}.yp-post small{display:block;font-size:6px;font-weight:400;color:#555;line-height:7px}.yp-post .yp-resp{margin-top:2px;color:#1C2EAB;font-weight:600}.yp-filled{background:#f2f4fb}.yp-filled strong{display:block;color:#1C2EAB;font-size:8px;line-height:8px}.yp-filled span{display:block;font-size:4.5px;line-height:6px;white-space:nowrap}@media print{body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}</style></head><body>${body}<script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);
   w.document.close();
 }
 if (youthMovement && printAllLabelsButton) {
