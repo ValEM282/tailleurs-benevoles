@@ -63,3 +63,13 @@
     padding: 14px;
   }
 }
+
+
+.schedule-edit-locations{display:grid;gap:8px}
+.schedule-edit-location-row{display:grid;grid-template-columns:minmax(0,1fr) 34px;gap:8px;align-items:end}
+.schedule-edit-location-row:first-child{grid-template-columns:minmax(0,1fr)}
+.schedule-edit-location-row label{display:grid;gap:4px}
+.schedule-edit-location-row select{width:100%}
+.schedule-add-location-button{justify-self:start;border:0;background:transparent;color:var(--blue);font:inherit;font-weight:700;cursor:pointer;padding:4px 0}
+.schedule-add-location-button:hover{text-decoration:underline}
+.schedule-remove-location-button{width:34px;height:34px;border:2px solid #ef768f;border-radius:8px;background:#fff;color:#c82043;font-size:1.2rem;font-weight:800;cursor:pointer}
