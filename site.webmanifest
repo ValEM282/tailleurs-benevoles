@@ -1,0 +1,13 @@
+{
+  "name": "Portail Bénévoles — Les Tailleurs",
+  "short_name": "Bénévoles",
+  "start_url": "/dashboard.html",
+  "scope": "/",
+  "icons": [
+    {"src": "/android-chrome-192x192.png?v=20260926-1", "sizes": "192x192", "type": "image/png"},
+    {"src": "/android-chrome-512x512.png?v=20260926-1", "sizes": "512x512", "type": "image/png"}
+  ],
+  "theme_color": "#1C2EAB",
+  "background_color": "#1C2EAB",
+  "display": "standalone"
+}
