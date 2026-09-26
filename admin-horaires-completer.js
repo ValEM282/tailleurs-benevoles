@@ -170,7 +170,7 @@ async function loadCandidates(card, need) {
   const key = `${startInput.value}|${endInput.value}`;
 
   if (select.dataset.loading === "1" || select.dataset.loadedFor === key) return;
-  if (!startInput.value || !endInput.value || endInput.value <= startInput.value) {
+  if (!startInput.value || !endInput.value || endInput.value === startInput.value) {
     message.textContent = "Choisis d’abord une plage horaire valide.";
     message.className = "open-card-message error";
     return;
@@ -245,7 +245,7 @@ async function assignVolunteer(event, need) {
     return;
   }
 
-  if (!startInput.value || !endInput.value || endInput.value <= startInput.value) {
+  if (!startInput.value || !endInput.value || endInput.value === startInput.value) {
     message.textContent = "La plage horaire choisie n’est pas valide.";
     message.className = "open-card-message error";
     return;
