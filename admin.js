@@ -17,6 +17,8 @@ const volunteerSearchButton = document.getElementById("admin-volunteer-search");
 const volunteerSearchFirstname = document.getElementById("volunteer-search-firstname");
 const volunteerSearchLastname = document.getElementById("volunteer-search-lastname");
 const volunteerAddButton = document.getElementById("admin-volunteer-add");
+const youthUnitSearch = document.getElementById("youth-unit-search");
+const youthSearchButton = document.getElementById("admin-youth-search");
 const volunteerCreatePanel = document.getElementById("admin-volunteer-create-panel");
 const volunteerCreateForm = document.getElementById("admin-volunteer-create-form");
 const volunteerCreateCancel = document.getElementById("admin-volunteer-create-cancel");
@@ -288,6 +290,14 @@ if (volunteerListButton) {
 
 if (volunteerSearchButton) {
   volunteerSearchButton.addEventListener("click", openVolunteerSearch);
+}
+
+if (youthSearchButton) {
+  youthSearchButton.addEventListener("click", () => {
+    const params = new URLSearchParams({ mouvement: "jeunesse" });
+    if (youthUnitSearch?.value) params.set("unite", youthUnitSearch.value);
+    window.location.href = `benevoles-liste.html?${params.toString()}`;
+  });
 }
 
 for (let count = 0; count <= 25; count += 1) {
