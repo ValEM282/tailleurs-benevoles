@@ -29,6 +29,7 @@ const volunteerPhone = document.getElementById("new-volunteer-phone");
 const volunteerEmail = document.getElementById("new-volunteer-email");
 const volunteerTshirt = document.getElementById("new-volunteer-tshirt");
 const volunteerTailloux = document.getElementById("new-volunteer-tailloux");
+const volunteerSandwich = document.getElementById("new-volunteer-sandwich");
 
 let currentUser = null;
 const unlockDurationMs = 30 * 60 * 1000;
@@ -330,7 +331,8 @@ volunteerCreateForm.addEventListener("submit", async event => {
   const nom = volunteerLastname.value.trim().toLocaleUpperCase("fr");
   const email = volunteerEmail.value.trim().toLowerCase();
   const tshirt = volunteerTshirt.value;
-  const tailloux = Number(volunteerTailloux.value);
+  const tailloux = volunteerTailloux.value === "" ? null : Number(volunteerTailloux.value);
+  const sandwich = volunteerSandwich.value || null;
   const phone = normalizeVolunteerPhone(volunteerPhone.value);
   volunteerLastname.value = nom;
   if (!phone.error) volunteerPhone.value = phone.value || "";
@@ -345,8 +347,8 @@ volunteerCreateForm.addEventListener("submit", async event => {
     return;
   }
 
-  if (!tshirt || volunteerTailloux.value === "" || !Number.isInteger(tailloux) || tailloux < 0 || tailloux > 25) {
-    showVolunteerCreateError("Choisis un T-shirt et un nombre de Tailloux entre 0 et 25.", !tshirt ? volunteerTshirt : volunteerTailloux);
+  if (!tshirt || (tailloux !== null && (!Number.isInteger(tailloux) || tailloux < 0 || tailloux > 25))) {
+    showVolunteerCreateError("Choisis un T-shirt. Si tu indiques des Tailloux, le nombre doit être compris entre 0 et 25.", !tshirt ? volunteerTshirt : volunteerTailloux);
     return;
   }
 
@@ -362,7 +364,8 @@ volunteerCreateForm.addEventListener("submit", async event => {
       p_telephone: phone.value,
       p_email: email,
       p_tshirt: tshirt,
-      p_tailloux: tailloux
+      p_tailloux: tailloux,
+      p_sandwich: sandwich
     });
 
     if (error) {
