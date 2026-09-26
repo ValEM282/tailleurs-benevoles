@@ -438,8 +438,12 @@ async function createNeed(event) {
     createMessage.className = "open-card-message error";
     return;
   }
-  if (createEnd.value <= createStart.value) {
-    createMessage.textContent = "L’heure de fin doit être postérieure à l’heure de début.";
+  // Journée festival : 04:00 → 03:59 le lendemain.
+  // Une heure de fin comprise entre 00:00 et 03:59 est donc autorisée
+  // pour un créneau commencé entre 04:00 et 23:59.
+  const crossesFestivalMidnight = createStart.value >= "04:00" && createEnd.value < "04:00";
+  if (createEnd.value === createStart.value || (createEnd.value < createStart.value && !crossesFestivalMidnight)) {
+    createMessage.textContent = "La plage horaire choisie n’est pas valide.";
     createMessage.className = "open-card-message error";
     return;
   }
