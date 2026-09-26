@@ -169,6 +169,27 @@ function formatShiftRange(shift) {
     : `${formatCompactTime(shift.debut)}-${formatCompactTime(shift.fin)}`;
 }
 
+function mergeConsecutiveShifts(shifts) {
+  const sorted = [...shifts].sort((a, b) => new Date(a.debut) - new Date(b.debut));
+  const ranges = [];
+  sorted.forEach(shift => {
+    if (isReinforcementShift(shift)) {
+      ranges.push({ ...shift, _reinforcement: true });
+      return;
+    }
+    const start = new Date(shift.debut).getTime();
+    const end = new Date(shift.fin).getTime();
+    const previous = ranges[ranges.length - 1];
+    if (previous && !previous._reinforcement && start === previous.end) {
+      previous.end = Math.max(previous.end, end);
+      previous.fin = shift.fin;
+    } else {
+      ranges.push({ ...shift, start, end });
+    }
+  });
+  return ranges;
+}
+
 function formatPhoneForLink(phone) {
   return (phone || "").replace(/[^0-9+]/g, "");
 }
@@ -442,7 +463,7 @@ function createShiftCard(group) {
 
   const time = document.createElement("div");
   time.className = "schedule-shift-time";
-  time.textContent = group.shifts.map(formatShiftRange).join(" | ");
+  time.textContent = mergeConsecutiveShifts(group.shifts).map(formatShiftRange).join(" | ");
   content.appendChild(time);
 
   if (group.responsable_prenom) {
