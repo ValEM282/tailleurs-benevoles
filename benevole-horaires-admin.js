@@ -686,6 +686,11 @@ function enterEditMode(card, group, dayKey) {
         }
       }
 
+      const { error: mergeError } = await PortalAuth.client.rpc("admin_merge_consecutive_affectations", {
+        p_personne_id: currentVolunteerId
+      });
+      if (mergeError) throw mergeError;
+
       await loadSchedule(currentVolunteerId);
     } catch (error) {
       console.error("Impossible de modifier les horaires :", error);
