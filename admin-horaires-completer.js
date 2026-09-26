@@ -5,6 +5,7 @@ const errorElement = document.getElementById("open-shifts-error");
 const listElement = document.getElementById("open-shifts-list");
 const dayFilter = document.getElementById("open-day-filter");
 const postFilter = document.getElementById("open-post-filter");
+const placeFilter = document.getElementById("open-place-filter");
 const statusFilter = document.getElementById("open-status-filter");
 const summaryPlaces = document.getElementById("open-summary-places");
 const summaryPosts = document.getElementById("open-summary-posts");
@@ -94,6 +95,7 @@ function filteredNeeds() {
   return needs.filter(need => {
     if (dayFilter.value && need.jour !== dayFilter.value) return false;
     if (postFilter.value && String(need.poste_id) !== postFilter.value) return false;
+    if (placeFilter.value && String(need.lieu_id) !== placeFilter.value) return false;
     if (statusFilter.value && need.urgence !== statusFilter.value) return false;
     return true;
   });
@@ -119,6 +121,7 @@ function updateSummary(rows) {
 function populateFilters() {
   const selectedDay = dayFilter.value;
   const selectedPost = postFilter.value;
+  const selectedPlace = placeFilter.value;
 
   const days = [...new Set(needs.map(need => need.jour))].sort();
   dayFilter.innerHTML = '<option value="">Tous les jours</option>' + days
@@ -132,6 +135,15 @@ function populateFilters() {
     .map(post => `<option value="${escapeHtml(post.id)}">${escapeHtml(post.label)}</option>`)
     .join("");
   if (posts.some(post => post.id === selectedPost)) postFilter.value = selectedPost;
+
+  const places = [...new Map(needs.filter(need => need.lieu_id != null).map(need => [String(need.lieu_id), {
+    id: String(need.lieu_id),
+    label: need.lieu || "Lieu à confirmer"
+  }])).values()].sort((a, b) => collator.compare(a.label, b.label));
+  placeFilter.innerHTML = '<option value="">Tous les lieux</option>' + places
+    .map(place => `<option value="${escapeHtml(place.id)}">${escapeHtml(place.label)}</option>`)
+    .join("");
+  if (places.some(place => place.id === selectedPlace)) placeFilter.value = selectedPlace;
 }
 
 function populateCreateOptions() {
@@ -485,6 +497,7 @@ async function initPage() {
 
 dayFilter.addEventListener("change", renderNeeds);
 postFilter.addEventListener("change", renderNeeds);
+placeFilter.addEventListener("change", renderNeeds);
 statusFilter.addEventListener("change", renderNeeds);
 addButton.setAttribute("aria-expanded", "false");
 addButton.addEventListener("click", () => setCreateOpen(createPanel.hidden));
