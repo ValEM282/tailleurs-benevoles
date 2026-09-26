@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260921-2">
   <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
-  <link rel="stylesheet" href="admin.css?v=20260923-17">
+  <link rel="stylesheet" href="admin.css?v=20260926-1">
   <link rel="stylesheet" href="admin-responsables.css?v=20260924-1">
   <link rel="stylesheet" href="admin-postes.css?v=20260924-1">
 </head>
@@ -118,6 +118,26 @@
                 <button type="submit" class="admin-primary-button">Valider</button>
               </div>
             </form>
+          </div>
+        </section>
+
+        <section class="admin-management-section" aria-labelledby="admin-youth-title">
+          <div class="admin-section-heading">
+            <h2 id="admin-youth-title">MOUVEMENT DE JEUNESSE</h2>
+          </div>
+          <div class="admin-search-grid admin-search-grid-single">
+            <div class="admin-search-field">
+              <label for="youth-unit-search">Nom de l'Unité</label>
+              <select id="youth-unit-search">
+                <option value="">Toutes les unités</option>
+                <option value="guide">Guides horizon</option>
+                <option value="patro">Patro</option>
+                <option value="pionnier">Pionniers</option>
+              </select>
+            </div>
+            <div class="admin-search-actions">
+              <button type="button" class="admin-search-button" id="admin-youth-search">Rechercher</button>
+            </div>
           </div>
         </section>
 
@@ -285,7 +305,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="portal-auth.js"></script>
-  <script src="admin.js?v=20260923-5"></script>
+  <script src="admin.js?v=20260926-1"></script>
   <script src="admin-responsables.js?v=20260924-2"></script>
   <script src="admin-postes.js?v=20260924-5"></script>
 </body>
