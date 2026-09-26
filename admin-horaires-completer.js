@@ -5,6 +5,7 @@ const errorElement = document.getElementById("open-shifts-error");
 const listElement = document.getElementById("open-shifts-list");
 const dayFilter = document.getElementById("open-day-filter");
 const postFilter = document.getElementById("open-post-filter");
+const statusFilter = document.getElementById("open-status-filter");
 const summaryPlaces = document.getElementById("open-summary-places");
 const summaryPosts = document.getElementById("open-summary-posts");
 const summaryHours = document.getElementById("open-summary-hours");
@@ -93,6 +94,7 @@ function filteredNeeds() {
   return needs.filter(need => {
     if (dayFilter.value && need.jour !== dayFilter.value) return false;
     if (postFilter.value && String(need.poste_id) !== postFilter.value) return false;
+    if (statusFilter.value && need.urgence !== statusFilter.value) return false;
     return true;
   });
 }
@@ -352,7 +354,12 @@ function createCard(need) {
 }
 
 function renderNeeds() {
-  const rows = filteredNeeds();
+  const urgencyOrder = { maintenant: 0, bientot: 1, avenir: 2 };
+  const rows = filteredNeeds().sort((a, b) => {
+    const statusDiff = (urgencyOrder[a.urgence] ?? 3) - (urgencyOrder[b.urgence] ?? 3);
+    if (statusDiff) return statusDiff;
+    return new Date(a.debut) - new Date(b.debut);
+  });
   updateSummary(rows);
   listElement.innerHTML = "";
 
@@ -478,6 +485,7 @@ async function initPage() {
 
 dayFilter.addEventListener("change", renderNeeds);
 postFilter.addEventListener("change", renderNeeds);
+statusFilter.addEventListener("change", renderNeeds);
 addButton.setAttribute("aria-expanded", "false");
 addButton.addEventListener("click", () => setCreateOpen(createPanel.hidden));
 createCancel.addEventListener("click", () => setCreateOpen(false));
