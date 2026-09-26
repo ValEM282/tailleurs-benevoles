@@ -655,14 +655,27 @@ async function printYouthPlanning(event) {
       });
 
       const first = dayRows[0];
+      const isSaturday = new Date(`${date}T12:00:00`).getDay() === 6;
+      let daySlots = slots;
+      if (isSaturday) {
+        const occupiedSlots = slots.filter(slot =>
+          dayRows.some(r => youthAssignmentCoversSlot(r, slot))
+        );
+        if (occupiedSlots.length) {
+          const firstOccupied = occupiedSlots[0];
+          const lastOccupied = occupiedSlots[occupiedSlots.length - 1];
+          daySlots = slots.filter(slot => slot >= firstOccupied && slot <= lastOccupied);
+        }
+      }
+
       body += `<section class="yp-sheet"><h1>PLANNING DES ${escapeHtml(unitName.toUpperCase())}</h1>
         <div class="yp-top"><div class="yp-chef">Chef : ${escapeHtml(unitRows[0].chef_prenom || "—")} · ${escapeHtml(unitRows[0].chef_telephone || "—")}</div><div class="yp-date">${escapeHtml(youthFestivalDayLabel(first.debut))}</div></div>
-        <table><thead><tr><th class="yp-post">POSTE</th>${slots.map(s=>`<th class="${s % 60 === 0 ? "yp-full-hour" : ""}">${youthSlotLabel(s)}</th>`).join("")}</tr></thead><tbody>`;
+        <table><thead><tr><th class="yp-post">POSTE</th>${daySlots.map(s=>`<th class="${s % 60 === 0 ? "yp-full-hour" : ""}">${youthSlotLabel(s)}</th>`).join("")}</tr></thead><tbody>`;
 
       [...groups.entries()].sort((a,b)=>compareFrench(a[0],b[0])).forEach(([key, groupRows]) => {
         const [post, place] = key.split("|");
         body += `<tr><td class="yp-post"><strong>${escapeHtml(post)}</strong><small>${escapeHtml(place)}</small></td>`;
-        slots.forEach(slot => {
+        daySlots.forEach(slot => {
           const ids = new Set(groupRows.filter(r => youthAssignmentCoversSlot(r, slot)).map(r => r.personne_id));
           const count = ids.size;
           body += `<td class="${count ? "yp-filled" : ""}">${count ? `<strong>${count}</strong><span>animé·e${count>1?"·s":""}</span>` : ""}</td>`;
