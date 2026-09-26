@@ -13,7 +13,9 @@ const sortButtons = [...document.querySelectorAll(".sort-button")];
 const searchParams = new URLSearchParams(window.location.search);
 const searchFirstname = (searchParams.get("prenom") || "").trim();
 const searchLastname = (searchParams.get("nom") || "").trim();
-const hasSearch = Boolean(searchFirstname || searchLastname);
+const youthMovement = searchParams.get("mouvement") === "jeunesse";
+const youthUnit = (searchParams.get("unite") || "").trim().toLowerCase();
+const hasSearch = Boolean(searchFirstname || searchLastname || youthMovement);
 
 let volunteers = [];
 let currentUser = null;
@@ -47,8 +49,18 @@ function normalizeSearch(value) {
     .toLocaleLowerCase("fr");
 }
 
+function matchesYouthMovement(volunteer) {
+  if (!youthMovement) return true;
+  const firstname = normalizeSearch(volunteer.prenom);
+  if (youthUnit === "guide") return /^guide\s+\d+$/i.test(normalizeText(volunteer.prenom));
+  if (youthUnit === "patro") return /^patro\s+\d+$/i.test(normalizeText(volunteer.prenom));
+  if (youthUnit === "pionnier") return /^pionnier\s+\d+$/i.test(normalizeText(volunteer.prenom));
+  return /^(guide|patro|pionnier)\s+\d+$/i.test(normalizeText(volunteer.prenom));
+}
+
 function matchesSearch(volunteer) {
   if (!hasSearch) return true;
+  if (!matchesYouthMovement(volunteer)) return false;
 
   const firstnameMatches = !searchFirstname ||
     normalizeSearch(volunteer.prenom).includes(normalizeSearch(searchFirstname));
