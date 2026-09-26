@@ -1,5 +1,5 @@
 /* Journée festival : de 04h00 à 03h59 le lendemain.
-   Les prestations après minuit restent donc rattachées au jour du festival précédent. */
+   Toute prestation entre 00h00 et 03h59 reste rattachée au jour précédent. */
 (() => {
   const FESTIVAL_CUTOFF_HOURS = 4;
   const CUTOFF_MS = FESTIVAL_CUTOFF_HOURS * 60 * 60 * 1000;
@@ -42,12 +42,24 @@
     return grouped;
   }
 
-  /* Remplace uniquement la logique d'affichage/groupement des pages horaires. */
+  /* Fonctions communes, réutilisables par les différents écrans. */
+  window.portalFestivalDayKey = festivalDayKey;
+  window.portalFestivalDayTitle = festivalDayTitle;
+
+  /* Pages Mes horaires / Horaire admin. */
   window.groupByDay = groupByFestivalDay;
   window.formatDayTitle = festivalDayTitle;
+  if (typeof window.dayKeyFor === "function") {
+    window.dayKeyFor = festivalDayKey;
+  }
 
-  /* Sur la fiche admin, le dayKey représente désormais la journée festival.
-     Une heure entre 00h00 et 03h59 doit donc être enregistrée le lendemain civil. */
+  /* Dashboard : la date affichée du prochain poste suit aussi la journée festival. */
+  if (typeof window.formatShiftDate === "function") {
+    window.formatShiftDate = festivalDayTitle;
+  }
+
+  /* Sur la fiche admin, le dayKey représente la journée festival.
+     Une heure entre 00h00 et 03h59 est donc enregistrée le lendemain civil. */
   if (typeof window.proposedDates === "function") {
     window.proposedDates = function (dayKey, startMinutes, endMinutes) {
       const startNextDay = Number(startMinutes) < FESTIVAL_CUTOFF_HOURS * 60;
@@ -63,8 +75,7 @@
     };
   }
 
-  /* Sécurité : si le premier rendu a eu lieu avant le chargement de ce fichier,
-     on le recalcule une fois la page complètement chargée. */
+  /* Sécurité : si un premier rendu a eu lieu avant ce fichier, on le recalcule. */
   window.addEventListener("load", () => {
     if (document.getElementById("schedule-add-button") && typeof window.renderSchedule === "function") {
       window.renderSchedule();
@@ -73,6 +84,11 @@
 
     if (document.getElementById("schedule-list") && typeof window.loadSchedule === "function") {
       window.loadSchedule();
+      return;
+    }
+
+    if (document.getElementById("next-shift-content") && typeof window.loadNextShift === "function") {
+      window.loadNextShift();
     }
   }, { once: true });
 })();
