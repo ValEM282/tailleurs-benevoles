@@ -206,3 +206,54 @@
 @media print {
   .logistics-edit-button { display: none !important; }
 }
+
+
+/* Éditeurs T-shirt / Tailloux / Sandwich : compacts et entièrement visibles */
+.logistics-cell {
+  overflow: visible !important;
+}
+
+.logistics-cell .contact-editor.logistics-editor {
+  left: 4px;
+  right: auto;
+  min-width: 0;
+  width: max-content;
+  max-width: none;
+  grid-template-columns: 105px 34px 34px;
+  padding: 6px;
+}
+
+.logistics-cell.sandwich-cell .contact-editor.logistics-editor {
+  left: auto;
+  right: 4px;
+}
+
+.logistics-editor .contact-edit-input {
+  width: 105px;
+  min-width: 105px;
+}
+
+.logistics-editor .contact-save-button,
+.logistics-editor .contact-cancel-button {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 1.15rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.logistics-editor .contact-save-button {
+  border: 2px solid #56c979;
+  color: #258443;
+}
+
+.logistics-editor .contact-cancel-button {
+  border: 2px solid #ef768f;
+  color: #c82043;
+}
