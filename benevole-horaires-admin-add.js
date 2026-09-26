@@ -360,6 +360,13 @@
       p_slots: slotsPayload
     });
 
+    if (!error) {
+      const { error: mergeError } = await PortalAuth.client.rpc("admin_merge_consecutive_affectations", {
+        p_personne_id: volunteerId
+      });
+      if (mergeError) console.error("Impossible de fusionner les plages consécutives :", mergeError);
+    }
+
     if (error) {
       console.error("Impossible d'ajouter l'horaire :", error);
       if (submit) submit.disabled = false;
