@@ -72,6 +72,23 @@ function formatShiftRange(shift) {
   return `${formatCompactTime(shift.debut)}-${formatCompactTime(shift.fin)}`;
 }
 
+function mergeConsecutiveShifts(shifts) {
+  const sorted = [...shifts].sort((a, b) => new Date(a.debut) - new Date(b.debut));
+  const ranges = [];
+  sorted.forEach(shift => {
+    const start = new Date(shift.debut).getTime();
+    const end = new Date(shift.fin).getTime();
+    const previous = ranges[ranges.length - 1];
+    if (previous && start === previous.end) {
+      previous.end = Math.max(previous.end, end);
+      previous.fin = shift.fin;
+    } else {
+      ranges.push({ start, end, debut: shift.debut, fin: shift.fin });
+    }
+  });
+  return ranges;
+}
+
 function getLocationName(shift) {
   let locationName = normalizeText(shift.lieu);
 
@@ -177,7 +194,7 @@ function createVolunteerLabel(volunteer, shifts) {
         createTextElement(
           "p",
           "label-time",
-          group.shifts.map(formatShiftRange).join(" | ")
+          mergeConsecutiveShifts(group.shifts).map(formatShiftRange).join(" | ")
         )
       );
 
