@@ -276,7 +276,7 @@ function openLogisticsEditor(button) {
   if (field === "sandwich") options = ["","Oui","Non"].map(v => `<option value="${v}" ${v===current?"selected":""}>${v || "—"}</option>`).join("");
   cell.innerHTML = `<div class="contact-editor logistics-editor" data-benevole-id="${escapeHtml(volunteerId)}" data-participation-id="${escapeHtml(participationId)}" data-field="${field}">
     <select class="contact-edit-input">${options}</select>
-    <button type="button" class="logistics-save-button" title="Valider" aria-label="Valider">✓</button>
+    <button type="button" class="contact-save-button logistics-save-button" title="Valider" aria-label="Valider">✓</button>
     <button type="button" class="contact-cancel-button" title="Annuler" aria-label="Annuler">✕</button>
     <span class="contact-edit-error" aria-live="polite"></span></div>`;
   cell.querySelector("select").focus();
