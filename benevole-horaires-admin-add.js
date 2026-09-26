@@ -115,6 +115,17 @@
     ].join("");
   }
 
+  function locationRowMarkup(index, posteId, selectedId = "") {
+    return `<div class="schedule-edit-location-row" data-add-location-row>
+      <label><span>Lieu ${index}</span><select data-add-location>${locationOptionsFor(posteId)}</select></label>
+      ${index > 1 ? '<button type="button" class="schedule-remove-location-button" data-remove-add-location aria-label="Supprimer ce lieu">×</button>' : ""}
+    </div>`;
+  }
+
+  function renumberLocations() {
+    addPanel.querySelectorAll("[data-add-location-row]").forEach((row,index)=>{ const span=row.querySelector("label > span"); if(span) span.textContent=`Lieu ${index+1}`; });
+  }
+
   function dateOptions() {
     return [
       '<option value="">Choisir une date</option>',
@@ -171,10 +182,10 @@
           <select id="schedule-add-post" required>${postOptions()}</select>
         </div>
 
-        <div class="schedule-edit-field">
-          <label for="schedule-add-location">Lieu</label>
-          <select id="schedule-add-location">${locationOptionsFor("")}</select>
+        <div class="schedule-edit-locations" data-add-location-rows>
+          ${locationRowMarkup(1, "")}
         </div>
+        <button type="button" class="schedule-add-location-button" data-add-another-location>+ Ajouter un lieu</button>
 
         <div class="schedule-edit-slots" data-add-slots>
           ${slotMarkup(1)}
@@ -284,12 +295,24 @@
     resetOverlapConfirmation();
 
     if (event.target?.id === "schedule-add-post") {
-      const location = addPanel.querySelector("#schedule-add-location");
-      if (location) location.innerHTML = locationOptionsFor(event.target.value);
+      addPanel.querySelectorAll("[data-add-location]").forEach(location => { location.innerHTML = locationOptionsFor(event.target.value); });
     }
   });
 
   addPanel.addEventListener("click", event => {
+    const addLocation = event.target.closest("[data-add-another-location]");
+    if (addLocation) {
+      const rows=addPanel.querySelector("[data-add-location-rows]");
+      const count=rows?.querySelectorAll("[data-add-location-row]").length||0;
+      const posteId=addPanel.querySelector("#schedule-add-post")?.value||"";
+      rows?.insertAdjacentHTML("beforeend",locationRowMarkup(count+1,posteId));
+      resetOverlapConfirmation();
+      return;
+    }
+
+    const removeLocation=event.target.closest("[data-remove-add-location]");
+    if(removeLocation){ removeLocation.closest("[data-add-location-row]")?.remove(); renumberLocations(); resetOverlapConfirmation(); return; }
+
     const addSlot = event.target.closest("[data-add-another-slot]");
     if (addSlot) {
       const slots = addPanel.querySelector("[data-add-slots]");
@@ -322,7 +345,9 @@
     }
 
     const posteId = addPanel.querySelector("#schedule-add-post")?.value || "";
-    const lieuId = addPanel.querySelector("#schedule-add-location")?.value || "";
+    const lieuIds=[...addPanel.querySelectorAll("[data-add-location]")].map(s=>Number(s.value)).filter(Boolean);
+    const uniqueLieuIds=[...new Set(lieuIds)];
+    const lieuId=uniqueLieuIds[0] || null;
 
     if (!posteId) {
       setMessage("Choisis un poste.", "error");
@@ -353,14 +378,19 @@
       fin: slot.end.toISOString()
     }));
 
-    const { error } = await PortalAuth.client.rpc("admin_create_benevole_schedule_slots", {
+    const { data, error } = await PortalAuth.client.rpc("admin_create_benevole_schedule_slots", {
       p_benevole_id: volunteerId,
       p_poste_id: Number(posteId),
-      p_lieu_id: lieuId ? Number(lieuId) : null,
+      p_lieu_id: lieuId,
       p_slots: slotsPayload
     });
 
     if (!error) {
+      const createdIds = Array.isArray(data) ? data : [];
+      for (const id of createdIds) {
+        const { error: lieuxError } = await PortalAuth.client.rpc("admin_set_affectation_lieux", { p_affectation_id: id, p_lieu_ids: uniqueLieuIds });
+        if (lieuxError) { console.error("Impossible d'enregistrer les lieux :", lieuxError); setMessage("Les lieux n'ont pas pu être enregistrés.", "error"); return; }
+      }
       const { error: mergeError } = await PortalAuth.client.rpc("admin_merge_consecutive_affectations", {
         p_personne_id: volunteerId
       });
