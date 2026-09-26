@@ -65,8 +65,10 @@ function matchesYouthMovement(volunteer) {
 }
 
 function matchesSearch(volunteer) {
-  if (!hasSearch) return true;
+  // Toujours appliquer le filtre MOUVEMENTS DE JEUNESSE,
+  // même lorsque Prénom et NOM sont laissés vides.
   if (!matchesYouthMovement(volunteer)) return false;
+  if (!hasSearch) return true;
 
   const firstnameMatches = !searchFirstname ||
     normalizeSearch(volunteer.prenom).includes(normalizeSearch(searchFirstname));
