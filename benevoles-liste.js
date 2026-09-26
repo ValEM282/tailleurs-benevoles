@@ -49,8 +49,14 @@ function normalizeSearch(value) {
     .toLocaleLowerCase("fr");
 }
 
+function isYouthMovementVolunteer(volunteer) {
+  return /^(guide|patro|pionnier)\s+\d+$/i.test(normalizeText(volunteer.prenom));
+}
+
 function matchesYouthMovement(volunteer) {
-  if (!youthMovement) return true;
+  // Les membres des mouvements de jeunesse ne sont visibles que
+  // depuis l'encadré MOUVEMENT DE JEUNESSE de la page ADMIN.
+  if (!youthMovement) return !isYouthMovementVolunteer(volunteer);
   const firstname = normalizeSearch(volunteer.prenom);
   if (youthUnit === "guide") return /^guide\s+\d+$/i.test(normalizeText(volunteer.prenom));
   if (youthUnit === "patro") return /^patro\s+\d+$/i.test(normalizeText(volunteer.prenom));
