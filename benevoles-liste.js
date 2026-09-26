@@ -639,7 +639,7 @@ async function printYouthPlanning(event) {
     const dates = [...new Set(assigned.map(r => youthFestivalDate(r.debut)))].sort();
 
     if (!dates.length) {
-      body += `<section class="yp-sheet"><h1>PLANNING HORAIRE — ${escapeHtml(unitName.toUpperCase())}</h1>
+      body += `<section class="yp-sheet"><h1>PLANNING DES ${escapeHtml(unitName.toUpperCase())}</h1>
         <div class="yp-chef">Chef : ${escapeHtml(unitRows[0].chef_prenom || "—")} · ${escapeHtml(unitRows[0].chef_telephone || "—")}</div>
         <p>Aucun horaire attribué.</p></section>`;
       continue;
@@ -655,13 +655,13 @@ async function printYouthPlanning(event) {
       });
 
       const first = dayRows[0];
-      body += `<section class="yp-sheet"><h1>PLANNING HORAIRE — ${escapeHtml(unitName.toUpperCase())}</h1>
+      body += `<section class="yp-sheet"><h1>PLANNING DES ${escapeHtml(unitName.toUpperCase())}</h1>
         <div class="yp-top"><div class="yp-chef">Chef : ${escapeHtml(unitRows[0].chef_prenom || "—")} · ${escapeHtml(unitRows[0].chef_telephone || "—")}</div><div class="yp-date">${escapeHtml(youthFestivalDayLabel(first.debut))}</div></div>
         <table><thead><tr><th class="yp-post">POSTE</th>${slots.map(s=>`<th class="${s % 60 === 0 ? "yp-full-hour" : ""}">${youthSlotLabel(s)}</th>`).join("")}</tr></thead><tbody>`;
 
       [...groups.entries()].sort((a,b)=>compareFrench(a[0],b[0])).forEach(([key, groupRows]) => {
         const [post, place] = key.split("|");
-        body += `<tr><td class="yp-post"><strong>${escapeHtml(post)}</strong><small>${escapeHtml(place)}</small><small class="yp-resp">${escapeHtml(groupRows[0].responsable_poste || "—")}</small></td>`;
+        body += `<tr><td class="yp-post"><strong>${escapeHtml(post)}</strong><small>${escapeHtml(place)}</small></td>`;
         slots.forEach(slot => {
           const ids = new Set(groupRows.filter(r => youthAssignmentCoversSlot(r, slot)).map(r => r.personne_id));
           const count = ids.size;
