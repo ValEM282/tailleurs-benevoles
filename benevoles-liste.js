@@ -717,17 +717,14 @@ async function printYouthPlanning(event) {
       });
 
       const first = dayRows[0];
-      const isSaturday = new Date(`${date}T12:00:00`).getDay() === 6;
       let daySlots = slots;
-      if (isSaturday) {
-        const occupiedSlots = slots.filter(slot =>
-          dayRows.some(r => youthAssignmentCoversSlot(r, slot))
-        );
-        if (occupiedSlots.length) {
-          const firstOccupied = occupiedSlots[0];
-          const lastOccupied = occupiedSlots[occupiedSlots.length - 1];
-          daySlots = slots.filter(slot => slot >= firstOccupied && slot <= lastOccupied);
-        }
+      const occupiedSlots = slots.filter(slot =>
+        dayRows.some(r => youthAssignmentCoversSlot(r, slot))
+      );
+      if (occupiedSlots.length) {
+        const firstOccupied = occupiedSlots[0];
+        const lastOccupied = occupiedSlots[occupiedSlots.length - 1];
+        daySlots = slots.filter(slot => slot >= firstOccupied && slot <= lastOccupied);
       }
 
       body += `<section class="yp-sheet"><h1>PLANNING DES ${escapeHtml(unitName.toUpperCase())}</h1>
