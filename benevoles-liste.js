@@ -50,7 +50,7 @@ function normalizeSearch(value) {
 }
 
 function isYouthMovementVolunteer(volunteer) {
-  return /^(guide|patro|pionnier)\s+\d+$/i.test(normalizeText(volunteer.prenom));
+  return /^(guide|patro|pionnier)\s*0*\d+$/i.test(normalizeText(volunteer.prenom));
 }
 
 function matchesYouthMovement(volunteer) {
@@ -58,10 +58,10 @@ function matchesYouthMovement(volunteer) {
   // depuis l'encadré MOUVEMENT DE JEUNESSE de la page ADMIN.
   if (!youthMovement) return !isYouthMovementVolunteer(volunteer);
   const firstname = normalizeSearch(volunteer.prenom);
-  if (youthUnit === "guide") return /^guide\s+\d+$/i.test(normalizeText(volunteer.prenom));
-  if (youthUnit === "patro") return /^patro\s+\d+$/i.test(normalizeText(volunteer.prenom));
-  if (youthUnit === "pionnier") return /^pionnier\s+\d+$/i.test(normalizeText(volunteer.prenom));
-  return /^(guide|patro|pionnier)\s+\d+$/i.test(normalizeText(volunteer.prenom));
+  if (youthUnit === "guide") return /^guide\s*0*\d+$/i.test(normalizeText(volunteer.prenom));
+  if (youthUnit === "patro") return /^patro\s*0*\d+$/i.test(normalizeText(volunteer.prenom));
+  if (youthUnit === "pionnier") return /^pionnier\s*0*\d+$/i.test(normalizeText(volunteer.prenom));
+  return /^(guide|patro|pionnier)\s*0*\d+$/i.test(normalizeText(volunteer.prenom));
 }
 
 function matchesSearch(volunteer) {
