@@ -835,50 +835,6 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-function formatMailSentAtShort(value) {
-  const parts = new Intl.DateTimeFormat("fr-BE", {
-    timeZone: "Europe/Brussels",
-    day: "2-digit",
-    month: "2-digit",
-    year: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false
-  }).formatToParts(new Date(value));
-  const get = type => parts.find(part => part.type === type)?.value || "";
-  return `${get("day")}-${get("month")}-${get("year")} ${get("hour")}:${get("minute")}`;
-}
-function formatMailSentAt(value) {
-  return new Intl.DateTimeFormat("fr-BE",{timeZone:"Europe/Brussels",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(new Date(value));
-}
-async function refreshVolunteerMailStatus() {
-  const button=document.getElementById("mail-volunteer-schedule-button"),status=document.getElementById("mail-volunteer-schedule-status");
-  if(!button||!status||!currentVolunteerId)return;
-  const {data,error}=await PortalAuth.client.rpc("admin_benevole_mailing_status",{p_benevole_id:currentVolunteerId});
-  if(error){console.error(error);return}
-  const row=data?.[0]; if(!row)return;
-  button.hidden=!currentShifts.length||!row.email;
-  status.hidden=false;
-  if(row.statut==="envoye"){status.textContent="✓";status.className="schedule-mail-status sent schedule-mail-sent-dot";status.title=formatMailSentAtShort(row.envoye_at);status.setAttribute("aria-label","Envoyé le "+formatMailSentAtShort(row.envoye_at));button.textContent="Renvoyer horaire";}
-  else if(row.statut==="erreur"){status.textContent="Erreur lors du dernier envoi";status.className="schedule-mail-status error";button.textContent="Réessayer l’envoi";}
-  else{status.textContent="À envoyer";status.className="schedule-mail-status pending";button.textContent="Envoyer l’horaire par mail";}
-}
-async function sendVolunteerScheduleMail() {
-  const button=document.getElementById("mail-volunteer-schedule-button"),status=document.getElementById("mail-volunteer-schedule-status");
-  if(!button||!currentVolunteerId)return;
-  const isResend=button.textContent.startsWith("Renvoyer");
-  if(isResend&&!window.confirm("Cet horaire a déjà été envoyé. Le renvoyer à ce bénévole ?"))return;
-  button.disabled=true;status.hidden=false;status.textContent="Envoi en cours…";status.className="schedule-mail-status pending";
-  try{
-    const {data:sessionData,error:sessionError}=await PortalAuth.client.auth.getSession();
-    if(sessionError||!sessionData?.session?.access_token)throw new Error("Session expirée.");
-    const response=await fetch("https://ftfhtyohyjezoibmumum.supabase.co/functions/v1/mailing-horaires-test",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+sessionData.session.access_token,"apikey":"sb_publishable_oQOnxMDMyvx6ukcuJHgWuQ_Gu-utQe3"},body:JSON.stringify({mode:"individual",benevole_id:currentVolunteerId})});
-    const raw=await response.text();let payload=null;try{payload=raw?JSON.parse(raw):null}catch(_){}
-    if(!response.ok||!payload?.ok)throw new Error(payload?.error||raw||"Envoi impossible.");
-    await refreshVolunteerMailStatus();
-  }catch(error){console.error(error);status.textContent="Erreur : "+(error.message||error);status.className="schedule-mail-status error";button.disabled=false;return}
-  button.disabled=false;
-}
 async function initPage() {
   const user = await PortalAuth.requireAuth();
   if (!user) return;
@@ -948,13 +904,9 @@ async function initPage() {
 
   setupBulkPresenceControl();
 
-  const mailButton=document.getElementById("mail-volunteer-schedule-button");
-  if(mailButton) mailButton.addEventListener("click",sendVolunteerScheduleMail);
-
   try {
     await loadEditOptions();
     await loadSchedule(volunteerId);
-    await refreshVolunteerMailStatus();
   } catch (error) {
     document.getElementById("schedule-loading").hidden = true;
     document.getElementById("schedule-error").hidden = false;
