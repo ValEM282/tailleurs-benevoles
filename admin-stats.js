@@ -12,7 +12,6 @@ const placeStat = document.getElementById("stat-places");
 const absentStat = document.getElementById("stat-absent");
 const availableStat = document.getElementById("stat-available");
 const vacantPostsStat = document.getElementById("stat-vacant-posts");
-const vacantPlacesStat = document.getElementById("stat-vacant-places");
 const vacantHoursStat = document.getElementById("stat-vacant-hours");
 const mealGrid = document.getElementById("meal-grid");
 
@@ -129,7 +128,6 @@ function renderSummary(summary = {}, vacancySummary = {}) {
   absentStat.textContent = numberValue(summary.absents);
   availableStat.textContent = numberValue(summary.disponibles);
   vacantPostsStat.textContent = numberValue(vacancySummary.postes);
-  vacantPlacesStat.textContent = numberValue(vacancySummary.places);
   vacantHoursStat.textContent = formattedNumber(vacancySummary.heures);
 }
 
@@ -308,7 +306,6 @@ function renderDaily(rows, vacancyRows, peopleRows) {
         <td>${numberValue(row.absents)}</td>
         <td>${numberValue(row.disponibles)}</td>
         <td>${numberValue(vacancy.postes)}</td>
-        <td>${numberValue(vacancy.places)}</td>
         <td>${formattedNumber(vacancy.heures)}</td>
       </tr>
     `;
