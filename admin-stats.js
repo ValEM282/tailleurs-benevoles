@@ -10,6 +10,7 @@ const volunteerStat = document.getElementById("stat-volunteers");
 const postStat = document.getElementById("stat-posts");
 const placeStat = document.getElementById("stat-places");
 const absentStat = document.getElementById("stat-absent");
+const presentStat = document.getElementById("stat-present");
 const availableStat = document.getElementById("stat-available");
 const vacantPostsStat = document.getElementById("stat-vacant-posts");
 const vacantHoursStat = document.getElementById("stat-vacant-hours");
@@ -121,11 +122,12 @@ function initializeDays(days) {
   daysInitialized = true;
 }
 
-function renderSummary(summary = {}, vacancySummary = {}) {
+function renderSummary(summary = {}, vacancySummary = {}, presentCount = 0) {
   volunteerStat.textContent = numberValue(summary.benevoles);
   postStat.textContent = numberValue(summary.postes);
   placeStat.textContent = numberValue(summary.lieux);
   absentStat.textContent = numberValue(summary.absents);
+  presentStat.textContent = numberValue(presentCount);
   availableStat.textContent = numberValue(summary.disponibles);
   vacantPostsStat.textContent = numberValue(vacancySummary.postes);
   vacantHoursStat.textContent = formattedNumber(vacancySummary.heures);
@@ -312,9 +314,9 @@ function renderDaily(rows, vacancyRows, peopleRows) {
   }).join("");
 }
 
-function renderStats(data, vacancyData, volunteerHoursResult, peopleRows, selectedDay) {
+function renderStats(data, vacancyData, volunteerHoursResult, peopleRows, presentCount, selectedDay) {
   initializeDays(data?.days);
-  renderSummary(data?.summary, vacancyData?.summary);
+  renderSummary(data?.summary, vacancyData?.summary, presentCount);
   renderMeals(data?.meals);
   renderVolunteerHours(volunteerHoursResult);
   renderPosts(data?.by_post, selectedDay);
@@ -330,14 +332,15 @@ async function loadStats(selectedDay = "") {
   loadingElement.textContent = "Chargement des statistiques…";
   errorElement.hidden = true;
 
-  const [statsResult, vacancyResult, volunteerHoursResult, peopleResult] = await Promise.all([
+  const [statsResult, vacancyResult, volunteerHoursResult, peopleResult, presentResult] = await Promise.all([
     PortalAuth.client.rpc("admin_get_stats", { p_day: selectedDay || null }),
     PortalAuth.client.rpc("admin_get_vacancy_stats", { p_day: selectedDay || null }),
     PortalAuth.client.rpc("admin_get_volunteer_hours", { p_day: null }),
-    PortalAuth.client.rpc("admin_get_daily_people_stats")
+    PortalAuth.client.rpc("admin_get_daily_people_stats"),
+    PortalAuth.client.rpc("admin_get_present_volunteer_count", { p_day: selectedDay || null })
   ]);
 
-  const error = statsResult.error || vacancyResult.error || volunteerHoursResult.error || peopleResult.error;
+  const error = statsResult.error || vacancyResult.error || volunteerHoursResult.error || peopleResult.error || presentResult.error;
   if (error) {
     console.error("Impossible de charger les statistiques :", error);
     loadingElement.hidden = true;
@@ -351,6 +354,7 @@ async function loadStats(selectedDay = "") {
     vacancyResult.data || {},
     volunteerHoursResult.data || {},
     peopleResult.data || [],
+    presentResult.data || 0,
     selectedDay
   );
 }
