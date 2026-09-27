@@ -74,6 +74,43 @@
     return { times, counts, cells };
   }
 
+  function splitTableDataForReadability(doc, data, pageWidth, margin) {
+    const columnCount = data.times.length;
+    if (columnCount < 2) return [data];
+
+    const availableWidth = pageWidth - margin * 2;
+    const columnWidth = availableWidth / columnCount;
+    const horizontalPadding = 6; // 3 mm de chaque côté, comme dans autoTable
+    const usableTextWidth = Math.max(1, columnWidth - horizontalPadding);
+
+    // On ne coupe que si au moins un nom ne peut pas tenir sur une seule ligne
+    // dans la largeur qu'aurait sa colonne sur le PDF.
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8.5);
+    const hasWrappedName = data.cells.some(cell =>
+      String(cell || "")
+        .split("\n")
+        .filter(name => name && name !== "—")
+        .some(name => doc.getTextWidth(name) > usableTextWidth)
+    );
+
+    if (!hasWrappedName) return [data];
+
+    const splitAt = Math.ceil(columnCount / 2);
+    return [
+      {
+        times: data.times.slice(0, splitAt),
+        counts: data.counts.slice(0, splitAt),
+        cells: data.cells.slice(0, splitAt)
+      },
+      {
+        times: data.times.slice(splitAt),
+        counts: data.counts.slice(splitAt),
+        cells: data.cells.slice(splitAt)
+      }
+    ].filter(part => part.times.length);
+  }
+
   function estimateBlockHeight(data) {
     const maxLines = Math.max(
       1,
@@ -149,7 +186,11 @@
         const data = tableData(block);
         if (!data) return;
 
-        const requiredHeight = estimateBlockHeight(data);
+        const tableParts = splitTableDataForReadability(doc, data, pageWidth, margin);
+        const requiredHeight = tableParts.reduce(
+          (sum, part) => sum + estimateBlockHeight(part) - 23 - 10,
+          23 + 10 + Math.max(0, tableParts.length - 1) * 7
+        );
         const fullFreshPageHeight = printableBottom - 16;
 
         if (y + requiredHeight > printableBottom && requiredHeight <= fullFreshPageHeight) {
@@ -158,59 +199,65 @@
 
         y = drawTitleCard(doc, block, y, pageWidth, margin);
 
-        doc.autoTable({
-          startY: y,
-          head: [data.times],
-          body: [data.cells],
-          margin: { top: 16, left: margin, right: margin, bottom: margin },
-          pageBreak: "avoid",
-          rowPageBreak: "avoid",
-          theme: "grid",
-          styles: {
-            font: "helvetica",
-            fontSize: 8.5,
-            textColor: [20, 20, 20],
-            halign: "center",
-            valign: "middle",
-            cellPadding: 3,
-            lineColor: [215, 220, 242],
-            lineWidth: 0.25,
-            overflow: "linebreak"
-          },
-          headStyles: {
-            fillColor: [244, 245, 252],
-            textColor: [28, 46, 171],
-            fontStyle: "bold",
-            fontSize: 11.5,
-            valign: "top",
-            cellPadding: { top: 2.3, right: 3, bottom: 5.4, left: 3 },
-            minCellHeight: 13.5
-          },
-          bodyStyles: {
-            valign: "top",
-            cellPadding: { top: 2.5, right: 3, bottom: 3, left: 3 }
-          },
-          didDrawCell: hookData => {
-            if (hookData.section !== "head") return;
-            const count = data.counts[hookData.column.index];
-            if (!count) return;
+        tableParts.forEach((part, partIndex) => {
+          if (partIndex > 0) y += 7;
 
-            doc.setTextColor(28, 46, 171);
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(8.5);
-            doc.text(
-              count,
-              hookData.cell.x + hookData.cell.width / 2,
-              hookData.cell.y + hookData.cell.height - 2.2,
-              { align: "center" }
-            );
-          },
-          didDrawPage: () => {
-            drawStamp(doc, stamp, pageWidth);
-          }
+          doc.autoTable({
+            startY: y,
+            head: [part.times],
+            body: [part.cells],
+            margin: { top: 16, left: margin, right: margin, bottom: margin },
+            pageBreak: "avoid",
+            rowPageBreak: "avoid",
+            theme: "grid",
+            styles: {
+              font: "helvetica",
+              fontSize: 8.5,
+              textColor: [20, 20, 20],
+              halign: "center",
+              valign: "middle",
+              cellPadding: 3,
+              lineColor: [215, 220, 242],
+              lineWidth: 0.25,
+              overflow: "linebreak"
+            },
+            headStyles: {
+              fillColor: [244, 245, 252],
+              textColor: [28, 46, 171],
+              fontStyle: "bold",
+              fontSize: 11.5,
+              valign: "top",
+              cellPadding: { top: 2.3, right: 3, bottom: 5.4, left: 3 },
+              minCellHeight: 13.5
+            },
+            bodyStyles: {
+              valign: "top",
+              cellPadding: { top: 2.5, right: 3, bottom: 3, left: 3 }
+            },
+            didDrawCell: hookData => {
+              if (hookData.section !== "head") return;
+              const count = part.counts[hookData.column.index];
+              if (!count) return;
+
+              doc.setTextColor(28, 46, 171);
+              doc.setFont("helvetica", "normal");
+              doc.setFontSize(8.5);
+              doc.text(
+                count,
+                hookData.cell.x + hookData.cell.width / 2,
+                hookData.cell.y + hookData.cell.height - 2.2,
+                { align: "center" }
+              );
+            },
+            didDrawPage: () => {
+              drawStamp(doc, stamp, pageWidth);
+            }
+          });
+
+          y = doc.lastAutoTable.finalY;
         });
 
-        y = doc.lastAutoTable.finalY + 10;
+        y += 10;
       });
 
       const blob = doc.output("blob");
