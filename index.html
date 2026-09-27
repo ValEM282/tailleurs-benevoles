@@ -61,9 +61,7 @@
             required
           >
 
-          <p class="field-help">
-            Indique le même e-mail que celui utilisé lors de ton inscription comme bénévole
-          </p>
+          <p id="email-help" class="field-help">Utilise l&#39;email sur lequel tu as reçu une invitation à te connecter sur ce Portail</p>
           <p id="email-error" class="form-error" role="alert"></p>
         </div>
 
@@ -126,6 +124,16 @@
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js"></script>
+  <script>
+    (function () {
+      const email = document.getElementById("email");
+      const help = document.getElementById("email-help");
+      if (!email || !help) return;
+      function updateEmailHelp() { help.hidden = email.value.trim().length > 0; }
+      email.addEventListener("input", updateEmailHelp);
+      updateEmailHelp();
+    })();
+  </script>
 
 </body>
 </html>
