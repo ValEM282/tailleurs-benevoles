@@ -292,6 +292,14 @@ async function loadLabels() {
   let volunteers = Array.isArray(volunteersResult.data) ? volunteersResult.data : [];
   let schedules = Array.isArray(schedulesResult.data) ? schedulesResult.data : [];
 
+  // Les animé·e·s des mouvements de jeunesse ont leur propre planning et ne reçoivent pas ces étiquettes.
+  const isYouthVolunteer = volunteer => /^(guide|patro|pionnier)\\s*0*\\d+$/i.test(normalizeText(volunteer.prenom));
+  if (!targetVolunteerId) {
+    const volunteerIds = new Set(volunteers.filter(volunteer => !isYouthVolunteer(volunteer)).map(volunteer => volunteer.id));
+    volunteers = volunteers.filter(volunteer => volunteerIds.has(volunteer.id));
+    schedules = schedules.filter(shift => volunteerIds.has(shift.benevole_id));
+  }
+
   if (targetVolunteerId) {
     volunteers = volunteers.filter(volunteer => volunteer.id === targetVolunteerId);
     schedules = schedules.filter(shift => shift.benevole_id === targetVolunteerId);
