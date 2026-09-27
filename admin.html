@@ -345,21 +345,37 @@
         result.textContent = "Test de la connexion SMTP et préparation du mail…";
 
         try {
-          const response = await PortalAuth.client.functions.invoke("mailing-horaires-test", {
-            body: { mode: "test" }
-          });
-          if (response.error) {
-            let detail = response.error.message || "Erreur Edge Function";
-            try {
-              const ctx = response.error.context;
-              if (ctx && typeof ctx.json === "function") {
-                const payload = await ctx.json();
-                if (payload && payload.error) detail = payload.error;
-                else if (payload && payload.ready === false) detail = "Configuration SMTP incomplète côté serveur.";
-              }
-            } catch (_) {}
-            throw new Error(detail);
+          const { data: sessionData, error: sessionError } = await PortalAuth.client.auth.getSession();
+          if (sessionError || !sessionData?.session?.access_token) {
+            throw new Error("Session expirée. Reconnecte-toi au Portail puis réessaie.");
           }
+
+          const httpResponse = await fetch(
+            "https://ftfhtyohyjezoibmumum.supabase.co/functions/v1/mailing-horaires-test",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + sessionData.session.access_token,
+                "apikey": "sb_publishable_oQOnxMDMyvx6ukcuJHgWuQ_Gu-utQe3"
+              },
+              body: JSON.stringify({ mode: "test" })
+            }
+          );
+
+          let payload = null;
+          const raw = await httpResponse.text();
+          try { payload = raw ? JSON.parse(raw) : null; } catch (_) {}
+
+          if (!httpResponse.ok) {
+            throw new Error(
+              (payload && (payload.error || payload.message)) ||
+              raw ||
+              ("Erreur serveur HTTP " + httpResponse.status)
+            );
+          }
+
+          const response = { data: payload };
           if (!response.data || !response.data.ok) {
             throw new Error((response.data && response.data.error) || "Envoi non confirmé.");
           }
