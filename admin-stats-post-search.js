@@ -131,7 +131,7 @@
     doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(90,90,100); doc.text(`Imprimé le ${now}`,285,14,{align:"right"});
     const criteria=[postSelect.value ? `Poste : ${postSelect.value}`:"",subpostSelect.value ? `Sous-poste : ${subpostSelect.value}`:"",daySelect?.value ? `Jour : ${daySelect.options[daySelect.selectedIndex]?.textContent || daySelect.value}`:""].filter(Boolean).join(" · ");
     if(criteria){doc.setFontSize(8.5);doc.text(criteria,12,20);}
-    doc.autoTable({startY:criteria?24:20,head:[["Poste","Sous-poste","Bénévoles"]],body:rows.map(row=>[...row.cells].map(cell=>cell.textContent.trim())),theme:"grid",styles:{font:"helvetica",fontSize:9,cellPadding:2.5,lineColor:[207,212,232],lineWidth:.2,textColor:[20,20,24]},headStyles:{fillColor:[28,46,171],textColor:[255,255,255],fontStyle:"bold"},columnStyles:{2:{halign:"center"}}});
+    doc.autoTable({startY:criteria?24:20,head:[["Poste","Sous-poste","Bénévoles"]],body:rows.map(row=>[...row.cells].map((cell,index)=>index===1 && cell.textContent.trim().toLocaleLowerCase("fr")==="total du poste" ? "TOTAL DU POSTE" : cell.textContent.trim())),theme:"grid",styles:{font:"helvetica",fontSize:9,cellPadding:2.5,lineColor:[207,212,232],lineWidth:.2,textColor:[20,20,24]},headStyles:{fillColor:[28,46,171],textColor:[255,255,255],fontStyle:"bold"},columnStyles:{2:{halign:"center",fontSize:11,fontStyle:"bold"}},didParseCell(data){if(data.section==="body" && data.row.raw?.[1]==="TOTAL DU POSTE"){data.cell.styles.fillColor=[235,236,240];if(data.column.index===1)data.cell.styles.fontStyle="bold";}}});
     doc.save("benevoles-par-poste.pdf");
   }
 
