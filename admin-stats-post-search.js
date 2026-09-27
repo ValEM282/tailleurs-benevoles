@@ -62,7 +62,7 @@
   function refreshPostOptions() {
     const previousPost = postSelect.value;
     const posts = uniqueSorted(dataRows().map(rowPost));
-    setOptions(postSelect, posts, "Tous les postes", previousPost);
+    setOptions(postSelect, posts, "Choisir un poste", previousPost);
     refreshSubpostOptions();
   }
 
@@ -76,7 +76,7 @@
         .map(rowSubpost)
     );
 
-    setOptions(subpostSelect, subposts, "Tous les sous-postes", previousSubpost);
+    setOptions(subpostSelect, subposts, "Choisir un sous-poste", previousSubpost);
   }
 
   function removeEmptyRow() {
