@@ -365,13 +365,27 @@ async function loadDashboard() {
   const role = participation.role;
   roleElement.textContent = getRoleLabel(role);
 
-  if (role === "benevole") {
-    volunteerNextShiftSection.hidden = false;
-    teamMenuSection.hidden = true;
-    await loadNextShift();
-  } else if (role === "responsable" || role === "admin") {
-    volunteerNextShiftSection.hidden = true;
+  // Toute personne conserve d'abord son espace BÉNÉVOLE, même si elle
+  // cumule une fonction de responsable ou co-responsable.
+  volunteerNextShiftSection.hidden = false;
+  await loadNextShift();
+
+  if (role === "responsable" || role === "admin") {
     teamMenuSection.hidden = false;
+
+    if (role === "responsable") {
+      const { data: scopes, error: scopesError } = await supabaseClient.rpc("get_my_management_roles");
+      if (!scopesError && Array.isArray(scopes) && scopes.length) {
+        const responsible = scopes.filter(x => x.kind === "responsable").map(x => x.poste_nom);
+        const coResponsible = scopes.filter(x => x.kind === "co_responsable").map(x => x.poste_nom);
+        const labels = [];
+        if (responsible.length) labels.push(`Responsable : ${responsible.join(", ")}`);
+        if (coResponsible.length) labels.push(`Co-responsable : ${coResponsible.join(", ")}`);
+        roleElement.textContent = labels.join(" · ") || getRoleLabel(role);
+      }
+    }
+  } else {
+    teamMenuSection.hidden = true;
   }
 }
 
