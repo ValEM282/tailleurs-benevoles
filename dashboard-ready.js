@@ -24,16 +24,17 @@
       return true;
     }
 
-    // Admin : le libellé est déjà définitif dans dashboard.js.
-    if (volunteerSection.hidden && !teamSection.hidden && roleText.startsWith("Administration")) {
+    // Admin : il cumule maintenant aussi l'encadré bénévole.
+    if (!volunteerSection.hidden && !teamSection.hidden && roleText.startsWith("Administration")) {
       role.hidden = false;
       personalized.hidden = false;
       return true;
     }
 
-    // Responsable : attendre que le libellé générique ait été remplacé par ses vrais postes.
+    // Responsable / co-responsable : les deux encadrés sont affichés.
+    // Le libellé peut être détaillé par dashboard.js (Responsable / Co-responsable + postes).
     if (
-      volunteerSection.hidden &&
+      !volunteerSection.hidden &&
       !teamSection.hidden &&
       roleText &&
       roleText !== "Responsable de poste" &&
