@@ -75,3 +75,14 @@
   .responsables-table th:nth-child(6),
   .responsables-table td:nth-child(6) { width: 19%; }
 }
+
+.responsibility-display{display:flex;align-items:flex-start;gap:8px}
+.responsibility-edit-button{border:0;background:transparent;padding:1px 0;cursor:pointer;font-size:16px;line-height:1;color:inherit;flex:0 0 auto}
+.responsibility-edit-button:hover{transform:scale(1.08)}
+.responsibility-values{min-width:0}
+.responsibility-editor{display:grid;gap:8px;min-width:210px}
+.responsibility-options{display:grid;gap:4px;max-height:240px;overflow:auto;padding:7px;border:1px solid #d7dbea;border-radius:8px;background:#fff}
+.responsibility-option{display:flex;align-items:center;gap:7px;line-height:1.2;cursor:pointer}
+.responsibility-option input{accent-color:#1C2EAB}
+.responsibility-editor-actions{display:flex;gap:6px}
+@media print{.responsibility-edit-button{display:none!important}}
