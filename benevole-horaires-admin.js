@@ -856,6 +856,17 @@ async function initPage() {
   const prenom = (params.get("prenom") || "").trim();
   const nom = (params.get("nom") || "").trim();
 
+  // Les animé·e·s des mouvements de jeunesse utilisent des prénoms techniques
+  // Guide 01..., Patro 01..., Pionnier 01...
+  const isYouthVolunteer = /^(Guide|Patro|Pionnier)\s*0?\d+$/i.test(prenom);
+  if (isYouthVolunteer) {
+    const backButton = document.querySelector(".back-button");
+    if (backButton) {
+      backButton.textContent = "← Liste des animé·e·s";
+      backButton.href = "benevoles-liste.html?mouvement=jeunesse";
+    }
+  }
+
   if (!volunteerId) {
     window.location.replace("benevoles-liste.html");
     return;
