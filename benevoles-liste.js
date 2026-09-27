@@ -24,6 +24,11 @@ let sortField = "nom";
 let sortDirection = "asc";
 let activityFilter = "all"; // all -> active -> inactive -> all
 
+if (youthMovement) {
+  const pageTitle = document.querySelector(".volunteers-list-heading h1");
+  if (pageTitle) pageTitle.textContent = "Liste des animé·e·s";
+}
+
 if (youthMovement && printAllLabelsButton) {
   printAllLabelsButton.textContent = "Imprimer le planning horaire";
   printAllLabelsButton.href = "#";
