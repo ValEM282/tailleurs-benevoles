@@ -363,30 +363,62 @@ async function loadDashboard() {
   }
 
   const role = participation.role;
-  roleElement.textContent = getRoleLabel(role);
 
-  // Toute personne conserve d'abord son espace BÉNÉVOLE, même si elle
-  // cumule une fonction de responsable ou co-responsable.
-  volunteerNextShiftSection.hidden = false;
-  await loadNextShift();
+  // Le rôle technique ne suffit pas : un co-responsable reçoit aussi le rôle
+  // "responsable" pour ses droits. On détermine donc les fonctions réelles.
+  const { data: managementRoles, error: managementRolesError } =
+    await supabaseClient.rpc("get_my_management_roles");
 
-  if (role === "responsable" || role === "admin") {
-    teamMenuSection.hidden = false;
-
-    if (role === "responsable") {
-      const { data: scopes, error: scopesError } = await supabaseClient.rpc("get_my_management_roles");
-      if (!scopesError && Array.isArray(scopes) && scopes.length) {
-        const responsible = scopes.filter(x => x.kind === "responsable").map(x => x.poste_nom);
-        const coResponsible = scopes.filter(x => x.kind === "co_responsable").map(x => x.poste_nom);
-        const labels = [];
-        if (responsible.length) labels.push(`Responsable : ${responsible.join(", ")}`);
-        if (coResponsible.length) labels.push(`Co-responsable : ${coResponsible.join(", ")}`);
-        roleElement.textContent = labels.join(" · ") || getRoleLabel(role);
-      }
-    }
-  } else {
-    teamMenuSection.hidden = true;
+  if (managementRolesError) {
+    console.error("Impossible de déterminer les responsabilités :", managementRolesError);
   }
+
+  const scopes = Array.isArray(managementRoles) ? managementRoles : [];
+  const responsiblePosts = scopes
+    .filter(item => item.kind === "responsable")
+    .map(item => item.poste_nom);
+  const coResponsiblePosts = scopes
+    .filter(item => item.kind === "co_responsable")
+    .map(item => item.poste_nom);
+
+  const isAdmin = role === "admin";
+  const isResponsible = isAdmin || responsiblePosts.length > 0;
+  const isCoResponsible = coResponsiblePosts.length > 0;
+
+  // Règles d'affichage :
+  // - bénévole seul              => Bénévole
+  // - bénévole + co-responsable => Bénévole puis Responsable
+  // - responsable + co-resp.    => Responsable puis Bénévole
+  // - responsable seul          => Responsable
+  const showVolunteer = !isResponsible || isCoResponsible;
+  const showManager = isResponsible || isCoResponsible;
+
+  if (isAdmin) {
+    roleElement.textContent = getRoleLabel(role);
+  } else {
+    const labels = [];
+    if (responsiblePosts.length) labels.push(`Responsable : ${responsiblePosts.join(", ")}`);
+    if (coResponsiblePosts.length) labels.push(`Co-responsable : ${coResponsiblePosts.join(", ")}`);
+    roleElement.textContent = labels.join(" · ") || "Bénévole";
+  }
+
+  volunteerNextShiftSection.hidden = !showVolunteer;
+  teamMenuSection.hidden = !showManager;
+
+  // L'ordre des encadrés dépend de la fonction principale réelle.
+  if (showVolunteer && showManager) {
+    const parent = volunteerNextShiftSection.parentNode;
+    if (isResponsible) {
+      parent.insertBefore(teamMenuSection, volunteerNextShiftSection);
+    } else {
+      parent.insertBefore(volunteerNextShiftSection, teamMenuSection);
+    }
+  }
+
+  if (showVolunteer) {
+    await loadNextShift();
+  }
+
 }
 
 logoutButton.addEventListener("click", async () => {
