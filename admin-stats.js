@@ -277,9 +277,11 @@ function renderPosts(rows, selectedDay) {
   }).join("");
 }
 
-function renderDaily(rows, vacancyRows) {
+function renderDaily(rows, vacancyRows, peopleRows) {
   const dailyRows = Array.isArray(rows) ? rows : [];
   const vacancies = Array.isArray(vacancyRows) ? vacancyRows : [];
+  const people = Array.isArray(peopleRows) ? peopleRows : [];
+  const peopleMap = new Map(people.map(row => [row.jour, row]));
   const dailyMap = new Map(dailyRows.map(row => [row.jour, row]));
   const vacancyMap = new Map(vacancies.map(row => [row.jour, row]));
   const days = [...new Set([...dailyMap.keys(), ...vacancyMap.keys()])].sort();
@@ -299,7 +301,8 @@ function renderDaily(rows, vacancyRows) {
             ${escapeHtml(capitalize(formatDate(day, false)))}
           </button>
         </td>
-        <td>${numberValue(row.benevoles)}</td>
+        <td>${numberValue(peopleMap.get(day)?.benevoles)}</td>
+        <td>${numberValue(peopleMap.get(day)?.animes)}</td>
         <td>${numberValue(row.postes)}</td>
         <td>${numberValue(row.lieux)}</td>
         <td>${numberValue(row.absents)}</td>
@@ -312,13 +315,13 @@ function renderDaily(rows, vacancyRows) {
   }).join("");
 }
 
-function renderStats(data, vacancyData, volunteerHoursResult, selectedDay) {
+function renderStats(data, vacancyData, volunteerHoursResult, peopleRows, selectedDay) {
   initializeDays(data?.days);
   renderSummary(data?.summary, vacancyData?.summary);
   renderMeals(data?.meals);
   renderVolunteerHours(volunteerHoursResult);
   renderPosts(data?.by_post, selectedDay);
-  renderDaily(data?.daily, vacancyData?.daily);
+  renderDaily(data?.daily, vacancyData?.daily, peopleRows);
 
   loadingElement.hidden = true;
   errorElement.hidden = true;
@@ -330,13 +333,14 @@ async function loadStats(selectedDay = "") {
   loadingElement.textContent = "Chargement des statistiques…";
   errorElement.hidden = true;
 
-  const [statsResult, vacancyResult, volunteerHoursResult] = await Promise.all([
+  const [statsResult, vacancyResult, volunteerHoursResult, peopleResult] = await Promise.all([
     PortalAuth.client.rpc("admin_get_stats", { p_day: selectedDay || null }),
     PortalAuth.client.rpc("admin_get_vacancy_stats", { p_day: selectedDay || null }),
-    PortalAuth.client.rpc("admin_get_volunteer_hours", { p_day: null })
+    PortalAuth.client.rpc("admin_get_volunteer_hours", { p_day: null }),
+    PortalAuth.client.rpc("admin_get_daily_people_stats")
   ]);
 
-  const error = statsResult.error || vacancyResult.error || volunteerHoursResult.error;
+  const error = statsResult.error || vacancyResult.error || volunteerHoursResult.error || peopleResult.error;
   if (error) {
     console.error("Impossible de charger les statistiques :", error);
     loadingElement.hidden = true;
@@ -349,6 +353,7 @@ async function loadStats(selectedDay = "") {
     statsResult.data || {},
     vacancyResult.data || {},
     volunteerHoursResult.data || {},
+    peopleResult.data || [],
     selectedDay
   );
 }
