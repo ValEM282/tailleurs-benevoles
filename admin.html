@@ -137,7 +137,6 @@
             <div class="admin-search-field">
               <label for="youth-unit-search">Nom de l'Unité</label>
               <select id="youth-unit-search">
-                <option value="">Toutes les unités</option>
                 <option value="guide">Guides horizon</option>
                 <option value="patro">Patro</option>
                 <option value="pionnier">Pionniers</option>
@@ -219,7 +218,7 @@
           <div class="admin-search-grid admin-search-grid-single">
             <div class="admin-search-field">
               <label for="post-search-name">Nom du Poste</label>
-              <input id="post-search-name" type="text" autocomplete="off">
+              <select id="post-search-name"><option value="">Choisir un poste</option></select>
             </div>
             <div class="admin-search-actions">
               <button type="button" class="admin-list-button" id="admin-post-list">Liste</button>
@@ -273,7 +272,7 @@
           <div class="admin-search-grid admin-search-grid-single">
             <div class="admin-search-field">
               <label for="place-search-name">Nom du Lieu</label>
-              <input id="place-search-name" type="text" autocomplete="off">
+              <select id="place-search-name"><option value="">Choisir un lieu</option></select>
             </div>
             <div class="admin-search-actions">
               <button type="button" class="admin-list-button" id="admin-place-list">Liste</button>
@@ -313,7 +312,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="portal-auth.js"></script>
-  <script src="admin.js?v=20260926-1"></script>
+  <script src="admin.js?v=20260927-2"></script>
   <script src="admin-responsables.js?v=20260924-2"></script>
   <script src="admin-postes.js?v=20260924-5"></script>
 </body>
