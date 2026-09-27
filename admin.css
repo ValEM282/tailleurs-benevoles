@@ -367,3 +367,46 @@
     width: 100%;
   }
 }
+
+
+/* Correctif mobile : empêcher les cartes et formulaires de dépasser la largeur de l'écran */
+.admin-dashboard,
+.admin-management,
+.admin-management-section,
+.admin-search-grid,
+.admin-search-field {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+.admin-management-section {
+  overflow: hidden;
+}
+
+.admin-search-field input,
+.admin-search-field select,
+.admin-search-actions,
+.admin-search-button {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+@media (max-width: 600px) {
+  .admin-main {
+    padding-left: 12px;
+    padding-right: 12px;
+    overflow-x: hidden;
+  }
+
+  .admin-dashboard {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .admin-management-section {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
