@@ -306,7 +306,7 @@
           <div class="admin-section-heading">
             <h2 id="admin-mailing-title">ENVOI DES HORAIRES</h2>
           </div>
-          <button type="button" id="admin-mailing-test" class="admin-search-button" style="width:100%;">Test</button>
+          <button type="button" id="admin-mailing-test" class="admin-search-button" style="width:100%;">Envoyer les horaires</button>
           <p id="admin-mailing-result" class="admin-message" hidden></p>
         </section>
 
@@ -334,58 +334,79 @@
       const button = document.getElementById("admin-mailing-test");
       const result = document.getElementById("admin-mailing-result");
       if (!button || !result) return;
+      const endpoint = "https://ftfhtyohyjezoibmumum.supabase.co/functions/v1/mailing-horaires-test";
+      const apikey = "sb_publishable_oQOnxMDMyvx6ukcuJHgWuQ_Gu-utQe3";
+
+      async function callMailing(mode) {
+        const { data: sessionData, error: sessionError } = await PortalAuth.client.auth.getSession();
+        if (sessionError || !sessionData?.session?.access_token) {
+          throw new Error("Session expirée. Reconnecte-toi au Portail puis réessaie.");
+        }
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + sessionData.session.access_token,
+            "apikey": apikey
+          },
+          body: JSON.stringify({ mode })
+        });
+        const raw = await response.text();
+        let payload = null;
+        try { payload = raw ? JSON.parse(raw) : null; } catch (_) {}
+        if (!response.ok || !payload?.ok) {
+          throw new Error(payload?.error || payload?.message || raw || ("Erreur serveur HTTP " + response.status));
+        }
+        return payload;
+      }
 
       button.addEventListener("click", async function () {
-        const ok = window.confirm("Envoyer le mail TEST uniquement à Test 1 BÉNÉVOLE (meunier.valerie@gmail.com) ?");
-        if (!ok) return;
-
         button.disabled = true;
-        button.textContent = "Envoi en cours…";
         result.hidden = false;
-        result.textContent = "Test de la connexion SMTP et préparation du mail…";
+        result.textContent = "Vérification des destinataires…";
 
         try {
-          const { data: sessionData, error: sessionError } = await PortalAuth.client.auth.getSession();
-          if (sessionError || !sessionData?.session?.access_token) {
-            throw new Error("Session expirée. Reconnecte-toi au Portail puis réessaie.");
+          const preview = await callMailing("preview");
+          if (!preview.pending) {
+            result.textContent = preview.errors
+              ? "Aucun nouvel envoi à effectuer. " + preview.errors + " envoi(s) en erreur restent à traiter."
+              : "Tous les bénévoles concernés ont déjà reçu leur horaire.";
+            button.textContent = "Envoi terminé";
+            return;
           }
 
-          const httpResponse = await fetch(
-            "https://ftfhtyohyjezoibmumum.supabase.co/functions/v1/mailing-horaires-test",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + sessionData.session.access_token,
-                "apikey": "sb_publishable_oQOnxMDMyvx6ukcuJHgWuQ_Gu-utQe3"
-              },
-              body: JSON.stringify({ mode: "test" })
-            }
+          const ok = window.confirm(
+            "Envoyer maintenant le mail et l’horaire personnel à " + preview.pending + " bénévole(s) ?\n\n" +
+            "Seuls les bénévoles ayant un horaire actif sont concernés. Guides, Patro, Pionniers et le profil Test 1 sont exclus.\n\n" +
+            "Les personnes déjà enregistrées comme envoyées ne recevront pas le mail une seconde fois."
           );
-
-          let payload = null;
-          const raw = await httpResponse.text();
-          try { payload = raw ? JSON.parse(raw) : null; } catch (_) {}
-
-          if (!httpResponse.ok) {
-            throw new Error(
-              (payload && (payload.error || payload.message)) ||
-              raw ||
-              ("Erreur serveur HTTP " + httpResponse.status)
-            );
+          if (!ok) {
+            button.disabled = false;
+            result.hidden = true;
+            return;
           }
 
-          const response = { data: payload };
-          if (!response.data || !response.data.ok) {
-            throw new Error((response.data && response.data.error) || "Envoi non confirmé.");
+          button.textContent = "Envoi en cours…";
+          let state = preview;
+          while (state.pending > 0) {
+            state = await callMailing("bulk");
+            result.textContent =
+              "Envoi en cours : " + state.sent + " / " + state.total +
+              " envoyé(s)" + (state.errors ? " — " + state.errors + " erreur(s)" : "") + "…";
           }
-          result.textContent = "Mail TEST envoyé à " + response.data.recipient + " — " + response.data.shifts + " plage(s) horaire(s) jointe(s).";
-          button.textContent = "Test envoyé";
+
+          if (state.errors) {
+            result.textContent = "Envoi terminé : " + state.sent + " mail(s) envoyé(s), " + state.errors + " erreur(s).";
+            button.textContent = "Envoi terminé avec erreur(s)";
+          } else {
+            result.textContent = "Envoi terminé : " + state.sent + " / " + state.total + " bénévole(s) ont reçu leur horaire.";
+            button.textContent = "Envoi terminé";
+          }
         } catch (error) {
           console.error(error);
-          result.textContent = "Le mail TEST n'a pas été envoyé : " + (error.message || error);
+          result.textContent = "L’envoi s’est interrompu : " + (error.message || error) + ". Les mails déjà envoyés sont mémorisés et ne seront pas renvoyés.";
           button.disabled = false;
-          button.textContent = "Réessayer le test";
+          button.textContent = "Reprendre l’envoi";
         }
       });
     });
