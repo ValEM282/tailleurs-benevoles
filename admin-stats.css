@@ -80,8 +80,12 @@
   border-top-color: var(--red);
 }
 
-.stats-card-available {
+.stats-card-present {
   border-top-color: #2e9d57;
+}
+
+.stats-card-available {
+  border-top-color: var(--blue);
 }
 
 .stats-card-label {
@@ -101,8 +105,12 @@
   color: var(--red);
 }
 
-.stats-card-available strong {
+.stats-card-present strong {
   color: #237a44;
+}
+
+.stats-card-available strong {
+  color: var(--blue);
 }
 
 .stats-section {
