@@ -30,6 +30,8 @@ const volunteerEmail = document.getElementById("new-volunteer-email");
 const volunteerTshirt = document.getElementById("new-volunteer-tshirt");
 const volunteerTailloux = document.getElementById("new-volunteer-tailloux");
 const volunteerSandwich = document.getElementById("new-volunteer-sandwich");
+const postSearchSelect = document.getElementById("post-search-name");
+const placeSearchSelect = document.getElementById("place-search-name");
 
 let currentUser = null;
 const unlockDurationMs = 30 * 60 * 1000;
@@ -158,6 +160,14 @@ function normalizeVolunteerPhone(value) {
   return { value: formatBelgianPhoneDigits(digits) };
 }
 
+async function loadAdminSearchOptions() {
+  if (!postSearchSelect || !placeSearchSelect) return;
+  const { data, error } = await PortalAuth.client.rpc("admin_get_schedule_edit_options");
+  if (error) { console.error("Impossible de charger les postes et lieux :", error); return; }
+  for (const poste of (data?.postes || [])) { const option=document.createElement("option"); option.value=poste.nom; option.textContent=poste.nom; postSearchSelect.appendChild(option); }
+  for (const lieu of (data?.lieux || [])) { const option=document.createElement("option"); option.value=lieu.nom; option.textContent=lieu.nom; placeSearchSelect.appendChild(option); }
+}
+
 async function loadAdminPage() {
   adminLoading.hidden = false;
 
@@ -182,6 +192,7 @@ async function loadAdminPage() {
 
   if (status.configured && isLocallyUnlocked()) {
     showAdminContent();
+    loadAdminSearchOptions();
     return;
   }
 
@@ -267,6 +278,7 @@ unlockForm.addEventListener("submit", async event => {
   if (result.success) {
     storeUnlockedSession();
     showAdminContent();
+    loadAdminSearchOptions();
     return;
   }
 
