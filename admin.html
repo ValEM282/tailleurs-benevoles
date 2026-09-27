@@ -329,6 +329,40 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="portal-auth.js"></script>
   <script src="admin.js?v=20260927-2"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const button = document.getElementById("admin-mailing-test");
+      const result = document.getElementById("admin-mailing-result");
+      if (!button || !result) return;
+
+      button.addEventListener("click", async function () {
+        const ok = window.confirm("Envoyer le mail TEST uniquement à Test 1 BÉNÉVOLE (meunier.valerie@gmail.com) ?");
+        if (!ok) return;
+
+        button.disabled = true;
+        button.textContent = "Envoi en cours…";
+        result.hidden = false;
+        result.textContent = "Test de la connexion SMTP et préparation du mail…";
+
+        try {
+          const response = await PortalAuth.client.functions.invoke("mailing-horaires-test", {
+            body: { mode: "test" }
+          });
+          if (response.error) throw response.error;
+          if (!response.data || !response.data.ok) {
+            throw new Error((response.data && response.data.error) || "Envoi non confirmé.");
+          }
+          result.textContent = "Mail TEST envoyé à " + response.data.recipient + " — " + response.data.shifts + " plage(s) horaire(s) jointe(s).";
+          button.textContent = "Test envoyé";
+        } catch (error) {
+          console.error(error);
+          result.textContent = "Le mail TEST n'a pas été envoyé : " + (error.message || error);
+          button.disabled = false;
+          button.textContent = "Réessayer le test";
+        }
+      });
+    });
+  </script>
   <script src="admin-responsables.js?v=20260924-2"></script>
   <script src="admin-postes.js?v=20260924-5"></script>
 </body>
