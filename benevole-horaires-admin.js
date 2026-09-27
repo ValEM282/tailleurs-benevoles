@@ -835,7 +835,20 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-function formatMailSentAtShort(value) {\n  const parts=new Intl.DateTimeFormat("fr-BE",{timeZone:"Europe/Brussels",day:"2-digit",month:"2-digit",year:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date(value));\n  const get=t=>parts.find(p=>p.type===t)?.value||"";\n  return `${get("day")}-${get("month")}-${get("year")} ${get("hour")}:${get("minute")}`;\n}\nfunction formatMailSentAt(value) {
+function formatMailSentAtShort(value) {
+  const parts = new Intl.DateTimeFormat("fr-BE", {
+    timeZone: "Europe/Brussels",
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  }).formatToParts(new Date(value));
+  const get = type => parts.find(part => part.type === type)?.value || "";
+  return `${get("day")}-${get("month")}-${get("year")} ${get("hour")}:${get("minute")}`;
+}
+function formatMailSentAt(value) {
   return new Intl.DateTimeFormat("fr-BE",{timeZone:"Europe/Brussels",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(new Date(value));
 }
 async function refreshVolunteerMailStatus() {
