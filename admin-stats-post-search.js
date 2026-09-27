@@ -6,6 +6,7 @@
   const subpostSelect = document.getElementById("post-stats-subpost-search");
   const searchButton = document.getElementById("post-stats-search-button");
   const daySelect = document.getElementById("stats-day");
+  const printButton = document.getElementById("post-stats-print-button");
 
   if (!results || !body || !postSelect || !subpostSelect || !searchButton) return;
 
@@ -84,6 +85,7 @@
 
   function hideResultsUntilSearch() {
     results.hidden = true;
+    if (printButton) printButton.hidden = true;
     removeEmptyRow();
   }
 
@@ -116,6 +118,21 @@
     }
 
     results.hidden = false;
+    if (printButton) printButton.hidden = visibleCount === 0;
+  }
+
+  function buildPdf() {
+    const jsPDF = window.jspdf?.jsPDF;
+    const rows = dataRows().filter(row => !row.hidden);
+    if (!jsPDF || !rows.length || results.hidden) return;
+    const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+    const now = new Intl.DateTimeFormat("fr-BE", {timeZone:"Europe/Brussels",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(new Date());
+    doc.setFont("helvetica","bold"); doc.setFontSize(16); doc.setTextColor(28,46,171); doc.text("BÉNÉVOLES PAR POSTE",12,14);
+    doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(90,90,100); doc.text(`Imprimé le ${now}`,285,14,{align:"right"});
+    const criteria=[postSelect.value ? `Poste : ${postSelect.value}`:"",subpostSelect.value ? `Sous-poste : ${subpostSelect.value}`:"",daySelect?.value ? `Jour : ${daySelect.options[daySelect.selectedIndex]?.textContent || daySelect.value}`:""].filter(Boolean).join(" · ");
+    if(criteria){doc.setFontSize(8.5);doc.text(criteria,12,20);}
+    doc.autoTable({startY:criteria?24:20,head:[["Poste","Sous-poste","Bénévoles"]],body:rows.map(row=>[...row.cells].map(cell=>cell.textContent.trim())),theme:"grid",styles:{font:"helvetica",fontSize:9,cellPadding:2.5,lineColor:[207,212,232],lineWidth:.2,textColor:[20,20,24]},headStyles:{fillColor:[28,46,171],textColor:[255,255,255],fontStyle:"bold"},columnStyles:{2:{halign:"center"}}});
+    doc.save("benevoles-par-poste.pdf");
   }
 
   function resetSearchView() {
@@ -133,6 +150,7 @@
 
   subpostSelect.addEventListener("change", hideResultsUntilSearch);
   searchButton.addEventListener("click", applySearch);
+  printButton?.addEventListener("click", buildPdf);
 
   [postSelect, subpostSelect].forEach(select => {
     select.addEventListener("keydown", event => {
