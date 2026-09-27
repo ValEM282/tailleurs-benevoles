@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Infos pratiques — Portail Bénévoles</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20260921-2">
+  <link rel="stylesheet" href="subpage-header.css?v=20260922-1">
+  <style>
+    .coming-soon{max-width:1120px;margin:46px auto;padding:0 24px}
+    .coming-soon-card{background:#fff;border-radius:18px;padding:38px 28px;text-align:center;box-shadow:0 10px 30px rgba(28,46,171,.08)}
+    .coming-soon-card p{margin:0;color:#1C2EAB;font-size:1.35rem;font-weight:700}
+  </style>
+</head>
+<body class="dashboard-page">
+  <header class="dashboard-header">
+    <div class="subpage-header-inner">
+      <a href="dashboard.html" class="back-button">← Accueil</a>
+      <a href="dashboard.html" class="dashboard-title" style="color:#fff;text-decoration:none">🎪 PORTAIL BÉNÉVOLES 🎪</a>
+      <button type="button" id="logout-button" class="logout-button">Se déconnecter</button>
+    </div>
+  </header>
+  <main class="coming-soon">
+    <section class="coming-soon-card"><p>Très prochainement disponible...</p></section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="portal-auth.js"></script>
+  <script>
+    (async()=>{const user=await window.PortalAuth.requireAuth();if(!user)return;
+    document.getElementById("logout-button").addEventListener("click",()=>window.PortalAuth.logout());})();
+  </script>
+</body>
+</html>
