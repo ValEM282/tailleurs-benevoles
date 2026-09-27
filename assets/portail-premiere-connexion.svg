@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="397" height="748" viewBox="0 0 397 748">
+<rect width="397" height="748" fill="white"/>
+<rect width="397" height="231" fill="#2438b8"/><rect y="227" width="397" height="5" fill="#e40230"/>
+<text x="198" y="62" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-size="38" font-weight="700">les</text>
+<text x="198" y="132" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-size="68" font-weight="700">Tailleurs</text>
+<text x="198" y="164" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-size="17" font-weight="700">FESTIVAL INSOLITE &amp; INSOLENT</text>
+<text x="198" y="207" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-size="17" font-weight="700">🎪 PORTAIL BÉNÉVOLES 🎪</text>
+<text x="22" y="280" fill="#1C2EAB" font-family="Arial,sans-serif" font-size="18" font-weight="700">E-mail</text>
+<rect x="22" y="300" width="350" height="68" rx="14" fill="white" stroke="#d8dbe5" stroke-width="2"/>
+<text x="43" y="341" fill="#777" font-family="Arial,sans-serif" font-size="17">prenom.nom@email.be</text>
+<text x="24" y="397" fill="#666" font-family="Arial,sans-serif" font-size="14">Utilise l'email sur lequel tu as reçu une invitation à</text>
+<text x="24" y="419" fill="#666" font-family="Arial,sans-serif" font-size="14">te connecter sur ce Portail</text>
+<text x="22" y="473" fill="#1C2EAB" font-family="Arial,sans-serif" font-size="18" font-weight="700">Mot de passe</text>
+<rect x="22" y="490" width="350" height="68" rx="14" fill="white" stroke="#d8dbe5" stroke-width="2"/>
+<text x="43" y="531" fill="#777" font-family="Arial,sans-serif" font-size="22">••••••••</text><text x="330" y="531" fill="#222" font-family="Arial,sans-serif" font-size="17">👀</text>
+<rect x="22" y="585" width="168" height="86" rx="16" fill="#2438b8"/><rect x="205" y="585" width="167" height="86" rx="16" fill="#e40230"/>
+<text x="106" y="623" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-size="16" font-weight="700">Première</text><text x="106" y="648" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-size="16" font-weight="700">connexion</text>
+<text x="288" y="635" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-size="16" font-weight="700">Se connecter</text>
+<text x="198" y="710" text-anchor="middle" fill="#1C2EAB" font-family="Arial,sans-serif" font-size="16">Mot de passe oublié ?</text>
+</svg>
