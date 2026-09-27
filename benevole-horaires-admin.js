@@ -835,7 +835,7 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-function formatMailSentAt(value) {
+function formatMailSentAtShort(value) {\n  const parts=new Intl.DateTimeFormat("fr-BE",{timeZone:"Europe/Brussels",day:"2-digit",month:"2-digit",year:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date(value));\n  const get=t=>parts.find(p=>p.type===t)?.value||"";\n  return `${get("day")}-${get("month")}-${get("year")} ${get("hour")}:${get("minute")}`;\n}\nfunction formatMailSentAt(value) {
   return new Intl.DateTimeFormat("fr-BE",{timeZone:"Europe/Brussels",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(new Date(value));
 }
 async function refreshVolunteerMailStatus() {
@@ -846,7 +846,7 @@ async function refreshVolunteerMailStatus() {
   const row=data?.[0]; if(!row)return;
   button.hidden=!currentShifts.length||!row.email;
   status.hidden=false;
-  if(row.statut==="envoye"){status.textContent="Envoyé le "+formatMailSentAt(row.envoye_at);status.className="schedule-mail-status sent";button.textContent="Renvoyer l’horaire par mail";}
+  if(row.statut==="envoye"){status.textContent="✓";status.className="schedule-mail-status sent schedule-mail-sent-dot";status.title=formatMailSentAtShort(row.envoye_at);status.setAttribute("aria-label","Envoyé le "+formatMailSentAtShort(row.envoye_at));button.textContent="Renvoyer horaire";}
   else if(row.statut==="erreur"){status.textContent="Erreur lors du dernier envoi";status.className="schedule-mail-status error";button.textContent="Réessayer l’envoi";}
   else{status.textContent="À envoyer";status.className="schedule-mail-status pending";button.textContent="Envoyer l’horaire par mail";}
 }
