@@ -13,10 +13,11 @@
   background: #fff;
   color: #239348;
   font: inherit;
-  font-size: 1.5rem;
+  font-size: 0;
   font-weight: 700;
   line-height: 1;
   text-align: center;
+  position: relative;
   cursor: pointer;
 }
 
@@ -156,4 +157,21 @@
 .schedule-remove-location-button:disabled {
   opacity: .55;
   cursor: wait;
+}
+
+/* Centrage optique du signe + indépendamment de la métrique de la police. */
+.schedule-add-button::before {
+  content: "+";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -52%);
+  font-family: Arial, sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+@media (max-width: 700px) {
+  .schedule-add-button::before { font-size: 22px; }
 }
