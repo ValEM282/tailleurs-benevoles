@@ -390,8 +390,21 @@ async function loadDashboard() {
   // - bénévole + co-responsable => Bénévole puis Responsable
   // - responsable + co-resp.    => Responsable puis Bénévole
   // - responsable seul          => Responsable
-  const showVolunteer = !isResponsible || isCoResponsible;
   const showManager = isResponsible || isCoResponsible;
+
+  // Un responsable/co-responsable ne voit aussi l'espace BÉNÉVOLE
+  // que s'il possède réellement au moins un horaire personnel actif.
+  let hasVolunteerSchedule = false;
+  if (showManager) {
+    const scheduleResult = await supabaseClient.rpc("get_my_schedule");
+    if (scheduleResult.error) {
+      console.error("Impossible de vérifier les horaires personnels :", scheduleResult.error);
+    } else {
+      hasVolunteerSchedule = Array.isArray(scheduleResult.data) && scheduleResult.data.length > 0;
+    }
+  }
+
+  const showVolunteer = !showManager || hasVolunteerSchedule;
 
   if (isAdmin) {
     roleElement.textContent = getRoleLabel(role);
