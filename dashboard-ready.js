@@ -16,36 +16,17 @@
     if (!isLoaded()) return false;
 
     const roleText = role.textContent.trim();
+    const volunteerVisible = !volunteerSection.hidden;
+    const managerVisible = !teamSection.hidden;
 
-    // Bénévole : le bloc bénévole est prêt et le libellé du rôle reste masqué.
-    if (!volunteerSection.hidden && teamSection.hidden && roleText === "Bénévole") {
-      role.hidden = true;
-      personalized.hidden = false;
-      return true;
-    }
+    // Une fois le prénom chargé et au moins un espace déterminé par dashboard.js,
+    // le dashboard peut être révélé. Cette règle couvre les 4 combinaisons réelles.
+    if (!volunteerVisible && !managerVisible) return false;
+    if (!roleText) return false;
 
-    // Admin : il cumule maintenant aussi l'encadré bénévole.
-    if (!volunteerSection.hidden && !teamSection.hidden && roleText.startsWith("Administration")) {
-      role.hidden = false;
-      personalized.hidden = false;
-      return true;
-    }
-
-    // Responsable / co-responsable : les deux encadrés sont affichés.
-    // Le libellé peut être détaillé par dashboard.js (Responsable / Co-responsable + postes).
-    if (
-      !volunteerSection.hidden &&
-      !teamSection.hidden &&
-      roleText &&
-      roleText !== "Responsable de poste" &&
-      roleText !== "Responsable"
-    ) {
-      role.hidden = false;
-      personalized.hidden = false;
-      return true;
-    }
-
-    return false;
+    role.hidden = roleText === "Bénévole";
+    personalized.hidden = false;
+    return true;
   }
 
   if (revealIfReady()) return;
