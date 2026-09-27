@@ -594,6 +594,7 @@ input:focus-visible {
   padding: 16px 18px;
   background: rgba(228, 2, 48, 0.08);
   border-left: 5px solid var(--red);
+  border-right: 5px solid var(--red);
   border-radius: 12px;
 }
 
