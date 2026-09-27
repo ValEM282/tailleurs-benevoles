@@ -75,15 +75,10 @@
     };
   }
 
-  /* Sécurité : si un premier rendu a eu lieu avant ce fichier, on le recalcule. */
+  /* Sécurité : sur les écrans qui ont pu rendre avant ce fichier, on recalcule une seule fois. */
   window.addEventListener("load", () => {
     if (document.getElementById("schedule-add-button") && typeof window.renderSchedule === "function") {
       window.renderSchedule();
-      return;
-    }
-
-    if (document.getElementById("schedule-list") && typeof window.loadSchedule === "function") {
-      window.loadSchedule();
       return;
     }
 
