@@ -12,6 +12,29 @@
   <link rel="stylesheet" href="admin.css?v=20260927-3">
   <link rel="stylesheet" href="admin-responsables.css?v=20260924-1">
   <link rel="stylesheet" href="admin-postes.css?v=20260924-1">
+  <style>
+    .admin-mailing-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      width: 100%;
+    }
+    .admin-mailing-actions .admin-search-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      text-decoration: none;
+      text-align: center;
+    }
+    @media (max-width: 700px) {
+      .admin-mailing-actions {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body class="dashboard-page">
   <header class="dashboard-header">
@@ -306,8 +329,10 @@
           <div class="admin-section-heading">
             <h2 id="admin-mailing-title">ENVOI DES HORAIRES</h2>
           </div>
-          <button type="button" id="admin-mailing-test" class="admin-search-button" style="width:100%;">Envoyer les horaires</button>
-          <a href="admin-envois-horaires.html" class="admin-list-button" style="display:flex;align-items:center;justify-content:center;width:100%;text-decoration:none;box-sizing:border-box;margin-top:8px;">Voir les envois</a>
+          <div class="admin-mailing-actions">
+            <button type="button" id="admin-mailing-test" class="admin-search-button">Envoyer les horaires</button>
+            <a href="admin-envois-horaires.html" class="admin-search-button">Voir les envois</a>
+          </div>
           <p id="admin-mailing-result" class="admin-message" hidden></p>
         </section>
 
