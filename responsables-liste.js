@@ -99,12 +99,45 @@ function responsablesUpdateSortIndicators() {
 function responsablesPostList(value) {
   const posts = Array.isArray(value) ? value.filter(Boolean) : [];
   if (!posts.length) return '<span class="responsibility-empty">—</span>';
+  return `<div class="responsibility-list">${posts.map(post => `<span class="responsibility-item">${responsablesEscapeHtml(post)}</span>`).join("")}</div>`;
+}
 
-  return `
-    <div class="responsibility-list">
-      ${posts.map(post => `<span class="responsibility-item">${responsablesEscapeHtml(post)}</span>`).join("")}
-    </div>
-  `;
+function responsablesEditablePosts(person, kind) {
+  const field = kind === "responsable" ? "responsable_postes" : "co_responsable_postes";
+  const label = kind === "responsable" ? "Responsable" : "Co-responsable";
+  return `<div class="responsibility-display">
+    <button type="button" class="responsibility-edit-button" data-personne-id="${responsablesEscapeHtml(person.id)}" data-kind="${kind}" title="Modifier ${label}" aria-label="Modifier ${label}">✏️</button>
+    <div class="responsibility-values">${responsablesPostList(person[field])}</div>
+  </div>`;
+}
+
+async function responsablesOpenPostsEditor(button) {
+  const personId=button.dataset.personneId, kind=button.dataset.kind;
+  const person=responsables.find(x=>x.id===personId), cell=button.closest("td");
+  if(!person||!cell) return;
+  const field=kind==="responsable"?"responsable_postes":"co_responsable_postes";
+  const current=new Set(Array.isArray(person[field])?person[field]:[]);
+  const {data,error}=await PortalAuth.client.rpc("admin_get_schedule_edit_options");
+  if(error){responsablesShowError("Impossible de charger les postes."); return;}
+  const posts=(data?.postes||data?.posts||[]).filter(p=>p?.actif!==false);
+  const options=posts.map(p=>`<label class="responsibility-option"><input type="checkbox" value="${p.id}" ${current.has(p.nom)?"checked":""}><span>${responsablesEscapeHtml(p.nom)}</span></label>`).join("");
+  cell.innerHTML=`<div class="responsibility-editor" data-personne-id="${responsablesEscapeHtml(personId)}" data-kind="${kind}">
+    <div class="responsibility-options">${options||"<span>Aucun poste disponible.</span>"}</div>
+    <div class="responsibility-editor-actions"><button type="button" class="contact-save-button responsibility-save-button" title="Valider">✓</button><button type="button" class="contact-cancel-button responsibility-cancel-button" title="Annuler">✕</button></div>
+    <span class="contact-edit-error" aria-live="polite"></span>
+  </div>`;
+}
+
+async function responsablesSavePostsEditor(button){
+ const editor=button.closest(".responsibility-editor"); if(!editor)return;
+ const ids=[...editor.querySelectorAll('input[type="checkbox"]:checked')].map(x=>Number(x.value));
+ const save=editor.querySelector(".responsibility-save-button"), cancel=editor.querySelector(".responsibility-cancel-button");
+ save.disabled=true; cancel.disabled=true;
+ const {error}=await PortalAuth.client.rpc("admin_set_person_responsibilities",{p_personne_id:editor.dataset.personneId,p_kind:editor.dataset.kind,p_poste_ids:ids});
+ if(error){save.disabled=false;cancel.disabled=false;editor.querySelector(".contact-edit-error").textContent=error.message||"Modification impossible.";return;}
+ const refreshed=await PortalAuth.client.rpc("admin_list_responsables");
+ if(refreshed.error){responsablesShowError("Modification enregistrée, mais la liste n’a pas pu être actualisée.");return;}
+ responsables=Array.isArray(refreshed.data)?refreshed.data:[]; responsablesError.hidden=true; responsablesRenderTable();
 }
 
 function responsablesEditableContact(person, field) {
@@ -147,8 +180,8 @@ function responsablesRenderTable() {
       <td class="volunteer-name">${responsablesEscapeHtml(person.nom || "—")}</td>
       <td class="contact-cell contact-phone-cell">${responsablesEditableContact(person, "telephone")}</td>
       <td class="contact-cell contact-email-cell">${responsablesEditableContact(person, "email")}</td>
-      <td>${responsablesPostList(person.responsable_postes)}</td>
-      <td>${responsablesPostList(person.co_responsable_postes)}</td>
+      <td class="responsibility-cell">${responsablesEditablePosts(person, "responsable")}</td>
+      <td class="responsibility-cell">${responsablesEditablePosts(person, "co_responsable")}</td>
     </tr>
   `).join("");
 
@@ -277,6 +310,13 @@ async function responsablesSaveContactEditor(button) {
 }
 
 responsablesTableBody.addEventListener("click", event => {
+  const responsibilityEdit = event.target.closest(".responsibility-edit-button");
+  if (responsibilityEdit) { responsablesOpenPostsEditor(responsibilityEdit); return; }
+  const responsibilitySave = event.target.closest(".responsibility-save-button");
+  if (responsibilitySave) { responsablesSavePostsEditor(responsibilitySave); return; }
+  const responsibilityCancel = event.target.closest(".responsibility-cancel-button");
+  if (responsibilityCancel) { responsablesRenderTable(); return; }
+
   const editButton = event.target.closest(".contact-edit-button");
   if (editButton) {
     responsablesOpenContactEditor(editButton);
