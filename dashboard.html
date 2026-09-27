@@ -26,6 +26,10 @@
   <link rel="stylesheet" href="dashboard-team-menu.css?v=20260925-2">
   <link rel="stylesheet" href="dashboard-admin.css?v=20260925-1">
   <link rel="stylesheet" href="phone-actions.css?v=20260922-1">
+  <style>
+    .dashboard-space-label{font-weight:800;letter-spacing:.08em;color:#1C2EAB;margin:0 0 10px;font-size:.92rem}
+    #team-menu-section .dashboard-space-label{color:#E40230}
+  </style>
 </head>
 
 <body class="dashboard-page">
@@ -60,6 +64,7 @@
       </section>
 
       <section id="volunteer-next-shift-section" class="next-shift-card">
+        <div class="dashboard-space-label">BÉNÉVOLE</div>
         <div class="section-heading next-shift-heading">
           <div class="next-shift-heading-block">
             <h2>🚨 MON POSTE 🚨</h2>
@@ -87,6 +92,7 @@
       </section>
 
       <section id="team-menu-section" class="next-shift-card team-menu-card" hidden>
+        <div class="dashboard-space-label">RESPONSABLE</div>
         <div class="section-heading">
           <div>
             <h2>Mon équipe de bénévoles</h2>
@@ -158,7 +164,7 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="dashboard.js?v=20260922-3"></script>
+  <script src="dashboard.js?v=20260927-1"></script>
   <script src="festival-day-schedule.js?v=20260926-1"></script>
   <script src="lieu-navigation.js?v=20260924-1"></script>
   <script src="responsable-role-label.js?v=20260922-4"></script>
