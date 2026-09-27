@@ -98,7 +98,8 @@ function selectedPostInfo() {
 function rowsForSelectedPost() {
   const selected = selectedPostInfo();
   const rows = rowsForSelectedDay();
-  if (selected.kind === "parent") {
+  if (selected.kind === "all") return rows;
+  if (selected.kind === "parent" || selected.kind === "all") {
     return rows.filter(row => Number(row.parent_poste_id) === selected.id);
   }
   return rows.filter(row => Number(row.poste_id) === selected.id);
@@ -119,6 +120,11 @@ function renderPosts() {
   const dayRows = rowsForSelectedDay();
   const previous = postFilter.value;
   postFilter.innerHTML = "";
+
+  const allOption = document.createElement("option");
+  allOption.value = "all:0";
+  allOption.textContent = "Tous mes postes";
+  postFilter.appendChild(allOption);
 
   const parents = uniqueBy(
     dayRows.filter(row => row.parent_poste_id !== null),
@@ -153,6 +159,7 @@ function renderPosts() {
   });
 
   if (options.some(option => option.value === previous)) postFilter.value = previous;
+  else postFilter.value = "all:0";
 }
 
 function placeKey(row) {
@@ -185,7 +192,7 @@ function renderPlaces() {
   const allowedValues = [...placeFilter.options].map(option => option.value);
   if (allowedValues.includes(previous)) {
     placeFilter.value = previous;
-  } else if (selected.kind === "parent") {
+  } else if (selected.kind === "parent" || selected.kind === "all") {
     placeFilter.value = "all";
   }
 }
