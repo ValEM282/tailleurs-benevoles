@@ -348,7 +348,18 @@
           const response = await PortalAuth.client.functions.invoke("mailing-horaires-test", {
             body: { mode: "test" }
           });
-          if (response.error) throw response.error;
+          if (response.error) {
+            let detail = response.error.message || "Erreur Edge Function";
+            try {
+              const ctx = response.error.context;
+              if (ctx && typeof ctx.json === "function") {
+                const payload = await ctx.json();
+                if (payload && payload.error) detail = payload.error;
+                else if (payload && payload.ready === false) detail = "Configuration SMTP incomplète côté serveur.";
+              }
+            } catch (_) {}
+            throw new Error(detail);
+          }
           if (!response.data || !response.data.ok) {
             throw new Error((response.data && response.data.error) || "Envoi non confirmé.");
           }
