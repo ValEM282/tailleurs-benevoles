@@ -122,14 +122,14 @@ function initializeDays(days) {
   daysInitialized = true;
 }
 
-function renderSummary(summary = {}, vacancySummary = {}, presentCount = 0) {
+function renderSummary(summary = {}, vacancySummary = {}, presentCount = 0, vacantScheduleCount = 0) {
   volunteerStat.textContent = numberValue(summary.benevoles);
   postStat.textContent = numberValue(summary.postes);
   placeStat.textContent = numberValue(summary.lieux);
   absentStat.textContent = numberValue(summary.absents);
   presentStat.textContent = numberValue(presentCount);
   availableStat.textContent = numberValue(summary.disponibles);
-  vacantPostsStat.textContent = numberValue(vacancySummary.postes);
+  vacantPostsStat.textContent = numberValue(vacantScheduleCount);
   vacantHoursStat.textContent = formattedNumber(vacancySummary.heures);
 }
 
@@ -314,9 +314,9 @@ function renderDaily(rows, vacancyRows, peopleRows) {
   }).join("");
 }
 
-function renderStats(data, vacancyData, volunteerHoursResult, peopleRows, presentCount, selectedDay) {
+function renderStats(data, vacancyData, volunteerHoursResult, peopleRows, presentCount, vacantScheduleCount, selectedDay) {
   initializeDays(data?.days);
-  renderSummary(data?.summary, vacancyData?.summary, presentCount);
+  renderSummary(data?.summary, vacancyData?.summary, presentCount, vacantScheduleCount);
   renderMeals(data?.meals);
   renderVolunteerHours(volunteerHoursResult);
   renderPosts(data?.by_post, selectedDay);
@@ -332,15 +332,16 @@ async function loadStats(selectedDay = "") {
   loadingElement.textContent = "Chargement des statistiques…";
   errorElement.hidden = true;
 
-  const [statsResult, vacancyResult, volunteerHoursResult, peopleResult, presentResult] = await Promise.all([
+  const [statsResult, vacancyResult, volunteerHoursResult, peopleResult, presentResult, vacantScheduleResult] = await Promise.all([
     PortalAuth.client.rpc("admin_get_stats", { p_day: selectedDay || null }),
     PortalAuth.client.rpc("admin_get_vacancy_stats", { p_day: selectedDay || null }),
     PortalAuth.client.rpc("admin_get_volunteer_hours", { p_day: null }),
     PortalAuth.client.rpc("admin_get_daily_people_stats"),
-    PortalAuth.client.rpc("admin_get_present_volunteer_count", { p_day: selectedDay || null })
+    PortalAuth.client.rpc("admin_get_present_volunteer_count", { p_day: selectedDay || null }),
+    PortalAuth.client.rpc("admin_get_vacant_schedule_count", { p_day: selectedDay || null })
   ]);
 
-  const error = statsResult.error || vacancyResult.error || volunteerHoursResult.error || peopleResult.error || presentResult.error;
+  const error = statsResult.error || vacancyResult.error || volunteerHoursResult.error || peopleResult.error || presentResult.error || vacantScheduleResult.error;
   if (error) {
     console.error("Impossible de charger les statistiques :", error);
     loadingElement.hidden = true;
@@ -355,6 +356,7 @@ async function loadStats(selectedDay = "") {
     volunteerHoursResult.data || {},
     peopleResult.data || [],
     presentResult.data || 0,
+    vacantScheduleResult.data || 0,
     selectedDay
   );
 }
