@@ -84,6 +84,14 @@
   border-top-color: #2e9d57;
 }
 
+.stats-card-late {
+  border-top-color: #f59e0b;
+}
+
+.stats-card-late strong {
+  color: #d97706;
+}
+
 .stats-card-available {
   border-top-color: var(--blue);
 }
