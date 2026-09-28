@@ -18,7 +18,7 @@
       .replaceAll("'", "&#039;");
   }
 
-  function formatFirstLogin(value) {
+  function formatLastLogin(value) {
     if (!value) return "—";
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return "—";
@@ -52,7 +52,7 @@
       <tr>
         <td>${escapeHtml(row.prenom || "")}</td>
         <td><strong>${escapeHtml((row.nom || "").toUpperCase())}</strong></td>
-        <td>${escapeHtml(formatFirstLogin(row.premiere_connexion))}</td>
+        <td>${escapeHtml(formatLastLogin(row.derniere_connexion))}</td>
       </tr>
     `).join("");
   }
