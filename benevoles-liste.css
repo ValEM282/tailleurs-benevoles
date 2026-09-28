@@ -585,3 +585,9 @@
     padding: 12px 13px;
   }
 }
+
+
+/* Sélection des bénévoles pour impression d'étiquettes */
+.labels-selected-button{font:inherit;cursor:pointer}.labels-selected-button:disabled{opacity:.45;cursor:not-allowed;transform:none}.label-select-heading,.label-select-cell{width:48px;min-width:48px;text-align:center!important;padding-left:8px!important;padding-right:8px!important}.label-select-checkbox{width:20px;height:20px;accent-color:var(--blue);cursor:pointer}.label-select-checkbox:disabled{cursor:not-allowed;opacity:.35}
+@media print{.label-select-heading,.label-select-cell,.labels-selected-button{display:none!important}}
+@media(max-width:700px){.volunteers-list-heading-actions{align-items:stretch}.labels-selected-button{width:100%}}
