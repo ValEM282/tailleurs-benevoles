@@ -5,14 +5,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css?v=20260921-2"><link rel="stylesheet" href="subpage-header.css?v=20260922-2"><link rel="stylesheet" href="admin.css?v=20260927-3">
 <style>
-.mail-status-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 18px}.mail-status-box{padding:12px;border-radius:10px;background:#f4f5fb;text-align:center}.mail-status-box strong{display:block;font-size:1.5rem;color:#1C2EAB}.mail-status-list{display:grid;gap:8px}.mail-status-row{display:grid;grid-template-columns:minmax(160px,1.3fr) minmax(190px,1.5fr) minmax(105px,.7fr) minmax(145px,1fr);gap:10px;align-items:center;padding:11px 12px;border:1px solid #dde1ed;border-radius:10px;background:#fff}.mail-status-name{font-weight:700}.mail-status-email{overflow-wrap:anywhere}.mail-status-pill{font-weight:700}.mail-status-pill.envoye{color:#168344}.mail-status-pill.a_envoyer{color:#1C2EAB}.mail-status-pill.erreur{color:#E40230}@media(max-width:700px){.mail-status-summary{grid-template-columns:1fr}.mail-status-row{grid-template-columns:1fr;gap:2px}.mail-status-date{color:#5f6884}}
+.mail-status-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 18px}.mail-status-box{padding:12px;border-radius:10px;background:#f4f5fb;text-align:center}.mail-status-box strong{display:block;font-size:1.5rem;color:#1C2EAB}.mail-status-list{display:grid;gap:8px}.mail-status-row{display:grid;grid-template-columns:minmax(160px,1.3fr) minmax(190px,1.5fr) minmax(105px,.7fr) minmax(170px,1fr) 44px;gap:10px;align-items:center;padding:11px 12px;border:1px solid #dde1ed;border-radius:10px;background:#fff}.mail-status-name{font-weight:700}.mail-status-email{overflow-wrap:anywhere}.mail-status-pill{font-weight:700}.mail-status-pill.envoye{color:#168344}.mail-status-pill.a_envoyer{color:#1C2EAB}.mail-status-pill.erreur{color:#E40230}.mail-resend{width:38px;height:38px;border:2px solid #168344;border-radius:50%;background:#168344;color:#fff;font-size:23px;line-height:1;display:grid;place-items:center;cursor:pointer;font-family:Arial,sans-serif}.mail-resend:hover{filter:brightness(.92)}.mail-resend:disabled{opacity:.55;cursor:wait}.mail-status-feedback{grid-column:1/-1;color:#168344;font-weight:600;font-size:.95rem}.mail-status-feedback.error{color:#E40230}@media(max-width:700px){.mail-status-summary{grid-template-columns:1fr}.mail-status-row{grid-template-columns:1fr auto;gap:3px 8px}.mail-status-name,.mail-status-email,.mail-status-pill,.mail-status-date{grid-column:1}.mail-resend{grid-column:2;grid-row:1/5;align-self:center}.mail-status-date{color:#5f6884}}
 </style></head>
 <body class="dashboard-page"><header class="dashboard-header"><div class="subpage-header-inner">
 <a href="admin.html" class="back-button">← Accueil ADMIN</a><a href="dashboard.html" class="dashboard-title" style="color:#fff;text-decoration:none">🎪 PORTAIL BÉNÉVOLES 🎪</a><span></span>
 </div></header>
 <main class="subpage-main admin-main"><section class="admin-card">
 <h1 style="color:#1C2EAB;margin-top:0">SUIVI DES MAILS</h1>
-
 <div id="mail-loading" class="admin-message">Chargement…</div>
 <div id="mail-content" hidden><div class="mail-status-summary">
 <div class="mail-status-box"><strong id="count-sent">0</strong>Envoyés</div>
@@ -26,12 +25,36 @@
  const loading=document.getElementById("mail-loading"),content=document.getElementById("mail-content"),list=document.getElementById("mail-list");
  const user=await PortalAuth.requireAuth();if(!user)return;
  const {data:isAdmin,error:ae}=await PortalAuth.client.rpc("is_current_portal_admin");if(ae||!isAdmin){loading.textContent="Cette page est réservée aux administrateurs.";return}
- const {data,error}=await PortalAuth.client.rpc("admin_mailing_horaires_status");if(error){console.error(error);loading.textContent="Impossible de charger le suivi des envois.";return}
- const rows=data||[],sent=rows.filter(x=>x.statut==="envoye").length,pending=rows.filter(x=>x.statut==="a_envoyer").length,errors=rows.filter(x=>x.statut==="erreur").length;
- document.getElementById("count-sent").textContent=sent;document.getElementById("count-pending").textContent=pending;document.getElementById("count-errors").textContent=errors;
- const fmt=d=>d?new Intl.DateTimeFormat("fr-BE",{timeZone:"Europe/Brussels",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(new Date(d)):"—";
+ const fmt=d=>d?new Intl.DateTimeFormat("fr-BE",{timeZone:"Europe/Brussels",day:"2-digit",month:"2-digit",year:"2-digit",hour:"2-digit",minute:"2-digit"}).format(new Date(d)).replace(",",""):"—";
  const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
- for(const r of rows){const row=document.createElement("div");row.className="mail-status-row";const label=r.statut==="envoye"?"Envoyé":r.statut==="erreur"?"Erreur":"À envoyer";row.innerHTML='<div class="mail-status-name">'+esc(r.prenom)+" "+esc(r.nom)+'</div><div class="mail-status-email">'+esc(r.email)+'</div><div class="mail-status-pill '+esc(r.statut)+'">'+label+'</div><div class="mail-status-date">'+(r.statut==="envoye"?fmt(r.envoye_at):r.statut==="erreur"?esc(r.erreur||"Erreur d’envoi"):"—")+'</div>';list.appendChild(row)}
- loading.hidden=true;content.hidden=false;
+ const ordinal=n=>n===1?"1er":n+"e";
+ async function load(){
+  const {data,error}=await PortalAuth.client.rpc("admin_mailing_horaires_status");if(error){console.error(error);loading.hidden=false;loading.textContent="Impossible de charger le suivi des envois.";return}
+  const rows=data||[],sent=rows.filter(x=>x.statut==="envoye").length,pending=rows.filter(x=>x.statut==="a_envoyer").length,errors=rows.filter(x=>x.statut==="erreur").length;
+  document.getElementById("count-sent").textContent=sent;document.getElementById("count-pending").textContent=pending;document.getElementById("count-errors").textContent=errors;list.innerHTML="";
+  for(const r of rows){
+   const row=document.createElement("div");row.className="mail-status-row";
+   const label=r.statut==="envoye"?"Envoyé":r.statut==="erreur"?"Erreur":"À envoyer";
+   const n=Number(r.nombre_envois||0);
+   const dateText=r.statut==="envoye"?fmt(r.envoye_at)+(n?" ("+ordinal(n)+")":""):r.statut==="erreur"?esc(r.erreur||"Erreur d’envoi"):"—";
+   row.innerHTML='<div class="mail-status-name">'+esc(r.prenom)+" "+esc(r.nom)+'</div><div class="mail-status-email">'+esc(r.email)+'</div><div class="mail-status-pill '+esc(r.statut)+'">'+label+'</div><div class="mail-status-date">'+dateText+'</div><button type="button" class="mail-resend" title="'+(n?"Renvoyer l’horaire":"Envoyer l’horaire")+'" aria-label="'+(n?"Renvoyer l’horaire":"Envoyer l’horaire")+'">↻</button>';
+   const btn=row.querySelector(".mail-resend");
+   btn.addEventListener("click",async()=>{
+    const action=n?"Renvoyer":"Envoyer";
+    if(!confirm(action+" le mail contenant les horaires à "+r.prenom+" "+r.nom+"\n"+r.email+" ?"))return;
+    btn.disabled=true;btn.textContent="…";
+    const {data:res,error:sendError}=await PortalAuth.client.functions.invoke("mailing-horaires-test",{body:{mode:"individual",benevole_id:r.benevole_id}});
+    if(sendError||!res?.ok){
+      btn.disabled=false;btn.textContent="↻";
+      let fb=row.querySelector(".mail-status-feedback");if(!fb){fb=document.createElement("div");fb.className="mail-status-feedback error";row.appendChild(fb)}
+      fb.className="mail-status-feedback error";fb.textContent="Échec de l’envoi : "+(res?.error||sendError?.message||"erreur inconnue");return;
+    }
+    await load();
+   });
+   list.appendChild(row);
+  }
+  loading.hidden=true;content.hidden=false;
+ }
+ await load();
 })();
 </script></body></html>
