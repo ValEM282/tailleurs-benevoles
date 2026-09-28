@@ -9,10 +9,6 @@
 
   if (!firstnameInput || !lastnameInput || !searchButton || !results || !body) return;
 
-  const sortButtons = [...document.querySelectorAll("[data-account-sort]")];
-  let currentRows = [];
-  let sortField = null;
-  let sortDirection = "asc";
 
   function escapeHtml(value) {
     return String(value ?? "")
@@ -45,38 +41,15 @@
     return `${day} - ${time}`;
   }
 
-  function sortedRows(rows) {
-    if (!sortField) return [...rows];
-    return [...rows].sort((a, b) => {
-      let result = 0;
-      if (sortField === "nom") {
-        result = String(a.nom || "").localeCompare(String(b.nom || ""), "fr", { sensitivity: "base" });
-      } else {
-        const at = a.derniere_connexion ? new Date(a.derniere_connexion).getTime() : 0;
-        const bt = b.derniere_connexion ? new Date(b.derniere_connexion).getTime() : 0;
-        result = at - bt;
-      }
-      return sortDirection === "asc" ? result : -result;
-    });
-  }
-
-  function updateSortIndicators() {
-    document.querySelectorAll("[data-account-sort-indicator]").forEach(indicator => {
-      indicator.textContent = indicator.dataset.accountSortIndicator === sortField
-        ? (sortDirection === "asc" ? "↑" : "↓") : "↕";
-    });
-  }
-
   function renderRows(rows) {
     results.hidden = false;
-    const displayedRows = sortedRows(rows);
 
-    if (!displayedRows.length) {
+    if (!rows.length) {
       body.innerHTML = '<tr><td colspan="3" class="stats-empty-row">Aucun compte bénévole ne correspond à la recherche.</td></tr>';
       return;
     }
 
-    body.innerHTML = displayedRows.map(row => `
+    body.innerHTML = rows.map(row => `
       <tr>
         <td>${escapeHtml(row.prenom || "")}</td>
         <td><strong>${escapeHtml((row.nom || "").toUpperCase())}</strong></td>
@@ -104,20 +77,8 @@
       return;
     }
 
-    currentRows = Array.isArray(data) ? data : [];
-    renderRows(currentRows);
+    renderRows(Array.isArray(data) ? data : []);
   }
-
-  sortButtons.forEach(button => {
-    button.addEventListener("click", () => {
-      const field = button.dataset.accountSort;
-      if (sortField === field) sortDirection = sortDirection === "asc" ? "desc" : "asc";
-      else { sortField = field; sortDirection = "asc"; }
-      updateSortIndicators();
-      renderRows(currentRows);
-    });
-  });
-  updateSortIndicators();
 
   searchButton.addEventListener("click", searchAccounts);
 
