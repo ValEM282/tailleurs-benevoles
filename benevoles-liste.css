@@ -521,9 +521,9 @@
     max-width: none !important;
   }
 
-  /* Email : largeur strictement dictée par l'adresse la plus longue, sans étirement. */
-  .volunteers-table th:nth-child(6),
-  .volunteers-table td:nth-child(6) {
+  /* Impression : chaque colonne prend uniquement la largeur de son contenu le plus long. */
+  .volunteers-table th:nth-child(n+3),
+  .volunteers-table td:nth-child(n+3) {
     width: 1% !important;
     white-space: nowrap !important;
   }
