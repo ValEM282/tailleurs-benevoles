@@ -377,7 +377,7 @@ async function loadStats(selectedDay = "") {
     presentElement.textContent = String(realtimePresence.presents || 0) + " / " + String(realtimePresence.prevus || 0);
   }
   if (lateElement) {
-    lateElement.textContent = String(realtimePresence.retards || 0);
+    lateElement.textContent = String(realtimePresence.retards || 0) + " / " + String(realtimePresence.prevus || 0);
   }
 }
 
