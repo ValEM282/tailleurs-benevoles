@@ -528,7 +528,7 @@ function updateLabelSelectionControls() {
   if (printSelectedLabelsButton) {
     printSelectedLabelsButton.disabled = selectedLabelIds.size === 0;
     printSelectedLabelsButton.textContent = selectedLabelIds.size
-      ? `Imprimer les étiquettes sélectionnées (${selectedLabelIds.size})`
+      ? `Imprimer ${selectedLabelIds.size} étiquette${selectedLabelIds.size > 1 ? "s" : ""}`
       : "Imprimer les étiquettes sélectionnées";
   }
 }
