@@ -95,7 +95,9 @@ function visibleRowsForDay() {
 }
 
 function renderFilterOptions() {
-  const rows = visibleRowsForDay();
+  // Les filtres Poste/Lieu doivent proposer tout le périmètre accessible au profil.
+  // Le filtre Jour est masqué dans cette vue et ne doit donc pas réduire ces listes.
+  const rows = filterRows;
   const posts = uniqueBy(rows, row => String(row.poste_id))
     .sort((a, b) => alphaCollator.compare(a.poste_nom, b.poste_nom));
   const places = uniqueBy(rows.filter(row => row.lieu_id !== null), row => String(row.lieu_id))
