@@ -602,3 +602,21 @@
 .retour-horaire:disabled{opacity:.55;cursor:wait}
 .contact-email-cell .contact-display{gap:8px}
 @media print{.retour-horaire{display:none!important}}
+
+/* Affichage desktop plus compact : priorité à l'adresse e-mail sur une seule ligne */
+@media (min-width: 901px) {
+  .volunteers-table { min-width: 1080px; }
+  .volunteers-table th,
+  .volunteers-table td { padding-left: 11px; padding-right: 11px; }
+  .label-select-heading,
+  .label-select-cell { width:42px; min-width:42px; padding-left:6px!important; padding-right:6px!important; }
+  .schedule-view-heading,
+  .schedule-view-cell { width:52px; min-width:52px; padding-left:6px!important; padding-right:6px!important; }
+  .contact-phone-cell { white-space:nowrap; }
+  .contact-email-cell { min-width:250px; white-space:nowrap; }
+  .contact-email-cell .contact-display { flex-wrap:nowrap; white-space:nowrap; }
+  .contact-email-cell .contact-value { white-space:nowrap; }
+  .sandwich-cell { min-width:95px; }
+  .kit-ok-heading,
+  .kit-ok-cell { width:68px; min-width:68px; padding-left:10px!important; padding-right:12px!important; }
+}
