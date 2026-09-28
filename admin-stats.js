@@ -353,14 +353,6 @@ async function loadStats(selectedDay = "") {
   }
 
   const realtimePresence = realtimePresenceResult.data || {};
-  const presentElement = document.getElementById("stat-present");
-  const lateElement = document.getElementById("stat-late");
-  if (presentElement) {
-    presentElement.textContent = String(realtimePresence.presents || 0) + " / " + String(realtimePresence.prevus || 0);
-  }
-  if (lateElement) {
-    lateElement.textContent = String(realtimePresence.retards || 0);
-  }
 
   const activatedAccountsElement = document.getElementById("stat-activated-accounts");
   if (activatedAccountsElement) {
@@ -376,6 +368,17 @@ async function loadStats(selectedDay = "") {
     vacantScheduleResult.data || 0,
     selectedDay
   );
+
+  // Ces indicateurs sont temps réel : les appliquer après renderStats,
+  // qui renseigne encore l'ancien compteur "présents".
+  const presentElement = document.getElementById("stat-present");
+  const lateElement = document.getElementById("stat-late");
+  if (presentElement) {
+    presentElement.textContent = String(realtimePresence.presents || 0) + " / " + String(realtimePresence.prevus || 0);
+  }
+  if (lateElement) {
+    lateElement.textContent = String(realtimePresence.retards || 0);
+  }
 }
 
 function applyVolunteerHoursSearch() {
