@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="styles.css?v=20260921-2">
   <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
   <link rel="stylesheet" href="admin.css?v=20260927-3">
+  <link rel="stylesheet" href="admin-stats.css?v=20260927-2">
   <link rel="stylesheet" href="admin-responsables.css?v=20260924-1">
   <link rel="stylesheet" href="admin-postes.css?v=20260924-1">
   <style>
@@ -318,6 +319,20 @@
           </a>
         </section>
 
+        <section class="admin-management-section" aria-labelledby="volunteer-accounts-title">
+          <div class="admin-section-heading">
+            <h2 id="volunteer-accounts-title">COMPTES BÉNÉVOLES</h2>
+          </div>
+          <div class="volunteer-hours-search" role="search" aria-label="Rechercher un compte bénévole">
+            <div class="volunteer-hours-search-field"><label for="volunteer-accounts-firstname">Prénom</label><input id="volunteer-accounts-firstname" type="text" autocomplete="off"></div>
+            <div class="volunteer-hours-search-field"><label for="volunteer-accounts-lastname">NOM</label><input id="volunteer-accounts-lastname" type="text" autocomplete="off"></div>
+            <button type="button" id="volunteer-accounts-search-button" class="volunteer-hours-search-button">Rechercher</button>
+          </div>
+          <div id="volunteer-accounts-results" class="stats-table-scroll" hidden>
+            <table class="stats-table"><thead><tr><th scope="col">Prénom</th><th scope="col">NOM</th><th scope="col">Dernière connexion</th></tr></thead><tbody id="volunteer-accounts-body"></tbody></table>
+          </div>
+        </section>
+
         <section class="admin-management-section" aria-labelledby="admin-consistency-title">
           <div class="admin-section-heading">
             <h2 id="admin-consistency-title">CONTRÔLE DE COHÉRENCE</h2>
@@ -437,6 +452,7 @@
       });
     });
   </script>
+  <script src="admin-stats-accounts.js?v=20260928-3"></script>
   <script src="admin-responsables.js?v=20260924-2"></script>
   <script src="admin-postes.js?v=20260924-5"></script>
 </body>
