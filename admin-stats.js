@@ -123,7 +123,8 @@ function initializeDays(days) {
 }
 
 function renderSummary(summary = {}, vacancySummary = {}, presentCount = 0, vacantScheduleCount = 0) {
-  volunteerStat.textContent = numberValue(summary.benevoles);
+  // Le compteur général fourni par admin_get_stats inclut aussi les mouvements de jeunesse.
+  // Les deux compteurs sont recalculés plus bas à partir des horaires afin de les séparer.
   postStat.textContent = numberValue(summary.postes);
   placeStat.textContent = numberValue(summary.lieux);
   absentStat.textContent = numberValue(summary.absents);
@@ -332,7 +333,7 @@ async function loadStats(selectedDay = "") {
   loadingElement.textContent = "Chargement des statistiques…";
   errorElement.hidden = true;
 
-  const [statsResult, vacancyResult, volunteerHoursResult, peopleResult, presentResult, vacantScheduleResult, activatedAccountsResult, realtimePresenceResult] = await Promise.all([
+  const [statsResult, vacancyResult, volunteerHoursResult, peopleResult, presentResult, vacantScheduleResult, activatedAccountsResult, realtimePresenceResult, allSchedulesResult, allVolunteersResult] = await Promise.all([
     PortalAuth.client.rpc("admin_get_stats", { p_day: selectedDay || null }),
     PortalAuth.client.rpc("admin_get_vacancy_stats", { p_day: selectedDay || null }),
     PortalAuth.client.rpc("admin_get_volunteer_hours", { p_day: null }),
@@ -340,10 +341,12 @@ async function loadStats(selectedDay = "") {
     PortalAuth.client.rpc("admin_get_present_volunteer_count", { p_day: selectedDay || null }),
     PortalAuth.client.rpc("admin_get_vacant_schedule_count", { p_day: selectedDay || null }),
     PortalAuth.client.rpc("admin_search_volunteer_accounts", { p_prenom: null, p_nom: null }),
-    PortalAuth.client.rpc("admin_get_realtime_presence_stats")
+    PortalAuth.client.rpc("admin_get_realtime_presence_stats"),
+    PortalAuth.client.rpc("admin_list_all_benevole_schedules"),
+    PortalAuth.client.rpc("admin_list_benevoles")
   ]);
 
-  const error = statsResult.error || vacancyResult.error || volunteerHoursResult.error || peopleResult.error || presentResult.error || vacantScheduleResult.error || activatedAccountsResult.error || realtimePresenceResult.error;
+  const error = statsResult.error || vacancyResult.error || volunteerHoursResult.error || peopleResult.error || presentResult.error || vacantScheduleResult.error || activatedAccountsResult.error || realtimePresenceResult.error || allSchedulesResult.error || allVolunteersResult.error;
   if (error) {
     console.error("Impossible de charger les statistiques :", error);
     loadingElement.hidden = true;
@@ -353,6 +356,20 @@ async function loadStats(selectedDay = "") {
   }
 
   const realtimePresence = realtimePresenceResult.data || {};
+
+  const volunteerById = new Map((Array.isArray(allVolunteersResult.data) ? allVolunteersResult.data : []).map(v => [v.id, v]));
+  const scheduledIds = new Set((Array.isArray(allSchedulesResult.data) ? allSchedulesResult.data : []).map(s => s.benevole_id).filter(Boolean));
+  const isYouth = v => /^(guide|patro|pionnier)\\s*0*\\d+$/i.test(String(v?.prenom || "").trim());
+  let scheduledVolunteers = 0, scheduledYouth = 0;
+  scheduledIds.forEach(id => {
+    const v = volunteerById.get(id);
+    if (!v) return;
+    if (isYouth(v)) scheduledYouth += 1;
+    else scheduledVolunteers += 1;
+  });
+  if (volunteerStat) volunteerStat.textContent = String(scheduledVolunteers);
+  const youthStat = document.getElementById("stat-youth-with-schedule");
+  if (youthStat) youthStat.textContent = String(scheduledYouth);
 
   const activatedAccountsElement = document.getElementById("stat-activated-accounts");
   if (activatedAccountsElement) {
