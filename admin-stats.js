@@ -332,22 +332,28 @@ async function loadStats(selectedDay = "") {
   loadingElement.textContent = "Chargement des statistiques…";
   errorElement.hidden = true;
 
-  const [statsResult, vacancyResult, volunteerHoursResult, peopleResult, presentResult, vacantScheduleResult] = await Promise.all([
+  const [statsResult, vacancyResult, volunteerHoursResult, peopleResult, presentResult, vacantScheduleResult, activatedAccountsResult] = await Promise.all([
     PortalAuth.client.rpc("admin_get_stats", { p_day: selectedDay || null }),
     PortalAuth.client.rpc("admin_get_vacancy_stats", { p_day: selectedDay || null }),
     PortalAuth.client.rpc("admin_get_volunteer_hours", { p_day: null }),
     PortalAuth.client.rpc("admin_get_daily_people_stats"),
     PortalAuth.client.rpc("admin_get_present_volunteer_count", { p_day: selectedDay || null }),
-    PortalAuth.client.rpc("admin_get_vacant_schedule_count", { p_day: selectedDay || null })
+    PortalAuth.client.rpc("admin_get_vacant_schedule_count", { p_day: selectedDay || null }),
+    PortalAuth.client.rpc("admin_search_volunteer_accounts", { p_prenom: null, p_nom: null })
   ]);
 
-  const error = statsResult.error || vacancyResult.error || volunteerHoursResult.error || peopleResult.error || presentResult.error || vacantScheduleResult.error;
+  const error = statsResult.error || vacancyResult.error || volunteerHoursResult.error || peopleResult.error || presentResult.error || vacantScheduleResult.error || activatedAccountsResult.error;
   if (error) {
     console.error("Impossible de charger les statistiques :", error);
     loadingElement.hidden = true;
     errorElement.textContent = "Impossible de charger les statistiques pour le moment.";
     errorElement.hidden = false;
     return;
+  }
+
+  const activatedAccountsElement = document.getElementById("stat-activated-accounts");
+  if (activatedAccountsElement) {
+    activatedAccountsElement.textContent = String(Array.isArray(activatedAccountsResult.data) ? activatedAccountsResult.data.length : 0);
   }
 
   renderStats(
