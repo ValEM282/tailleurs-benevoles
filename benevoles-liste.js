@@ -269,7 +269,9 @@ function editableContact(volunteer, field) {
 }
 
 function editableLogistics(volunteer, field) {
-  const value = volunteer[field] == null ? "" : String(volunteer[field]);
+  const rawValue = volunteer[field] == null ? "" : String(volunteer[field]);
+  const sandwichDisplay = { "Sam": "S", "Dim": "D", "Sam & Dim": "S & D" };
+  const value = field === "sandwich" ? (sandwichDisplay[rawValue] || rawValue) : rawValue;
   const labels = { tshirt: "T-shirt", tailloux: "Tailloux", sandwich: "Sandwich" };
   return `
     <div class="contact-display">
