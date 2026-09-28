@@ -12,7 +12,7 @@
   <style>
     :root{--blue:#1C2EAB;--red:#E40230;--purple:#891E82;--ink:#17204f;--soft:#f5f7ff}
     *{box-sizing:border-box}
-    .job-main{max-width:1120px;margin:30px auto 60px;padding:0 20px}
+    .job-main{max-width:1120px;margin:0 auto 60px;padding:0 20px}
     .job-intro{background:#fff;border-top:5px solid var(--blue);border-radius:16px;padding:22px 24px;box-shadow:0 8px 24px rgba(28,46,171,.08);margin-bottom:22px}
     .job-intro h1{margin:0 0 5px;color:var(--blue);font-size:1.65rem}.job-intro p{margin:0;color:#59617e}
     .job-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:28px}
@@ -29,7 +29,7 @@
     .tip{background:#f7f2fb;border-left:5px solid var(--purple);padding:12px 15px;border-radius:8px;margin:12px 0}
     details{border-top:1px solid #e5e8f5;padding:0}details summary{cursor:pointer;color:var(--blue);font-weight:700;font-size:1.08rem;padding:15px 0;list-style:none}details summary::-webkit-details-marker{display:none}details summary:after{content:"＋";float:right}details[open] summary:after{content:"−"}details .detail-body{padding:0 2px 14px}
     .back-list{border:0;background:none;color:var(--blue);font:inherit;font-weight:700;cursor:pointer;padding:0 0 18px}
-    @media(max-width:680px){.job-main{padding:0 14px;margin-top:20px}.job-grid{grid-template-columns:1fr}.sheet-head,.sheet-body{padding:18px}.job-intro{padding:18px}.sheet-head h2{font-size:1.45rem}}
+    @media(max-width:680px){.job-main{padding:0 14px;margin-top:0}.job-grid{grid-template-columns:1fr}.sheet-head,.sheet-body{padding:18px}.job-intro{padding:18px}.sheet-head h2{font-size:1.45rem}}
   </style>
 </head>
 <body class="dashboard-page">
@@ -40,7 +40,8 @@
 </div></header>
 <main class="job-main">
   <section id="job-list">
-    <div class="job-intro"><h1>FICHES DE POSTE</h1><p>Choisis un poste pour consulter les consignes utiles pendant le festival.</p></div>
+    <section class="subpage-heading"><h1>Fiches de poste</h1></section>
+    <div class="job-intro"><p>Choisis un poste pour consulter les consignes utiles pendant le festival.</p></div>
     <div class="job-grid">
       <button class="job-card" data-sheet="accadmin"><span class="job-icon">👋</span><span><strong>ACCUEIL – ADMIN</strong><small>Contrôle d'accès au kiosque</small></span></button>
       <button class="job-card" data-sheet="accspectacles"><span class="job-icon">🤡</span><span><strong>ACCUEIL SPECTACLES</strong><small>Accueil du public aux spectacles</small></span></button>
