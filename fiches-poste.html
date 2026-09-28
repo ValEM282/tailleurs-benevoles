@@ -10,27 +10,118 @@
   <link rel="stylesheet" href="styles.css?v=20260921-2">
   <link rel="stylesheet" href="subpage-header.css?v=20260922-1">
   <style>
-    .coming-soon{max-width:1120px;margin:46px auto;padding:0 24px}
-    .coming-soon-card{background:#fff;border-radius:18px;padding:38px 28px;text-align:center;box-shadow:0 10px 30px rgba(28,46,171,.08)}
-    .coming-soon-card p{margin:0;color:#1C2EAB;font-size:1.35rem;font-weight:700}
+    :root{--blue:#1C2EAB;--red:#E40230;--purple:#891E82;--ink:#17204f;--soft:#f5f7ff}
+    *{box-sizing:border-box}
+    .job-main{max-width:1120px;margin:30px auto 60px;padding:0 20px}
+    .job-intro{background:#fff;border-top:5px solid var(--blue);border-radius:16px;padding:22px 24px;box-shadow:0 8px 24px rgba(28,46,171,.08);margin-bottom:22px}
+    .job-intro h1{margin:0 0 5px;color:var(--blue);font-size:1.65rem}.job-intro p{margin:0;color:#59617e}
+    .job-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:28px}
+    .job-card{appearance:none;width:100%;background:#fff;border:2px solid var(--blue);border-radius:15px;padding:18px;text-align:left;display:flex;gap:14px;align-items:center;cursor:pointer;font:inherit;color:var(--blue);box-shadow:0 5px 14px rgba(28,46,171,.06)}
+    .job-card:hover,.job-card:focus-visible{background:var(--soft);transform:translateY(-1px)}
+    .job-icon{font-size:1.7rem;width:38px;text-align:center}.job-card strong{display:block;font-size:1.1rem}.job-card small{display:block;color:#667;line-height:1.25;margin-top:2px}
+    .sheet{display:none;background:#fff;border-radius:18px;box-shadow:0 10px 30px rgba(28,46,171,.10);overflow:hidden;margin-top:18px}
+    .sheet.active{display:block}.sheet-head{background:var(--blue);color:#fff;padding:22px 24px}.sheet-head h2{margin:0;font-size:1.7rem}.sheet-head p{margin:4px 0 0;opacity:.9}
+    .sheet-body{padding:22px 24px}.responsibles{background:var(--soft);border-left:5px solid var(--blue);border-radius:10px;padding:14px 16px;margin-bottom:20px}
+    .responsibles h3,.section h3{margin:0 0 9px;color:var(--blue)}.responsibles p{margin:4px 0}
+    .section{border-top:1px solid #e5e8f5;padding:18px 0 4px}.section:first-of-type{border-top:0}
+    .section ul{margin:8px 0;padding-left:22px}.section li{margin:7px 0;line-height:1.4}
+    .alert{background:#fff5f5;border-left:5px solid var(--red);padding:12px 15px;border-radius:8px;margin:12px 0;font-weight:600}
+    .tip{background:#f7f2fb;border-left:5px solid var(--purple);padding:12px 15px;border-radius:8px;margin:12px 0}
+    details{border-top:1px solid #e5e8f5;padding:0}details summary{cursor:pointer;color:var(--blue);font-weight:700;font-size:1.08rem;padding:15px 0;list-style:none}details summary::-webkit-details-marker{display:none}details summary:after{content:"＋";float:right}details[open] summary:after{content:"−"}details .detail-body{padding:0 2px 14px}
+    .back-list{border:0;background:none;color:var(--blue);font:inherit;font-weight:700;cursor:pointer;padding:0 0 18px}
+    @media(max-width:680px){.job-main{padding:0 14px;margin-top:20px}.job-grid{grid-template-columns:1fr}.sheet-head,.sheet-body{padding:18px}.job-intro{padding:18px}.sheet-head h2{font-size:1.45rem}}
   </style>
 </head>
 <body class="dashboard-page">
-  <header class="dashboard-header">
-    <div class="subpage-header-inner">
-      <a href="dashboard.html" class="back-button">← Accueil</a>
-      <a href="dashboard.html" class="dashboard-title" style="color:#fff;text-decoration:none">🎪 PORTAIL BÉNÉVOLES 🎪</a>
-      <button type="button" id="logout-button" class="logout-button">Se déconnecter</button>
+<header class="dashboard-header"><div class="subpage-header-inner">
+  <a href="dashboard.html" class="back-button">← Accueil</a>
+  <a href="dashboard.html" class="dashboard-title" style="color:#fff;text-decoration:none">🎪 PORTAIL BÉNÉVOLES 🎪</a>
+  <button type="button" id="logout-button" class="logout-button">Se déconnecter</button>
+</div></header>
+<main class="job-main">
+  <section id="job-list">
+    <div class="job-intro"><h1>FICHES DE POSTE</h1><p>Choisis un poste pour consulter les consignes utiles pendant le festival.</p></div>
+    <div class="job-grid">
+      <button class="job-card" data-sheet="bar"><span class="job-icon">🍺</span><span><strong>BAR</strong><small>Service, cautions et fonctionnement</small></span></button>
+      <button class="job-card" data-sheet="foodtruck"><span class="job-icon">🌭</span><span><strong>FOODTRUCK</strong><small>Pains saucisse, hamburgers et gaufres</small></span></button>
+      <button class="job-card" data-sheet="billetterie"><span class="job-icon">🎟️</span><span><strong>BILLETTERIE</strong><small>Préventes, ventes et pass</small></span></button>
+      <button class="job-card" data-sheet="caisse"><span class="job-icon">💰</span><span><strong>CAISSE</strong><small>Tailloux, cautions et paiements</small></span></button>
+      <button class="job-card" data-sheet="canards"><span class="job-icon">🦆</span><span><strong>COURSE AUX CANARDS</strong><small>Préparation, vente et récupération</small></span></button>
+      <button class="job-card" data-sheet="ecoteam"><span class="job-icon">♻️</span><span><strong>ECOTEAM</strong><small>Propreté, tri et toilettes sèches</small></span></button>
+      <button class="job-card" data-sheet="accadmin"><span class="job-icon">👋</span><span><strong>ACCUEIL – ADMIN</strong><small>Contrôle d'accès au kiosque</small></span></button>
     </div>
-  </header>
-  <main class="coming-soon">
-    <section class="coming-soon-card"><p>Très prochainement disponible...</p></section>
-  </main>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="portal-auth.js"></script>
-  <script>
-    (async()=>{const user=await window.PortalAuth.requireAuth();if(!user)return;
-    document.getElementById("logout-button").addEventListener("click",()=>window.PortalAuth.logout());})();
-  </script>
-</body>
-</html>
+  </section>
+
+  <section class="sheet" id="sheet-bar"><div class="sheet-head"><h2>🍺 BAR</h2><p>Fiche pratique du poste</p></div><div class="sheet-body"><button class="back-list">← Toutes les fiches</button>
+    <div class="responsibles"><h3>Responsables du poste</h3><p><strong>Emilie WAYENBERGH</strong> · <a href="tel:+32486577394">0486 57 73 94</a></p><p><strong>Nathalie DOMBARD</strong> (samedi) · <a href="tel:+32472426187">0472 42 61 87</a></p><p>Groupe WhatsApp : <strong>T26 – Bar</strong></p></div>
+    <div class="section"><h3>À retenir</h3><ul><li><strong>Jeton bleu</strong> = caution pour 1 gobelet, disponible à la caisse centrale.</li><li>Une caisse fermée pour les <strong>Tailloux</strong> et une autre pour les <strong>cautions</strong>.</li><li>Prévoir un récipient pour le retour des cautions.</li><li>Carte bénévoles/artistes : <strong>1 poinçon = 1 Taillou</strong>. Une carte pleine va dans la boîte en plastique.</li></ul><div class="alert">La carte bénévoles/artistes n'est pas valable sur les cocktails/mocktails du stand WILD DRINKZ.</div></div>
+    <div class="section"><h3>Organisation du bar</h3><ul><li>On essaie de tourner entre pompe, service et vaisselle. Si tout le monde se sent bien à son poste, on peut garder l'organisation en place.</li><li>Si tu n'es pas à l'aise dans ton poste, dis-le.</li><li>Pendant les temps morts : nettoyer les surfaces et ranger la réserve.</li><li>Préparer des « lignes » de softs et de vin pour faciliter le service, en adaptant les quantités à l'affluence.</li></ul><div class="tip"><strong>Principe :</strong> s'amuser tout en gardant un service efficace.</div></div>
+    <div class="section"><h3>Points importants</h3><div class="alert">Le bar est quasiment la seule source de revenus du festival. Pas de verre offert aux copains : pense aussi à poinçonner ta propre carte conso.</div><ul><li>Si un festivalier trouve la bière chère, tu peux rappeler que les spectacles proposés sont gratuits pour le public mais ont évidemment un coût.</li><li><strong>Si un festivalier semble trop alcoolisé, refuse de le servir.</strong></li><li>Surveille également ta propre consommation d'alcool.</li></ul></div>
+    <div class="section"><h3>Bon à savoir</h3><p>Bières : <strong>Brasserie de Silly</strong><br>Jus de pommes : pommes d'Écaussinnes pressées à Écaussinnes, vendues par le Rotary.</p></div>
+  </div></section>
+
+  <section class="sheet" id="sheet-foodtruck"><div class="sheet-head"><h2>🌭 FOODTRUCK</h2><p>Pain saucisse, hamburger et gaufre</p></div><div class="sheet-body"><button class="back-list">← Toutes les fiches</button>
+    <div class="responsibles"><h3>Responsable du poste</h3><p><strong>Vinciane CHARLOT</strong> · <a href="tel:+32497555606">0497 55 56 06</a></p><p>Groupe WhatsApp : <strong>T26 – Foodtruck</strong></p></div>
+    <details open><summary>🌭 Pain saucisse · 4 Tailloux</summary><div class="detail-body"><ul><li>Réchauffer quelques saucisses pour avoir un petit stock : elles sont précuites. Les garder dans une casserole fermée une fois chaudes.</li><li>Réchauffer les oignons dans la poêle électrique.</li><li>Couper les baguettes en 3.</li><li>Demander sauce et oignons : si oui, ne pas en mettre trop.</li><li>Tomates : 3 morceaux par pain saucisse. Ajouter un peu de salade si demandé.</li><li>À faire en continu pendant l'après-midi.</li></ul></div></details>
+    <details><summary>🍔 Hamburger · compagnies uniquement</summary><div class="detail-body"><ul><li>Précuire dans la grille pliante puis réchauffer à la commande.</li><li>Réchauffer les oignons dans la poêle électrique et couper les baguettes en 3.</li><li>Ajouter sauce/oignons sans excès, 3 morceaux de tomate et un peu de salade si demandé.</li><li><strong>Paiement uniquement pour les compagnies, avec un ticket.</strong></li></ul></div></details>
+    <details><summary>🧇 Gaufres · 2 ou 3 Tailloux</summary><div class="detail-body"><ul><li>Précuire 10 gaufres et les laisser refroidir sur la grille.</li><li>Réchauffer à la commande.</li><li>Mettre la gaufre dans un carton. Pour la version choco, ajouter le chocolat sur une gaufre nature et servir sur une assiette.</li><li><strong>2 Tailloux</strong> nature · <strong>3 Tailloux</strong> avec chocolat.</li></ul></div></details>
+  </div></section>
+
+  <section class="sheet" id="sheet-billetterie"><div class="sheet-head"><h2>🎟️ BILLETTERIE</h2><p>Que faire selon la situation du visiteur ?</p></div><div class="sheet-body"><button class="back-list">← Toutes les fiches</button>
+    <div class="responsibles"><h3>Responsables du poste</h3><p><strong>Rudy VANUGHI</strong> · <a href="tel:+32473211242">0473 21 12 42</a></p><p><strong>François BARBEZ</strong> · <a href="tel:+32473588020">0473 58 80 20</a></p><p>Groupe WhatsApp : <strong>T26 – Billetterie</strong></p></div>
+    <details open><summary>Préventes</summary><div class="detail-body"><p>Donner l'enveloppe et barrer son numéro sur le listing des préventes.</p></div></details>
+    <details><summary>Invités ou pros</summary><div class="detail-body"><p>Donner l'enveloppe et barrer son numéro sur le listing invités/pros.</p><div class="alert">Si la personne n'est pas sur la liste mais mentionne Didier Caille ou Arnaud Bourgis, lui donner un bracelet.</div></div></details>
+    <details><summary>Carte Article 27</summary><div class="detail-body"><ul><li>Inscrire toutes les coordonnées sur l'enveloppe Article 27.</li><li>Mettre le ticket Article 27 dans l'enveloppe.</li><li>Donner les places achetées.</li></ul></div></details>
+    <details><summary>Achat sur place</summary><div class="detail-body"><p><strong>Si PayPerPot n'est pas disponible :</strong> pour SumUp/Payconiq, effectuer la transaction avec le mobile et toujours créer la vente dans Loyverse POS. Pour le cash, toujours créer également la vente dans Loyverse POS.</p><p><strong>Si PayPerPot est disponible :</strong> créer la vente sur le terminal, choisir carte ou cash selon le paiement, recevoir le paiement puis donner les places.</p></div></details>
+    <details><summary>Riverains</summary><div class="detail-body"><ul><li>Récolter la composition de ménage.</li><li>La mettre dans l'enveloppe Article 27.</li><li>Donner les tickets spectacles.</li></ul><div class="alert">Maximum 4 tickets spectacles par famille.</div></div></details>
+    <div class="section"><h3>Couleur des pass</h3><p>🟤 <strong>Samedi :</strong> brun &nbsp; · &nbsp; 🟡 <strong>Dimanche :</strong> jaune &nbsp; · &nbsp; 🟠 <strong>Week-end :</strong> orange</p></div>
+  </div></section>
+
+  <section class="sheet" id="sheet-caisse"><div class="sheet-head"><h2>💰 CAISSE</h2><p>Tailloux, cautions et paiements</p></div><div class="sheet-body"><button class="back-list">← Toutes les fiches</button>
+    <div class="responsibles"><h3>Responsables du poste</h3><p><strong>Nicolas MASSART</strong> · <a href="tel:+32486411182">0486 41 11 82</a></p><p><strong>Mélanie DUMOULIN</strong> · <a href="tel:+32498652194">0498 65 21 94</a></p><p>Groupe WhatsApp : <strong>T26 – Caisse</strong></p></div>
+    <div class="section"><h3>Tailloux</h3><p>Les <strong>Tailloux bruns valent 1,50 €</strong> et servent à payer les boissons et certains articles de nourriture : pains saucisse, croque-monsieur du Rotary et gaufres.</p><div class="alert">Les Tailloux ne sont pas remboursables.</div></div>
+    <div class="section"><h3>Cautions gobelets</h3><p>Les <strong>jetons bleus valent 1 €</strong> et sont remboursables à ce stand. Pour rembourser une caution, récupérer le jeton bleu et rendre 1 € par jeton.</p></div>
+    <div class="section"><h3>Paiements</h3><ul><li>SumUp/Payconiq : faire la transaction avec le mobile et <strong>toujours créer la vente dans Loyverse POS</strong>.</li><li>Cash : toujours créer la vente dans Loyverse POS puis donner les Tailloux et cautions éventuelles.</li></ul></div>
+    <div class="section"><h3>Organisation</h3><p>Préparer à l'avance des tas de <strong>5 Tailloux</strong>.</p><div class="alert">Seuls Nicolas et Mélanie sont habilités à vider les caisses. S'il y a trop d'argent dans ta caisse, appelle un responsable du poste.</div></div>
+  </div></section>
+
+  <section class="sheet" id="sheet-canards"><div class="sheet-head"><h2>🦆 COURSE AUX CANARDS</h2><p>Préparation, vente et récupération</p></div><div class="sheet-body"><button class="back-list">← Toutes les fiches</button>
+    <div class="responsibles"><h3>Responsable du poste</h3><p><strong>Vinciane CHARLOT</strong> · <a href="tel:+32497555606">0497 55 56 06</a></p><p>Groupe WhatsApp : <strong>T26 – Canards</strong></p></div>
+    <div class="section"><h3>Avant la course</h3><ul><li>Accrocher les canards aux crochets noirs sur le mur de pierre dans le garage pour créer une belle vitrine.</li><li>Cette préparation doit être terminée <strong>45 minutes avant le début de la course</strong>.</li><li>La vente commence 45 minutes avant la course et se termine au départ. Elle doit être assurée par une personne adulte.</li><li>Si besoin de Payconiq, appeler Vinciane.</li></ul></div>
+    <div class="section"><h3>20 minutes avant le départ</h3><p>Entrer dans la Senette avant les mannes à linge pour récupérer les canards. Entrer et sortir par l'escalier.</p><div class="alert">Ne pas aller au moulin : trou dangereux.</div><p>Vérifier avec Vinciane s'il y a des canards à enlever au barrage.</p></div>
+    <div class="section"><h3>Après la course</h3><p>Ramasser les canards arrivés après la course.</p></div>
+  </div></section>
+
+  <section class="sheet" id="sheet-ecoteam"><div class="sheet-head"><h2>♻️ ECOTEAM</h2><p>Propreté et gestion des déchets du festival</p></div><div class="sheet-body"><button class="back-list">← Toutes les fiches</button>
+    <div class="responsibles"><h3>Responsables du poste</h3><p><strong>Valerie M.</strong> · <a href="tel:+32486277382">0486 27 73 82</a></p><p><strong>Wendy D.</strong> · <a href="tel:+32477808551">0477 80 85 51</a></p><p>Groupe WhatsApp : <strong>T26 – ECOTEAM</strong></p></div>
+    <details open><summary>♻️ Nettoyer le site</summary><div class="detail-body"><p>En continu, utiliser une pince et un sac poubelle pour ramasser les déchets sur la voie publique et dans les lieux visités. Les trier dans la zone de délestage de la Grand'Place.</p></div></details>
+    <details><summary>🗑️ Aider les festivaliers à trier</summary><div class="detail-body"><p>Indiquer les îlots de poubelles de tri à l'aide du plan MyMaps et inviter les festivaliers à les utiliser.</p></div></details>
+    <details><summary>🚬 Mégots et cendriers</summary><div class="detail-body"><p>Distribuer les cendriers de poche et inviter les fumeurs à ne pas jeter leurs mégots au sol. Le plan MyMaps indique également les cendriers fixes.</p></div></details>
+    <details><summary>🪑 Tables et bancs</summary><div class="detail-body"><p>Nettoyer en continu les tables et bancs brasseurs utilisés pour boire et manger. Le matériel nécessaire se trouve au bar des Tailleurs le plus proche, Grand'Place ou Place des Comtes.</p></div></details>
+    <details><summary>🚻 Toilettes sèches · toutes les 1h à 1h30</summary><div class="detail-body"><p>Contrôler les toilettes de la Grand'Place et de la Place des Comtes. Une zone non accessible au public, derrière les toilettes, contient le matériel.</p><ul><li>Nettoyer dessus et dessous des lunettes ainsi que l'assise en bois.</li><li>Remettre du papier toilette si nécessaire.</li><li>Remplir de copeaux le petit seau de chaque toilette.</li><li>Vider la petite poubelle si nécessaire.</li><li>Remplacer la grande poubelle sous la toilette lorsqu'elle est presque pleine.</li><li>Noter l'heure du dernier contrôle/nettoyage sur la check-list.</li></ul></div></details>
+    <details><summary>🗑️ Sacs des îlots de tri · toutes les 1h à 1h30</summary><div class="detail-body"><p>Les zones les plus fréquentées sont la Place des Comtes et la Grand'Place. Remplacer les sacs pleins aux 3/4 et déposer les sacs pleins, correctement fermés, dans la zone de délestage de la Grand'Place.</p></div></details>
+    <details><summary>🧹 Dimanche et lundi matin · 9h–12h</summary><div class="detail-body"><p>S'assurer que tout le site est propre avant l'arrivée des festivaliers ou avant démontage : rues, lieux de spectacle, poubelles de tri et Foodtrucks, toilettes propres et prêtes à l'usage/démontage.</p></div></details>
+  </div></section>
+
+  <section class="sheet" id="sheet-accadmin"><div class="sheet-head"><h2>👋 ACCUEIL – ADMIN</h2><p>Contrôle d'accès au kiosque</p></div><div class="sheet-body"><button class="back-list">← Toutes les fiches</button>
+    <div class="responsibles"><h3>Responsable du poste</h3><p><strong>Wendy De Troyer</strong> · <a href="tel:+32477808551">0477 80 85 51</a></p><p>Groupe WhatsApp : <strong>T26 – ACCUEIL-ADMIN</strong></p></div>
+    <div class="section"><h3>Mission</h3><p>Contrôler les personnes qui entrent dans le kiosque.</p><div class="alert">Laisser entrer uniquement les artistes qui se présentent avec un bracelet jaune. Les bénévoles portent également un bracelet jaune, mais ils ont un t-shirt bénévole : ils ne peuvent pas entrer.</div></div>
+  </div></section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="portal-auth.js?v=20260928-1"></script>
+<script>
+(async()=>{
+  const user=await window.PortalAuth.requireAuth(); if(!user)return;
+  document.getElementById("logout-button").addEventListener("click",()=>window.PortalAuth.logout());
+})();
+const list=document.getElementById("job-list");
+function showSheet(id){
+  document.querySelectorAll(".sheet").forEach(s=>s.classList.remove("active"));
+  const sheet=document.getElementById("sheet-"+id); if(!sheet)return;
+  list.hidden=true; sheet.classList.add("active"); window.scrollTo({top:0,behavior:"smooth"});
+}
+document.querySelectorAll(".job-card").forEach(b=>b.addEventListener("click",()=>showSheet(b.dataset.sheet)));
+document.querySelectorAll(".back-list").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".sheet").forEach(s=>s.classList.remove("active"));list.hidden=false;window.scrollTo({top:0,behavior:"smooth"});}));
+</script>
+</body></html>
