@@ -10,6 +10,10 @@ const printButton = document.getElementById("print-volunteers-button");
 const activityFilterButton = document.getElementById("activity-filter-button");
 const sortButtons = [...document.querySelectorAll(".sort-button")];
 const printAllLabelsButton = document.getElementById("print-all-labels-button");
+const printSelectedLabelsButton = document.getElementById("print-selected-labels-button");
+const selectAllLabelsCheckbox = document.getElementById("select-all-labels");
+const selectedLabelIds = new Set();
+const volunteersWithSchedules = new Set();
 
 const searchParams = new URLSearchParams(window.location.search);
 const searchFirstname = (searchParams.get("prenom") || "").trim();
@@ -475,7 +479,7 @@ function renderTable() {
   if (!rows.length) {
     tableBody.innerHTML = `
       <tr>
-        <td colspan="9" class="volunteers-empty">${emptyMessage()}</td>
+        <td colspan="10" class="volunteers-empty">${emptyMessage()}</td>
       </tr>
     `;
     countElement.textContent = "0 bénévole";
@@ -486,6 +490,7 @@ function renderTable() {
 
   tableBody.innerHTML = rows.map(volunteer => `
     <tr>
+      <td class="label-select-cell">${volunteersWithSchedules.has(volunteer.id) ? `<input type="checkbox" class="label-select-checkbox volunteer-label-select" data-benevole-id="${escapeHtml(volunteer.id)}" ${selectedLabelIds.has(volunteer.id) ? "checked" : ""} aria-label="Sélectionner ${escapeHtml((volunteer.prenom || "") + " " + (volunteer.nom || ""))} pour l’impression d’étiquette">` : ""}</td>
       <td class="schedule-view-cell">${scheduleButton(volunteer)}</td>
       <td class="volunteer-name">${escapeHtml(volunteer.prenom || "—")}</td>
       <td class="volunteer-name">${escapeHtml(volunteer.nom || "—")}</td>
@@ -501,6 +506,31 @@ function renderTable() {
   countElement.textContent = `${rows.length} bénévole${rows.length > 1 ? "s" : ""}`;
   updateSortIndicators();
   updateActivityFilterButton();
+  updateLabelSelectionControls();
+}
+
+
+function updateLabelSelectionControls() {
+  const visibleEligible = sortedVolunteers().filter(v => volunteersWithSchedules.has(v.id));
+  const selectedVisible = visibleEligible.filter(v => selectedLabelIds.has(v.id)).length;
+  if (selectAllLabelsCheckbox) {
+    selectAllLabelsCheckbox.disabled = visibleEligible.length === 0;
+    selectAllLabelsCheckbox.checked = visibleEligible.length > 0 && selectedVisible === visibleEligible.length;
+    selectAllLabelsCheckbox.indeterminate = selectedVisible > 0 && selectedVisible < visibleEligible.length;
+  }
+  if (printSelectedLabelsButton) {
+    printSelectedLabelsButton.disabled = selectedLabelIds.size === 0;
+    printSelectedLabelsButton.textContent = selectedLabelIds.size
+      ? `Imprimer les étiquettes sélectionnées (${selectedLabelIds.size})`
+      : "Imprimer les étiquettes sélectionnées";
+  }
+}
+
+function printSelectedLabels() {
+  const ids = [...selectedLabelIds].filter(id => volunteersWithSchedules.has(id));
+  if (!ids.length) return;
+  const params = new URLSearchParams({ print: "1", ids: ids.join(",") });
+  window.location.href = `etiquettes-benevoles.html?${params.toString()}`;
 }
 
 async function updateKitStatus(checkbox) {
@@ -566,6 +596,11 @@ async function loadVolunteers() {
   }
 
   volunteers = Array.isArray(data) ? data : [];
+
+  const { data: schedules, error: schedulesError } = await PortalAuth.client.rpc("admin_list_all_benevole_schedules");
+  if (!schedulesError && Array.isArray(schedules)) {
+    schedules.forEach(shift => { if (shift.benevole_id) volunteersWithSchedules.add(shift.benevole_id); });
+  }
   renderTable();
 }
 
@@ -642,10 +677,28 @@ tableBody.addEventListener("keydown", event => {
 });
 
 tableBody.addEventListener("change", event => {
+  const labelCheckbox = event.target.closest(".volunteer-label-select");
+  if (labelCheckbox) {
+    if (labelCheckbox.checked) selectedLabelIds.add(labelCheckbox.dataset.benevoleId);
+    else selectedLabelIds.delete(labelCheckbox.dataset.benevoleId);
+    updateLabelSelectionControls();
+    return;
+  }
   const checkbox = event.target.closest(".kit-checkbox");
   if (!checkbox) return;
   updateKitStatus(checkbox);
 });
+
+if (selectAllLabelsCheckbox) {
+  selectAllLabelsCheckbox.addEventListener("change", () => {
+    sortedVolunteers().filter(v => volunteersWithSchedules.has(v.id)).forEach(v => {
+      if (selectAllLabelsCheckbox.checked) selectedLabelIds.add(v.id);
+      else selectedLabelIds.delete(v.id);
+    });
+    renderTable();
+  });
+}
+if (printSelectedLabelsButton) printSelectedLabelsButton.addEventListener("click", printSelectedLabels);
 
 if (printButton) {
   printButton.addEventListener("click", printVolunteersList);
