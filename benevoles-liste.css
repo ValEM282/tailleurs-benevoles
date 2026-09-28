@@ -521,6 +521,13 @@
     max-width: none !important;
   }
 
+  /* Email : largeur strictement dictée par l'adresse la plus longue, sans étirement. */
+  .volunteers-table th:nth-child(6),
+  .volunteers-table td:nth-child(6) {
+    width: 1% !important;
+    white-space: nowrap !important;
+  }
+
   /* Colonnes purement écran : sélection + accès horaire masqués à l'impression.
      Les 8 colonnes métier restent toutes visibles. */
   .volunteers-table th:nth-child(n+3),
