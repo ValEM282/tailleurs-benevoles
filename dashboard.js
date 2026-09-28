@@ -371,6 +371,12 @@ async function loadDashboard() {
     jobSheetsLink.hidden = role === "benevole";
   }
 
+  // La page Infos pratiques reste en préparation : accès Admin uniquement.
+  const practicalInfoLink = document.getElementById("practical-info-link");
+  if (practicalInfoLink) {
+    practicalInfoLink.hidden = role !== "admin";
+  }
+
   // Le rôle technique ne suffit pas : un co-responsable reçoit aussi le rôle
   // "responsable" pour ses droits. On détermine donc les fonctions réelles.
   const { data: managementRoles, error: managementRolesError } =
