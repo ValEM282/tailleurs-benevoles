@@ -281,6 +281,7 @@ async function loadLabels() {
 
   const params = new URLSearchParams(window.location.search);
   const targetVolunteerId = normalizeText(params.get("id"));
+  const targetVolunteerIds = [...new Set(params.getAll("ids").flatMap(value => value.split(",")).map(normalizeText).filter(Boolean))];
 
   const [volunteersResult, schedulesResult] = await Promise.all([
     PortalAuth.client.rpc("admin_list_benevoles"),
@@ -299,10 +300,20 @@ async function loadLabels() {
 
   // Les animé·e·s des mouvements de jeunesse ont leur propre planning et ne reçoivent pas ces étiquettes.
   const isYouthVolunteer = volunteer => /^(guide|patro|pionnier)\s*0*\d+$/i.test(normalizeText(volunteer.prenom));
-  if (!targetVolunteerId) {
+  if (!targetVolunteerId && !targetVolunteerIds.length) {
     const volunteerIds = new Set(volunteers.filter(volunteer => !isYouthVolunteer(volunteer)).map(volunteer => volunteer.id));
     volunteers = volunteers.filter(volunteer => volunteerIds.has(volunteer.id));
     schedules = schedules.filter(shift => volunteerIds.has(shift.benevole_id));
+  }
+
+  if (targetVolunteerIds.length) {
+    const selectedIds = new Set(targetVolunteerIds);
+    volunteers = volunteers.filter(volunteer => selectedIds.has(volunteer.id));
+    schedules = schedules.filter(shift => selectedIds.has(shift.benevole_id));
+    if (!volunteers.length) {
+      showError("Aucun des bénévoles sélectionnés n'a été trouvé dans l'édition active.");
+      return;
+    }
   }
 
   if (targetVolunteerId) {
