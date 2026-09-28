@@ -11,7 +11,7 @@
 
   <link rel="stylesheet" href="styles.css?v=20260921-2">
   <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
-  <link rel="stylesheet" href="benevoles-liste.css?v=20260926-1">
+  <link rel="stylesheet" href="benevoles-liste.css?v=20260928-2">
   <link rel="stylesheet" href="benevoles-liste-edit.css?v=20260926-3">
   <link rel="stylesheet" href="print-icon-button.css?v=20260924-1">
 </head>
@@ -30,6 +30,7 @@
       <h1>Liste des bénévoles</h1>
 
       <div class="volunteers-list-heading-actions">
+        <button type="button" class="labels-print-button labels-selected-button" id="print-selected-labels-button" disabled>Imprimer les étiquettes sélectionnées</button>
         <a
           href="etiquettes-benevoles.html?print=1"
           class="labels-print-button"
@@ -62,6 +63,7 @@
         <table class="volunteers-table">
           <thead>
             <tr>
+              <th scope="col" class="label-select-heading"><input type="checkbox" id="select-all-labels" class="label-select-checkbox" aria-label="Tout sélectionner pour les étiquettes" title="Tout sélectionner"></th>
               <th scope="col" class="schedule-view-heading">
                 <button
                   type="button"
@@ -93,7 +95,7 @@
           </thead>
           <tbody id="volunteers-table-body">
             <tr>
-              <td colspan="9" class="volunteers-loading">Chargement de la liste…</td>
+              <td colspan="10" class="volunteers-loading">Chargement de la liste…</td>
             </tr>
           </tbody>
         </table>
@@ -103,6 +105,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="portal-auth.js"></script>
-  <script src="benevoles-liste.js?v=20260927-18"></script>
+  <script src="benevoles-liste.js?v=20260928-19"></script>
 </body>
 </html>
