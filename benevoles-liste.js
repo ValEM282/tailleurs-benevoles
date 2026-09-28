@@ -34,8 +34,15 @@ if (youthMovement) {
 }
 
 if (youthMovement && printAllLabelsButton) {
+  printAllLabelsButton.hidden = false;
   printAllLabelsButton.textContent = "Imprimer le planning horaire";
   printAllLabelsButton.href = "#";
+}
+if (youthMovement && printSelectedLabelsButton) {
+  printSelectedLabelsButton.hidden = true;
+}
+if (youthMovement && selectAllLabelsCheckbox) {
+  selectAllLabelsCheckbox.hidden = true;
 }
 
 function unlockStorageKey() {
