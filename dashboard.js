@@ -364,6 +364,13 @@ async function loadDashboard() {
 
   const role = participation.role;
 
+  // Pendant la préparation des fiches de poste, elles restent accessibles
+  // aux profils de gestion mais sont masquées pour les bénévoles simples.
+  const jobSheetsLink = document.getElementById("job-sheets-link");
+  if (jobSheetsLink) {
+    jobSheetsLink.hidden = role === "benevole";
+  }
+
   // Le rôle technique ne suffit pas : un co-responsable reçoit aussi le rôle
   // "responsable" pour ses droits. On détermine donc les fonctions réelles.
   const { data: managementRoles, error: managementRolesError } =
