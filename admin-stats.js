@@ -332,23 +332,34 @@ async function loadStats(selectedDay = "") {
   loadingElement.textContent = "Chargement des statistiques…";
   errorElement.hidden = true;
 
-  const [statsResult, vacancyResult, volunteerHoursResult, peopleResult, presentResult, vacantScheduleResult, activatedAccountsResult] = await Promise.all([
+  const [statsResult, vacancyResult, volunteerHoursResult, peopleResult, presentResult, vacantScheduleResult, activatedAccountsResult, realtimePresenceResult] = await Promise.all([
     PortalAuth.client.rpc("admin_get_stats", { p_day: selectedDay || null }),
     PortalAuth.client.rpc("admin_get_vacancy_stats", { p_day: selectedDay || null }),
     PortalAuth.client.rpc("admin_get_volunteer_hours", { p_day: null }),
     PortalAuth.client.rpc("admin_get_daily_people_stats"),
     PortalAuth.client.rpc("admin_get_present_volunteer_count", { p_day: selectedDay || null }),
     PortalAuth.client.rpc("admin_get_vacant_schedule_count", { p_day: selectedDay || null }),
-    PortalAuth.client.rpc("admin_search_volunteer_accounts", { p_prenom: null, p_nom: null })
+    PortalAuth.client.rpc("admin_search_volunteer_accounts", { p_prenom: null, p_nom: null }),
+    PortalAuth.client.rpc("admin_get_realtime_presence_stats")
   ]);
 
-  const error = statsResult.error || vacancyResult.error || volunteerHoursResult.error || peopleResult.error || presentResult.error || vacantScheduleResult.error || activatedAccountsResult.error;
+  const error = statsResult.error || vacancyResult.error || volunteerHoursResult.error || peopleResult.error || presentResult.error || vacantScheduleResult.error || activatedAccountsResult.error || realtimePresenceResult.error;
   if (error) {
     console.error("Impossible de charger les statistiques :", error);
     loadingElement.hidden = true;
     errorElement.textContent = "Impossible de charger les statistiques pour le moment.";
     errorElement.hidden = false;
     return;
+  }
+
+  const realtimePresence = realtimePresenceResult.data || {};
+  const presentElement = document.getElementById("stat-present");
+  const lateElement = document.getElementById("stat-late");
+  if (presentElement) {
+    presentElement.textContent = String(realtimePresence.presents || 0) + " / " + String(realtimePresence.prevus || 0);
+  }
+  if (lateElement) {
+    lateElement.textContent = String(realtimePresence.retards || 0);
   }
 
   const activatedAccountsElement = document.getElementById("stat-activated-accounts");
