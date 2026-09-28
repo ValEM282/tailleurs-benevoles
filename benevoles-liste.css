@@ -375,8 +375,8 @@
 }
 
 @page {
-  size: A4 landscape;
-  margin: 10mm;
+  size: landscape;
+  margin: 7mm;
 }
 
 @media print {
@@ -433,12 +433,12 @@
     min-width: 0;
     table-layout: auto;
     border-collapse: collapse;
-    font-size: 7.2pt;
+    font-size: 6.8pt;
   }
 
   .volunteers-table th,
   .volunteers-table td {
-    padding: 3.2mm 1.6mm;
+    padding: 2.6mm 1mm;
     border: 1px solid #bfc3ce;
     color: #000 !important;
     background: #fff !important;
