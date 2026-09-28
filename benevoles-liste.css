@@ -591,3 +591,14 @@
 .labels-selected-button{font:inherit;cursor:pointer}.labels-selected-button:disabled{opacity:.45;cursor:not-allowed;transform:none}.label-select-heading,.label-select-cell{width:48px;min-width:48px;text-align:center!important;padding-left:8px!important;padding-right:8px!important}.label-select-checkbox{width:20px;height:20px;accent-color:var(--blue);cursor:pointer}.label-select-checkbox:disabled{cursor:not-allowed;opacity:.35}
 @media print{.label-select-heading,.label-select-cell,.labels-selected-button{display:none!important}}
 @media(max-width:700px){.volunteers-list-heading-actions{align-items:stretch}.labels-selected-button{width:100%}}
+
+/* Suivi manuel du retour à l'envoi de l'horaire */
+.retour-horaire{
+  width:14px;height:14px;min-width:14px;padding:0;border:1px solid #9aa1b2;
+  border-radius:3px;background:#c9cdd6;cursor:pointer;box-shadow:none;
+}
+.retour-horaire-1{background:#39b86b;border-color:#269652}
+.retour-horaire-2{background:#e40230;border-color:#bd0028}
+.retour-horaire:disabled{opacity:.55;cursor:wait}
+.contact-email-cell .contact-display{gap:8px}
+@media print{.retour-horaire{display:none!important}}
