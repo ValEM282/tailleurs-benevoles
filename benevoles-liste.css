@@ -603,20 +603,30 @@
 .contact-email-cell .contact-display{gap:8px}
 @media print{.retour-horaire{display:none!important}}
 
-/* Affichage desktop plus compact : priorité à l'adresse e-mail sur une seule ligne */
-@media (min-width: 901px) {
-  .volunteers-table { min-width: 1080px; }
+/* Ordinateur + tablette paysage : toutes les colonnes visibles sans scroll horizontal */
+@media (min-width: 901px) and (orientation: landscape), (min-width: 1180px) {
+  .volunteers-table-scroll { overflow-x: hidden; }
+  .volunteers-table { min-width: 0; width: 100%; table-layout: auto; }
   .volunteers-table th,
-  .volunteers-table td { padding-left: 11px; padding-right: 11px; }
+  .volunteers-table td { padding-left: 7px; padding-right: 7px; font-size: .92rem; }
   .label-select-heading,
-  .label-select-cell { width:42px; min-width:42px; padding-left:6px!important; padding-right:6px!important; }
+  .label-select-cell { width:38px; min-width:38px; padding-left:4px!important; padding-right:4px!important; }
   .schedule-view-heading,
-  .schedule-view-cell { width:52px; min-width:52px; padding-left:6px!important; padding-right:6px!important; }
+  .schedule-view-cell { width:46px; min-width:46px; padding-left:4px!important; padding-right:4px!important; }
   .contact-phone-cell { white-space:nowrap; }
-  .contact-email-cell { min-width:250px; white-space:nowrap; }
-  .contact-email-cell .contact-display { flex-wrap:nowrap; white-space:nowrap; }
+  .contact-email-cell { white-space:nowrap; }
+  .contact-email-cell .contact-display { gap:6px; flex-wrap:nowrap; white-space:nowrap; }
   .contact-email-cell .contact-value { white-space:nowrap; }
-  .sandwich-cell { min-width:95px; }
+  .sandwich-cell { min-width:82px; }
   .kit-ok-heading,
-  .kit-ok-cell { width:68px; min-width:68px; padding-left:10px!important; padding-right:12px!important; }
+  .kit-ok-cell { width:58px; min-width:58px; padding-left:6px!important; padding-right:7px!important; }
+}
+
+/* Tablette portrait + smartphones : conserver le défilement horizontal */
+@media (max-width: 1179px) and (orientation: portrait), (max-width: 900px) {
+  .volunteers-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .volunteers-table { min-width: 1080px; width: 100%; }
+  .contact-email-cell,
+  .contact-email-cell .contact-display,
+  .contact-email-cell .contact-value { white-space: nowrap; }
 }
