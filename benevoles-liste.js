@@ -248,6 +248,36 @@ function scheduleButton(volunteer) {
   `;
 }
 
+function retourHoraireButton(volunteer) {
+  const state = Number(volunteer.retour_horaire || 0);
+  const labels = [
+    "Retour horaire non traité",
+    "Retour horaire traité : OK / OK avec modification",
+    "Retour horaire traité : ne vient pas"
+  ];
+  return `<button type="button" class="retour-horaire retour-horaire-${state}" data-participation-id="${escapeHtml(volunteer.participation_id)}" data-state="${state}" title="${labels[state]}" aria-label="${labels[state]}"></button>`;
+}
+
+async function updateRetourHoraire(button) {
+  const participationId = button.dataset.participationId;
+  const current = Number(button.dataset.state || 0);
+  const next = (current + 1) % 3;
+  button.disabled = true;
+  const { error } = await PortalAuth.client.rpc("admin_set_retour_horaire", {
+    p_participation_id: participationId,
+    p_retour_horaire: next
+  });
+  if (error) {
+    button.disabled = false;
+    showError("Le retour de confirmation n'a pas pu être enregistré.");
+    return;
+  }
+  const volunteer = volunteers.find(v => v.participation_id === participationId);
+  if (volunteer) volunteer.retour_horaire = next;
+  errorElement.hidden = true;
+  renderTable();
+}
+
 function editableContact(volunteer, field) {
   const value = normalizeText(volunteer[field]);
   const label = field === "telephone" ? "numéro de téléphone" : "adresse e-mail";
@@ -263,7 +293,7 @@ function editableContact(volunteer, field) {
         title="Modifier le ${label}"
         aria-label="Modifier le ${label}"
       >✏️</button>
-      <span class="contact-value">${escapeHtml(displayValue)}</span>
+      ${field === "email" ? retourHoraireButton(volunteer) : ""}\n      <span class="contact-value">${escapeHtml(displayValue)}</span>
     </div>
   `;
 }
@@ -643,6 +673,8 @@ if (activityFilterButton) {
 }
 
 tableBody.addEventListener("click", event => {
+  const retourButton = event.target.closest(".retour-horaire");
+  if (retourButton) { updateRetourHoraire(retourButton); return; }
   const logisticsEditButton = event.target.closest(".logistics-edit-button");
   if (logisticsEditButton) { openLogisticsEditor(logisticsEditButton); return; }
   const logisticsSaveButton = event.target.closest(".logistics-save-button");
