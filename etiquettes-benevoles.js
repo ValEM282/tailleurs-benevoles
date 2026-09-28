@@ -222,7 +222,12 @@ function renderLabels(volunteers, schedules) {
     scheduleMap.get(shift.benevole_id).push(shift);
   });
 
-  const orderedVolunteers = sortedVolunteers(volunteers);
+  // Pour l'impression collective, ne générer une étiquette que pour les bénévoles
+  // qui ont au moins une plage horaire. Cela évite de gaspiller des étiquettes vierges.
+  // L'impression individuelle (?id=...) reste inchangée.
+  const orderedVolunteers = sortedVolunteers(
+    volunteers.filter(volunteer => (scheduleMap.get(volunteer.id) || []).length > 0)
+  );
 
   for (let index = 0; index < orderedVolunteers.length; index += 4) {
     const sheet = document.createElement("section");
