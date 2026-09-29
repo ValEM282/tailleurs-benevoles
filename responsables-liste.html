@@ -31,6 +31,7 @@
       <h1>Liste des responsables</h1>
 
       <div class="volunteers-list-heading-actions">
+        <button type="button" class="labels-print-button labels-selected-button" id="print-selected-responsables-labels-button" disabled>Imprimer les étiquettes sélectionnées</button>
         <div class="volunteers-list-actions">
           <p id="responsables-count" class="volunteers-count" aria-live="polite"></p>
           <button
@@ -53,6 +54,7 @@
         <table class="volunteers-table responsables-table">
           <thead>
             <tr>
+              <th scope="col" class="label-select-heading"><input type="checkbox" id="select-all-responsables-labels" class="label-select-checkbox" aria-label="Tout sélectionner pour les étiquettes" title="Tout sélectionner"></th>
               <th scope="col" id="responsables-prenom-heading" data-label='<button type="button" class="sort-button" data-sort="prenom" aria-label="Trier par prénom">Prénom <span class="sort-indicator" data-indicator="prenom">↕</span></button>'>
                 <button type="button" id="responsables-activity-filter-button" class="activity-filter-button activity-filter-all" title="Tous les responsables" aria-label="Tous les responsables">🕥</button>
                 <button type="button" class="sort-button" data-sort="prenom" aria-label="Trier par prénom">
@@ -72,7 +74,7 @@
           </thead>
           <tbody id="responsables-table-body">
             <tr>
-              <td colspan="6" class="volunteers-loading">Chargement de la liste…</td>
+              <td colspan="7" class="volunteers-loading">Chargement de la liste…</td>
             </tr>
           </tbody>
         </table>
@@ -82,6 +84,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="portal-auth.js"></script>
-  <script src="responsables-liste.js?v=20260929-1"></script>
+  <script src="responsables-liste.js?v=20260929-2"></script>
 </body>
 </html>
