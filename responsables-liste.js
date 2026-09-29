@@ -8,6 +8,9 @@ const responsablesError = document.getElementById("responsables-error");
 const responsablesLogoutButton = document.getElementById("logout-button");
 const responsablesPrintButton = document.getElementById("print-responsables-button");
 const responsablesSortButtons = [...document.querySelectorAll(".sort-button")];
+const responsablesPrintSelectedLabelsButton = document.getElementById("print-selected-responsables-labels-button");
+const responsablesSelectAllLabels = document.getElementById("select-all-responsables-labels");
+const responsablesSelectedLabelIds = new Set();
 
 const responsablesSearchParams = new URLSearchParams(window.location.search);
 const responsablesSearchFirstname = (responsablesSearchParams.get("prenom") || "").trim();
@@ -184,7 +187,7 @@ function responsablesRenderTable() {
   if (!rows.length) {
     responsablesTableBody.innerHTML = `
       <tr>
-        <td colspan="6" class="volunteers-empty">
+        <td colspan="7" class="volunteers-empty">
           ${responsablesHasSearch ? "Aucun responsable ne correspond à cette recherche." : "Aucun responsable à afficher."}
         </td>
       </tr>
@@ -196,6 +199,7 @@ function responsablesRenderTable() {
 
   responsablesTableBody.innerHTML = rows.map(person => `
     <tr>
+      <td class="label-select-cell"><input type="checkbox" class="label-select-checkbox responsable-label-select" data-personne-id="${responsablesEscapeHtml(person.id)}" ${responsablesSelectedLabelIds.has(person.id) ? "checked" : ""} aria-label="Sélectionner ${responsablesEscapeHtml((person.prenom || "") + " " + (person.nom || ""))} pour l’impression d’étiquette"></td>
       <td class="volunteer-name"><span class="responsable-name-with-schedule">${responsablesScheduleButton(person)}<span>${responsablesEscapeHtml(person.prenom || "—")}</span></span></td>
       <td class="volunteer-name">${responsablesEscapeHtml(person.nom || "—")}</td>
       <td class="contact-cell contact-phone-cell">${responsablesEditableContact(person, "telephone")}</td>
@@ -207,6 +211,22 @@ function responsablesRenderTable() {
 
   responsablesCount.textContent = `${rows.length} responsable${rows.length > 1 ? "s" : ""}`;
   responsablesUpdateSortIndicators();
+  responsablesUpdateLabelSelection();
+}
+
+function responsablesUpdateLabelSelection() {
+  const visible = responsablesSortedRows();
+  const selectedVisible = visible.filter(p => responsablesSelectedLabelIds.has(p.id)).length;
+  if (responsablesSelectAllLabels) {
+    responsablesSelectAllLabels.checked = visible.length > 0 && selectedVisible === visible.length;
+    responsablesSelectAllLabels.indeterminate = selectedVisible > 0 && selectedVisible < visible.length;
+  }
+  if (responsablesPrintSelectedLabelsButton) {
+    responsablesPrintSelectedLabelsButton.disabled = responsablesSelectedLabelIds.size === 0;
+    responsablesPrintSelectedLabelsButton.textContent = responsablesSelectedLabelIds.size
+      ? `Imprimer ${responsablesSelectedLabelIds.size} étiquette${responsablesSelectedLabelIds.size > 1 ? "s" : ""}`
+      : "Imprimer les étiquettes sélectionnées";
+  }
 }
 
 function responsablesValidatePhone(value) {
@@ -338,6 +358,24 @@ document.addEventListener("click", event => {
     if (heading) heading.innerHTML = responsablesActivityFilterButton() + heading.dataset.label;
     return;
   }
+});
+
+responsablesTableBody.addEventListener("change", event => {
+  const checkbox = event.target.closest(".responsable-label-select");
+  if (!checkbox) return;
+  checkbox.checked ? responsablesSelectedLabelIds.add(checkbox.dataset.personneId) : responsablesSelectedLabelIds.delete(checkbox.dataset.personneId);
+  responsablesUpdateLabelSelection();
+});
+
+if (responsablesSelectAllLabels) responsablesSelectAllLabels.addEventListener("change", () => {
+  responsablesSortedRows().forEach(p => responsablesSelectAllLabels.checked ? responsablesSelectedLabelIds.add(p.id) : responsablesSelectedLabelIds.delete(p.id));
+  responsablesRenderTable();
+});
+
+if (responsablesPrintSelectedLabelsButton) responsablesPrintSelectedLabelsButton.addEventListener("click", () => {
+  if (!responsablesSelectedLabelIds.size) return;
+  const params = new URLSearchParams({ print: "1", ids: [...responsablesSelectedLabelIds].join(","), source: "responsables" });
+  window.location.href = `etiquettes-benevoles.html?${params.toString()}`;
 });
 
 responsablesTableBody.addEventListener("click", event => {
