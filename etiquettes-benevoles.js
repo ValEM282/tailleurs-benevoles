@@ -282,9 +282,10 @@ async function loadLabels() {
   const params = new URLSearchParams(window.location.search);
   const targetVolunteerId = normalizeText(params.get("id"));
   const targetVolunteerIds = [...new Set(params.getAll("ids").flatMap(value => value.split(",")).map(normalizeText).filter(Boolean))];
+  const source = normalizeText(params.get("source"));
 
   const [volunteersResult, schedulesResult] = await Promise.all([
-    PortalAuth.client.rpc("admin_list_benevoles"),
+    PortalAuth.client.rpc(source === "responsables" ? "admin_list_responsables" : "admin_list_benevoles"),
     PortalAuth.client.rpc("admin_list_all_benevole_schedules")
   ]);
 
@@ -311,7 +312,7 @@ async function loadLabels() {
     volunteers = volunteers.filter(volunteer => selectedIds.has(volunteer.id));
     schedules = schedules.filter(shift => selectedIds.has(shift.benevole_id));
     if (!volunteers.length) {
-      showError("Aucun des bénévoles sélectionnés n'a été trouvé dans l'édition active.");
+      showError(source === "responsables" ? "Aucun des responsables sélectionnés n'a été trouvé dans l'édition active." : "Aucun des bénévoles sélectionnés n'a été trouvé dans l'édition active.");
       return;
     }
   }
