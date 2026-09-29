@@ -410,26 +410,8 @@ volunteerCreateForm.addEventListener("submit", async event => {
   });
 });
 
-if (responsablesMailingButton) responsablesMailingButton.addEventListener("click", async () => {
-  const original = responsablesMailingButton.textContent;
-  responsablesMailingButton.disabled = true;
-  responsablesMailingButton.textContent = "Envoi test…";
-  if (responsablesMailingResult) {
-    responsablesMailingResult.hidden = false;
-    responsablesMailingResult.textContent = "Envoi du mail test en cours…";
-  }
-  try {
-    const { data, error } = await PortalAuth.client.functions.invoke("mailing-responsables-test", { body: { mode: "test" } });
-    if (error) throw error;
-    if (!data?.ok) throw new Error(data?.error || "Envoi impossible.");
-    if (responsablesMailingResult) responsablesMailingResult.textContent = "Mail test envoyé à " + data.recipient + ".";
-  } catch (error) {
-    console.error("Envoi test responsables :", error);
-    if (responsablesMailingResult) responsablesMailingResult.textContent = "Échec de l’envoi du mail test. Aucun envoi massif n’a été effectué.";
-  } finally {
-    responsablesMailingButton.disabled = false;
-    responsablesMailingButton.textContent = original;
-  }
+if (responsablesMailingButton) responsablesMailingButton.addEventListener("click", () => {
+  window.location.href = "admin-envois-responsables.html";
 });
 
 logoutButton.addEventListener("click", async () => {
