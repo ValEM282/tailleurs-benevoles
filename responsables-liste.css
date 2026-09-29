@@ -86,3 +86,6 @@
 .responsibility-option input{accent-color:#1C2EAB}
 .responsibility-editor-actions{display:flex;gap:6px}
 @media print{.responsibility-edit-button{display:none!important}}
+
+.responsable-name-with-schedule{display:flex;align-items:center;gap:8px}
+@media print{.responsable-name-with-schedule .schedule-view-button{display:none!important}}
