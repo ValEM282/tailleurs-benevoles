@@ -6,6 +6,7 @@ const createSection = document.getElementById("admin-pin-create");
 const unlockSection = document.getElementById("admin-pin-unlock");
 const adminContent = document.getElementById("admin-content");
 const logoutButton = document.getElementById("logout-button");
+const responsablesMailingButton = document.getElementById("admin-responsables-mailing-send");
 const createForm = document.getElementById("admin-pin-create-form");
 const unlockForm = document.getElementById("admin-pin-unlock-form");
 const newPinInput = document.getElementById("new-admin-pin");
@@ -406,6 +407,24 @@ volunteerCreateForm.addEventListener("submit", async event => {
     event.preventDefault();
     openVolunteerSearch();
   });
+});
+
+if (responsablesMailingButton) responsablesMailingButton.addEventListener("click", async () => {
+  const original = responsablesMailingButton.textContent;
+  responsablesMailingButton.disabled = true;
+  responsablesMailingButton.textContent = "Envoi test…";
+  try {
+    const { data, error } = await PortalAuth.client.functions.invoke("mailing-responsables-test", { body: { mode: "test" } });
+    if (error) throw error;
+    if (!data?.ok) throw new Error(data?.error || "Envoi impossible.");
+    alert("Mail test envoyé uniquement à " + data.recipient + ".");
+  } catch (error) {
+    console.error("Envoi test responsables :", error);
+    alert("Le mail test n’a pas pu être envoyé. Aucun envoi massif n’a été effectué.");
+  } finally {
+    responsablesMailingButton.disabled = false;
+    responsablesMailingButton.textContent = original;
+  }
 });
 
 logoutButton.addEventListener("click", async () => {
