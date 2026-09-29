@@ -18,6 +18,7 @@ let responsables = [];
 let responsablesCurrentUser = null;
 let responsablesSortField = "nom";
 let responsablesSortDirection = "asc";
+let responsablesActivityFilter = "all"; // all -> active -> inactive -> all
 
 function responsablesUnlockStorageKey() {
   return responsablesCurrentUser ? `portalAdminUnlockedUntil:${responsablesCurrentUser.id}` : "";
@@ -72,9 +73,15 @@ function responsablesCompareFrench(a, b) {
   });
 }
 
+function responsablesMatchesActivity(person) {
+  if (responsablesActivityFilter === "active") return Boolean(person.en_poste);
+  if (responsablesActivityFilter === "inactive") return !person.en_poste;
+  return true;
+}
+
 function responsablesSortedRows() {
   return responsables
-    .filter(responsablesMatchesSearch)
+    .filter(person => responsablesMatchesSearch(person) && responsablesMatchesActivity(person))
     .sort((a, b) => {
       let result = responsablesCompareFrench(a[responsablesSortField], b[responsablesSortField]);
       if (result === 0) {
@@ -143,7 +150,14 @@ async function responsablesSavePostsEditor(button){
 function responsablesScheduleButton(person) {
   const label = `${person.prenom || ""} ${person.nom || ""}`.trim() || "cette personne";
   const params = new URLSearchParams({ id: person.id, prenom: person.prenom || "", nom: person.nom || "" });
-  return `<a class="schedule-view-button" href="benevole-horaires-admin.html?${params.toString()}" title="Voir ou créer un horaire pour ${responsablesEscapeHtml(label)}" aria-label="Voir ou créer un horaire pour ${responsablesEscapeHtml(label)}">🕥</a>`;
+  const activeClass = person.en_poste ? " schedule-view-button-active" : "";
+  return `<a class="schedule-view-button${activeClass}" href="benevole-horaires-admin.html?${params.toString()}" title="Voir ou créer un horaire pour ${responsablesEscapeHtml(label)}" aria-label="Voir ou créer un horaire pour ${responsablesEscapeHtml(label)}">🕥</a>`;
+}
+
+function responsablesActivityFilterButton() {
+  const cls = responsablesActivityFilter === "active" ? "activity-filter-active" : responsablesActivityFilter === "inactive" ? "activity-filter-inactive" : "activity-filter-all";
+  const title = responsablesActivityFilter === "active" ? "Responsables actuellement en poste" : responsablesActivityFilter === "inactive" ? "Responsables qui ne sont pas actuellement en poste" : "Tous les responsables";
+  return `<button type="button" id="responsables-activity-filter-button" class="activity-filter-button ${cls}" title="${title}" aria-label="${title}">🕥</button>`;
 }
 
 function responsablesEditableContact(person, field) {
@@ -314,6 +328,17 @@ async function responsablesSaveContactEditor(button) {
   responsablesError.hidden = true;
   responsablesRenderTable();
 }
+
+document.addEventListener("click", event => {
+  const filter = event.target.closest("#responsables-activity-filter-button");
+  if (filter) {
+    responsablesActivityFilter = responsablesActivityFilter === "all" ? "active" : responsablesActivityFilter === "active" ? "inactive" : "all";
+    responsablesRenderTable();
+    const heading = document.getElementById("responsables-prenom-heading");
+    if (heading) heading.innerHTML = responsablesActivityFilterButton() + heading.dataset.label;
+    return;
+  }
+});
 
 responsablesTableBody.addEventListener("click", event => {
   const responsibilityEdit = event.target.closest(".responsibility-edit-button");
