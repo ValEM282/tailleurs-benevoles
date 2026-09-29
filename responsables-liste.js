@@ -140,6 +140,12 @@ async function responsablesSavePostsEditor(button){
  responsables=Array.isArray(refreshed.data)?refreshed.data:[]; responsablesError.hidden=true; responsablesRenderTable();
 }
 
+function responsablesScheduleButton(person) {
+  const label = `${person.prenom || ""} ${person.nom || ""}`.trim() || "cette personne";
+  const params = new URLSearchParams({ id: person.id, prenom: person.prenom || "", nom: person.nom || "" });
+  return `<a class="schedule-view-button" href="benevole-horaires-admin.html?${params.toString()}" title="Voir ou créer un horaire pour ${responsablesEscapeHtml(label)}" aria-label="Voir ou créer un horaire pour ${responsablesEscapeHtml(label)}">🕥</a>`;
+}
+
 function responsablesEditableContact(person, field) {
   const value = responsablesNormalizeText(person[field]);
   const label = field === "telephone" ? "numéro de téléphone" : "adresse e-mail";
@@ -176,7 +182,7 @@ function responsablesRenderTable() {
 
   responsablesTableBody.innerHTML = rows.map(person => `
     <tr>
-      <td class="volunteer-name">${responsablesEscapeHtml(person.prenom || "—")}</td>
+      <td class="volunteer-name"><span class="responsable-name-with-schedule">${responsablesScheduleButton(person)}<span>${responsablesEscapeHtml(person.prenom || "—")}</span></span></td>
       <td class="volunteer-name">${responsablesEscapeHtml(person.nom || "—")}</td>
       <td class="contact-cell contact-phone-cell">${responsablesEditableContact(person, "telephone")}</td>
       <td class="contact-cell contact-email-cell">${responsablesEditableContact(person, "email")}</td>
