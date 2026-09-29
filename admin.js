@@ -7,6 +7,7 @@ const unlockSection = document.getElementById("admin-pin-unlock");
 const adminContent = document.getElementById("admin-content");
 const logoutButton = document.getElementById("logout-button");
 const responsablesMailingButton = document.getElementById("admin-responsables-mailing-send");
+const responsablesMailingResult = document.getElementById("admin-responsables-mailing-result");
 const createForm = document.getElementById("admin-pin-create-form");
 const unlockForm = document.getElementById("admin-pin-unlock-form");
 const newPinInput = document.getElementById("new-admin-pin");
@@ -413,14 +414,18 @@ if (responsablesMailingButton) responsablesMailingButton.addEventListener("click
   const original = responsablesMailingButton.textContent;
   responsablesMailingButton.disabled = true;
   responsablesMailingButton.textContent = "Envoi test…";
+  if (responsablesMailingResult) {
+    responsablesMailingResult.hidden = false;
+    responsablesMailingResult.textContent = "Envoi du mail test en cours…";
+  }
   try {
     const { data, error } = await PortalAuth.client.functions.invoke("mailing-responsables-test", { body: { mode: "test" } });
     if (error) throw error;
     if (!data?.ok) throw new Error(data?.error || "Envoi impossible.");
-    alert("Mail test envoyé uniquement à " + data.recipient + ".");
+    if (responsablesMailingResult) responsablesMailingResult.textContent = "Mail test envoyé à " + data.recipient + ".";
   } catch (error) {
     console.error("Envoi test responsables :", error);
-    alert("Le mail test n’a pas pu être envoyé. Aucun envoi massif n’a été effectué.");
+    if (responsablesMailingResult) responsablesMailingResult.textContent = "Échec de l’envoi du mail test. Aucun envoi massif n’a été effectué.";
   } finally {
     responsablesMailingButton.disabled = false;
     responsablesMailingButton.textContent = original;
