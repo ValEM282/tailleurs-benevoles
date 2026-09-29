@@ -53,7 +53,8 @@
         <table class="volunteers-table responsables-table">
           <thead>
             <tr>
-              <th scope="col">
+              <th scope="col" id="responsables-prenom-heading" data-label='<button type="button" class="sort-button" data-sort="prenom" aria-label="Trier par prénom">Prénom <span class="sort-indicator" data-indicator="prenom">↕</span></button>'>
+                <button type="button" id="responsables-activity-filter-button" class="activity-filter-button activity-filter-all" title="Tous les responsables" aria-label="Tous les responsables">🕥</button>
                 <button type="button" class="sort-button" data-sort="prenom" aria-label="Trier par prénom">
                   Prénom <span class="sort-indicator" data-indicator="prenom">↕</span>
                 </button>
@@ -81,6 +82,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="portal-auth.js"></script>
-  <script src="responsables-liste.js?v=20260927-2"></script>
+  <script src="responsables-liste.js?v=20260929-1"></script>
 </body>
 </html>
