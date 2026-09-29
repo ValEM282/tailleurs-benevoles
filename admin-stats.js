@@ -333,7 +333,7 @@ async function loadStats(selectedDay = "") {
   loadingElement.textContent = "Chargement des statistiques…";
   errorElement.hidden = true;
 
-  const [statsResult, vacancyResult, volunteerHoursResult, peopleResult, presentResult, vacantScheduleResult, activatedAccountsResult, realtimePresenceResult, allSchedulesResult, allVolunteersResult, responsablesResult] = await Promise.all([
+  const [statsResult, vacancyResult, volunteerHoursResult, peopleResult, presentResult, vacantScheduleResult, activatedAccountsResult, realtimePresenceResult, allSchedulesResult, allVolunteersResult, responsablesResult, organisationResult] = await Promise.all([
     PortalAuth.client.rpc("admin_get_stats", { p_day: selectedDay || null }),
     PortalAuth.client.rpc("admin_get_vacancy_stats", { p_day: selectedDay || null }),
     PortalAuth.client.rpc("admin_get_volunteer_hours", { p_day: null }),
@@ -344,10 +344,11 @@ async function loadStats(selectedDay = "") {
     PortalAuth.client.rpc("admin_get_realtime_presence_stats"),
     PortalAuth.client.rpc("admin_list_all_benevole_schedules"),
     PortalAuth.client.rpc("admin_list_benevoles"),
-    PortalAuth.client.rpc("admin_list_responsables")
+    PortalAuth.client.rpc("admin_list_responsables"),
+    PortalAuth.client.rpc("admin_list_organisation_person_ids")
   ]);
 
-  const error = statsResult.error || vacancyResult.error || volunteerHoursResult.error || peopleResult.error || presentResult.error || vacantScheduleResult.error || activatedAccountsResult.error || realtimePresenceResult.error || allSchedulesResult.error || allVolunteersResult.error || responsablesResult.error;
+  const error = statsResult.error || vacancyResult.error || volunteerHoursResult.error || peopleResult.error || presentResult.error || vacantScheduleResult.error || activatedAccountsResult.error || realtimePresenceResult.error || allSchedulesResult.error || allVolunteersResult.error || responsablesResult.error || organisationResult.error;
   if (error) {
     console.error("Impossible de charger les statistiques :", error);
     loadingElement.hidden = true;
@@ -362,12 +363,11 @@ async function loadStats(selectedDay = "") {
   const scheduledIds = new Set((Array.isArray(allSchedulesResult.data) ? allSchedulesResult.data : []).map(s => s.benevole_id).filter(Boolean));
 
   // Les animé·e·s sont les comptes génériques Guide/Patro/Pionnier.
-  // Les responsables sont exclus du compteur bénévoles ; les co-responsables seuls restent inclus.
+  // Les membres de l'organisation sont exclus du compteur bénévoles.
+  // Un·e co-responsable qui n'est pas membre de l'organisation reste compté·e comme bénévole.
   const isYouth = v => /^(guide|patro|pionnier)\s*0*\d+$/i.test(String(v?.prenom || "").trim());
-  const responsableIds = new Set(
-    (Array.isArray(responsablesResult.data) ? responsablesResult.data : [])
-      .filter(r => Array.isArray(r.responsable_postes) && r.responsable_postes.length > 0)
-      .map(r => r.id)
+  const organisationIds = new Set(
+    (Array.isArray(organisationResult.data) ? organisationResult.data : []).map(r => r.id)
   );
 
   let scheduledVolunteers = 0, scheduledYouth = 0;
@@ -378,7 +378,7 @@ async function loadStats(selectedDay = "") {
       scheduledYouth += 1;
       return;
     }
-    if (responsableIds.has(id)) return;
+    if (organisationIds.has(id)) return;
     scheduledVolunteers += 1;
   });
   if (volunteerStat) volunteerStat.textContent = String(scheduledVolunteers);
