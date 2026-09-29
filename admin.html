@@ -14,6 +14,17 @@
   <link rel="stylesheet" href="admin-responsables.css?v=20260924-1">
   <link rel="stylesheet" href="admin-postes.css?v=20260924-1">
   <style>
+    .admin-mailing-group + .admin-mailing-group {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid #dfe3f5;
+    }
+    .admin-mailing-group h3 {
+      margin: 0 0 10px;
+      color: #1C2EAB;
+      font-size: 1rem;
+      font-weight: 700;
+    }
     .admin-mailing-actions {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -347,13 +358,25 @@
 
         <section class="admin-management-section" aria-labelledby="admin-mailing-title">
           <div class="admin-section-heading">
-            <h2 id="admin-mailing-title">ENVOI DES HORAIRES</h2>
+            <h2 id="admin-mailing-title">ENVOI DE MAILS</h2>
           </div>
-          <div class="admin-mailing-actions">
-            <button type="button" id="admin-mailing-test" class="admin-search-button">Envoyer les horaires</button>
-            <a href="admin-envois-horaires.html" class="admin-search-button">Voir les envois</a>
+
+          <div class="admin-mailing-group">
+            <h3>HORAIRES BÉNÉVOLES</h3>
+            <div class="admin-mailing-actions">
+              <button type="button" id="admin-mailing-test" class="admin-search-button">Envoyer les horaires</button>
+              <a href="admin-envois-horaires.html" class="admin-search-button">Voir les envois</a>
+            </div>
+            <p id="admin-mailing-result" class="admin-message" hidden></p>
           </div>
-          <p id="admin-mailing-result" class="admin-message" hidden></p>
+
+          <div class="admin-mailing-group">
+            <h3>INVITATIONS RESPONSABLES</h3>
+            <div class="admin-mailing-actions">
+              <button type="button" id="admin-responsables-mailing-send" class="admin-search-button">Envoyer les invitations</button>
+              <a href="admin-envois-responsables.html" class="admin-search-button">Voir les envois</a>
+            </div>
+          </div>
         </section>
 
         <section class="admin-management-section" aria-labelledby="admin-stats-title">
