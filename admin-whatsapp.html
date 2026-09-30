@@ -1,1 +1,34 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Groupes WhatsApp — ADMIN</title><link rel="stylesheet" href="styles.css?v=20260921-1"><link rel="stylesheet" href="admin-whatsapp.css?v=20260930-1"></head><body class="dashboard-page"><header class="dashboard-header"><div class="dashboard-header-inner"><div class="dashboard-title">GROUPES WHATSAPP</div><a href="admin.html" class="wa-admin-back">Accueil ADMIN</a></div></header><main class="dashboard-main"><section class="wa-admin"><h1>Groupes WhatsApp T26</h1><p>Encode ici le lien d'invitation de chaque groupe après sa création dans WhatsApp.</p><div id="wa-admin-message"></div><div id="wa-admin-list">Chargement…</div></section></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="portal-auth.js"></script><script src="admin-whatsapp.js?v=20260930-1"></script></body></html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Groupes WhatsApp — ADMIN</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20260921-2">
+  <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
+  <link rel="stylesheet" href="admin-whatsapp.css?v=20260930-2">
+</head>
+<body class="dashboard-page">
+  <header class="dashboard-header">
+    <div class="subpage-header-inner">
+      <a href="admin.html" class="back-button">← Accueil ADMIN</a>
+      <a href="dashboard.html" class="dashboard-title" style="color:#fff;text-decoration:none">🎪 PORTAIL BÉNÉVOLES 🎪</a>
+      <button type="button" id="logout-button" class="logout-button">Se déconnecter</button>
+    </div>
+  </header>
+  <main class="dashboard-main">
+    <section class="wa-admin">
+      <h1>Groupes WhatsApp T26</h1>
+      <p>Encode ici le lien d'invitation de chaque groupe après sa création dans WhatsApp.</p>
+      <div id="wa-admin-message"></div>
+      <div id="wa-admin-list">Chargement…</div>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="portal-auth.js"></script>
+  <script src="admin-whatsapp.js?v=20260930-2"></script>
+</body>
+</html>
