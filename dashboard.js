@@ -364,11 +364,10 @@ async function loadDashboard() {
 
   const role = participation.role;
 
-  // Pendant la préparation des fiches de poste, elles restent accessibles
-  // aux profils de gestion mais sont masquées pour les bénévoles simples.
+  // Pendant la construction des fiches de poste, elles sont réservées aux admins.
   const jobSheetsLink = document.getElementById("job-sheets-link");
   if (jobSheetsLink) {
-    jobSheetsLink.hidden = role === "benevole";
+    jobSheetsLink.hidden = role !== "admin";
   }
 
 
