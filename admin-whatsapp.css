@@ -3,3 +3,7 @@
 
 /* Icône de groupe : rendu circulaire comme dans WhatsApp */
 .wa-group-logo{width:46px;height:46px;flex:0 0 46px;border-radius:50%;object-fit:cover;overflow:hidden;display:block}
+
+/* Statut de configuration des liens */
+.wa-status.is-configured{color:#258443;font-weight:600}
+.wa-status.is-missing{color:#e40230;font-weight:600}
