@@ -13,7 +13,7 @@ list.innerHTML="";
 rows.forEach(g=>{
  const wrap=document.createElement("section");wrap.className="wa-group";
  const row=document.createElement("div");row.className="wa-row";
- const name=document.createElement("div");name.innerHTML='<div class="wa-name"></div><div class="wa-status"></div>';
+ const name=document.createElement("div");name.className="wa-name-block";name.innerHTML='<img class="wa-group-logo" src="assets/T26_Favicon_Portail.png" alt=""><div><div class="wa-name"></div><div class="wa-status"></div></div>';
  name.querySelector(".wa-name").textContent=g.nom;name.querySelector(".wa-status").textContent=g.est_runner?"Groupe transversal Runner":(g.invitation_url?"Configuré":"Lien à ajouter");
  const input=document.createElement("input");input.className="wa-url";input.type="url";input.placeholder="https://chat.whatsapp.com/…";input.value=g.invitation_url||"";
  const save=document.createElement("button");save.className="wa-save";save.textContent="Enregistrer";
