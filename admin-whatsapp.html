@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260921-2">
   <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
-  <link rel="stylesheet" href="admin-whatsapp.css?v=20260930-6">
+  <link rel="stylesheet" href="admin-whatsapp.css?v=20260930-7">
 </head>
 <body class="dashboard-page">
   <header class="dashboard-header">
@@ -21,14 +21,13 @@
   </header>
   <main class="dashboard-main">
     <section class="wa-admin">
-      <h1>Groupes WhatsApp T26</h1>
-      <p>Encode ici le lien d'invitation de chaque groupe après sa création dans WhatsApp.</p>
+      <div class="wa-admin-heading"><h1>Groupes WhatsApp</h1><button type="button" id="wa-export-all" class="wa-export wa-export-all">Exporter tous les contacts (.vcf)</button></div>
       <div id="wa-admin-message"></div>
       <div id="wa-admin-list">Chargement…</div>
     </section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="portal-auth.js"></script>
-  <script src="admin-whatsapp.js?v=20260930-7"></script>
+  <script src="admin-whatsapp.js?v=20260930-8"></script>
 </body>
 </html>
