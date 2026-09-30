@@ -17,10 +17,10 @@ rows.forEach(g=>{
  const wrap=document.createElement("section");wrap.className="wa-group";
  const row=document.createElement("div");row.className="wa-row";
  const name=document.createElement("div");name.className="wa-name-block";name.innerHTML='<img class="wa-group-logo" src="assets/T26_Favicon_Portail.png" alt=""><div><div class="wa-name"></div><div class="wa-status"></div></div>';
- name.querySelector(".wa-name").textContent=g.nom;name.querySelector(".wa-status").textContent=g.est_runner?"Groupe transversal Runner":(g.invitation_url?"Configuré":"Lien à ajouter");
+ name.querySelector(".wa-name").textContent=g.nom;const status=name.querySelector(".wa-status");status.textContent=g.est_runner?"Groupe transversal Runner":(g.invitation_url?"Configuré":"Lien à ajouter");status.classList.toggle("is-configured",!g.est_runner&&!!g.invitation_url);status.classList.toggle("is-missing",!g.est_runner&&!g.invitation_url);
  const input=document.createElement("input");input.className="wa-url";input.type="url";input.placeholder="https://chat.whatsapp.com/…";input.value=g.invitation_url||"";
  const save=document.createElement("button");save.className="wa-save";save.textContent="Enregistrer";
- save.onclick=async()=>{save.disabled=true;const value=input.value.trim()||null;const {error:e}=await PortalAuth.client.from("whatsapp_groupes").update({invitation_url:value,updated_at:new Date().toISOString()}).eq("id",g.id);save.disabled=false;if(e){msg.className="wa-msg";msg.textContent="Impossible d'enregistrer "+g.nom+".";console.error(e);}else{msg.className="wa-msg";msg.textContent=g.nom+" : lien enregistré.";name.querySelector(".wa-status").textContent=g.est_runner?"Groupe transversal Runner":"Configuré";}};
+ save.onclick=async()=>{save.disabled=true;const value=input.value.trim()||null;const {error:e}=await PortalAuth.client.from("whatsapp_groupes").update({invitation_url:value,updated_at:new Date().toISOString()}).eq("id",g.id);save.disabled=false;if(e){msg.className="wa-msg";msg.textContent="Impossible d'enregistrer "+g.nom+".";console.error(e);}else{msg.className="wa-msg";msg.textContent=g.nom+" : lien enregistré.";const status=name.querySelector(".wa-status");status.textContent=g.est_runner?"Groupe transversal Runner":"Configuré";status.classList.toggle("is-configured",!g.est_runner);status.classList.remove("is-missing");}};
  row.append(name,input,save);
  const people=byGroup.get(g.id)||[];
  const details=document.createElement("details");details.className="wa-members";
