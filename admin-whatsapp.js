@@ -9,6 +9,9 @@ const [{data:rows,error},{data:members,error:membersError}]=await Promise.all([
 if(error||membersError){list.textContent="Accès refusé ou chargement impossible.";console.error(error||membersError);return;}
 const byGroup=new Map();(members||[]).forEach(m=>{if(!byGroup.has(m.groupe_id))byGroup.set(m.groupe_id,[]);byGroup.get(m.groupe_id).push(m);});
 const shortName=p=>p.prenom+" "+(p.nom||"").trim();
+const vcfEscape=v=>String(v||"").replace(/\\/g,"\\\\").replace(/\n/g,"\\n").replace(/;/g,"\\;").replace(/,/g,"\\,");
+const exportVcf=(people,filename)=>{const unique=new Map();people.filter(p=>p.telephone&&p.telephone.trim()).forEach(p=>{const key=p.personne_id||((p.prenom||"")+"|"+(p.nom||"")+"|"+p.telephone);if(!unique.has(key))unique.set(key,p);});const current=[...unique.values()];if(!current.length){msg.className="wa-msg";msg.textContent="Aucun numéro de téléphone à exporter.";return;}const cards=current.map(p=>["BEGIN:VCARD","VERSION:3.0","N:"+vcfEscape((p.nom||"").trim())+";"+vcfEscape(p.prenom)+";;;","FN:"+vcfEscape(shortName(p)),"TEL;TYPE=CELL:"+String(p.telephone).replace(/[^+0-9]/g,""),"END:VCARD"].join("\r\n")).join("\r\n");const blob=new Blob([cards+"\r\n"],{type:"text/vcard;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);};
+document.getElementById("wa-export-all")?.addEventListener("click",()=>exportVcf(members||[],"T26_tous_les_contacts.vcf"));
 list.innerHTML="";
 rows.forEach(g=>{
  const wrap=document.createElement("section");wrap.className="wa-group";
@@ -24,7 +27,7 @@ rows.forEach(g=>{
  const summary=document.createElement("summary");const count=document.createElement("span");count.textContent=people.length+" personne"+(people.length>1?"s":"")+" — Voir les membres";summary.append(count);details.append(summary);
  const tools=document.createElement("div");tools.className="wa-members-tools";
  const exportBtn=document.createElement("button");exportBtn.type="button";exportBtn.className="wa-export";exportBtn.textContent="Exporter les contacts (.vcf)";
- exportBtn.onclick=()=>{const current=(byGroup.get(g.id)||[]).filter(p=>!body.querySelector('[data-person-id="'+p.personne_id+'"]')?.classList.contains("wa-removed")).filter(p=>p.telephone&&p.telephone.trim());if(!current.length){msg.className="wa-msg";msg.textContent="Aucun numéro de téléphone à exporter pour "+g.nom+".";return;}const esc=v=>String(v||"").replace(/\\/g,"\\\\").replace(/\n/g,"\\n").replace(/;/g,"\\;").replace(/,/g,"\\,");const cards=current.map(p=>["BEGIN:VCARD","VERSION:3.0","N:"+esc((p.nom||"").trim())+";"+esc(p.prenom)+";;;","FN:"+esc(shortName(p)),"TEL;TYPE=CELL:"+String(p.telephone).replace(/[^+0-9]/g,""),"END:VCARD"].join("\r\n")).join("\r\n");const blob=new Blob([cards+"\r\n"],{type:"text/vcard;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=g.nom.replace(/[^a-zA-Z0-9À-ÿ()_-]+/g,"_")+"_contacts.vcf";document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);};
+ exportBtn.onclick=()=>{const current=(byGroup.get(g.id)||[]).filter(p=>!body.querySelector('[data-person-id="'+p.personne_id+'"]')?.classList.contains("wa-removed"));if(!current.some(p=>p.telephone&&p.telephone.trim())){msg.className="wa-msg";msg.textContent="Aucun numéro de téléphone à exporter pour "+g.nom+".";return;}exportVcf(current,g.nom.replace(/[^a-zA-Z0-9À-ÿ()_-]+/g,"_")+"_contacts.vcf");};
  tools.append(exportBtn);details.append(tools);
  const body=document.createElement("div");body.className="wa-members-body";
  if(!people.length){body.innerHTML='<p class="wa-no-members">Aucune personne calculée pour ce groupe.</p>';}
