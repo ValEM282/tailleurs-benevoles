@@ -10,9 +10,31 @@
   <link rel="stylesheet" href="styles.css?v=20260921-2">
   <link rel="stylesheet" href="subpage-header.css?v=20260922-1">
   <style>
-    .coming-soon{max-width:1120px;margin:46px auto;padding:0 24px}
-    .coming-soon-card{background:#fff;border-radius:18px;padding:38px 28px;text-align:center;box-shadow:0 10px 30px rgba(28,46,171,.08)}
-    .coming-soon-card p{margin:0;color:#1C2EAB;font-size:1.35rem;font-weight:700}
+    .infos-main{max-width:960px;margin:34px auto 60px;padding:0 20px}
+    .infos-title{color:#1C2EAB;text-align:center;font-size:2rem;margin:0 0 24px}
+    .info-card{background:#fff;border-radius:20px;padding:26px;margin:0 0 24px;box-shadow:0 10px 30px rgba(28,46,171,.09);border-left:7px solid #1C2EAB}
+    .info-card.manager{border-left-color:#E40230}
+    .info-card h2{margin:0 0 16px;color:#1C2EAB;font-size:1.55rem}
+    .info-card.manager h2{color:#E40230}
+    .info-card h3{color:#1C2EAB;margin:22px 0 8px;font-size:1.15rem}
+    .info-card p{font-size:1.05rem;line-height:1.5;margin:8px 0}
+    .info-card ul{margin:8px 0 0;padding-left:22px}
+    .info-card li{margin:7px 0;line-height:1.45}
+    .info-action{font-weight:700;margin-top:20px!important}
+    .quick-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px}
+    .quick-links a{display:block;text-align:center;text-decoration:none;border:2px solid #1C2EAB;color:#1C2EAB;border-radius:12px;padding:11px;font-weight:700}
+    .quick-links a:hover{background:#1C2EAB;color:#fff}
+    .status-line{font-weight:600}
+    .pickup{background:#fff7f9;border:2px solid #E40230;border-radius:16px;padding:18px;margin-top:20px}
+    .pickup h3{color:#E40230;margin-top:0}
+    #infos-loading{text-align:center;color:#1C2EAB;font-weight:700;padding:40px 0}
+    [hidden]{display:none!important}
+    @media(max-width:620px){
+      .infos-main{padding:0 14px;margin-top:24px}
+      .info-card{padding:20px 17px}
+      .quick-links{grid-template-columns:1fr}
+      .infos-title{font-size:1.7rem}
+    }
   </style>
 </head>
 <body class="dashboard-page">
@@ -23,14 +45,142 @@
       <button type="button" id="logout-button" class="logout-button">Se déconnecter</button>
     </div>
   </header>
-  <main class="coming-soon">
-    <section class="coming-soon-card"><p>Très prochainement disponible...</p></section>
+
+  <main class="infos-main">
+    <h1 class="infos-title">Infos pratiques</h1>
+    <div id="infos-loading">Chargement de tes informations…</div>
+
+    <section id="manager-info" class="info-card manager" hidden>
+      <h2>Fonctionnalités du Portail — Responsable</h2>
+      <p>Pendant le festival, le Portail est la plateforme de référence pour les bénévoles et les responsables.</p>
+
+      <p class="info-action">👉 CONSULTER une vue claire et à jour sur la situation en cours et à venir :</p>
+      <h3>Vue interactive</h3>
+      <ul>
+        <li><strong>POUR L’INSTANT</strong> — les bénévoles prévu·e·s au moment où tu consultes les infos.</li>
+        <li><strong>À VENIR</strong> — les horaires qui ne sont pas encore terminés.</li>
+      </ul>
+      <h3>Vue non interactive</h3>
+      <ul>
+        <li><strong>PLANNING COMPLET</strong> — le planning sur la totalité d’une journée, mis à jour en direct.</li>
+      </ul>
+
+      <p class="info-action">👉 SUIVRE la situation en temps réel</p>
+      <p>Tu peux suivre les retards annoncés sur le Portail et signaler le statut d’un·e bénévole durant une plage horaire :</p>
+      <p class="status-line">🟢 Présent·e · 🔴 Absent·e · 🔵 Disponible · 🟣 En pause</p>
+
+      <div id="manager-reinforcement" hidden>
+        <p class="info-action">👉 AFFECTER un bénévole à ton poste</p>
+        <p>Via l’écran <strong>BÉNÉVOLES DISPONIBLES</strong>, après l’avoir sollicité·e directement par appel, SMS ou WhatsApp pour lui demander de venir renforcer ton poste.</p>
+      </div>
+
+      <div class="quick-links">
+        <a href="plan.html">📍 Plan du site</a>
+        <a href="https://www.lestailleurs.be/horaires/" target="_blank" rel="noopener">🤡 Programme des spectacles</a>
+        <a href="whatsapp.html">💬 Groupes WhatsApp</a>
+        <a href="contacts.html">📞 Contacts utiles</a>
+      </div>
+    </section>
+
+    <section id="volunteer-info" class="info-card" hidden>
+      <h2>Fonctionnalités du Portail — Bénévole</h2>
+
+      <p class="info-action">👉 CONSULTER en priorité ton prochain horaire pour lequel on compte sur toi</p>
+      <p>Tu peux aussi :</p>
+      <ul>
+        <li>te rendre facilement à ton poste en cliquant sur le lieu pour ouvrir le plan ;</li>
+        <li>contacter directement le responsable de poste en cliquant sur son numéro ;</li>
+        <li>signaler ton statut de présence en direct.</li>
+      </ul>
+      <p class="status-line">🟢 Présent·e · 🟠 En retard · 🔴 Absent·e · 🔵 Rendu·e disponible · 🟣 En pause</p>
+
+      <p class="info-action">👉 CONSULTER tous tes horaires à venir</p>
+      <p>Tu peux aussi :</p>
+      <ul>
+        <li>prendre connaissance du temps qu’il te faut pour te rendre à ton prochain poste ;</li>
+        <li>contacter directement le responsable de poste en cliquant sur son numéro ;</li>
+        <li>signaler à l’avance un retard ou une absence.</li>
+      </ul>
+
+      <p class="info-action">👉 PRENDRE connaissance des informations utiles</p>
+      <p>Elles peuvent t’aider directement, mais aussi à répondre aux questions des festivaliers, artistes et autres bénévoles.</p>
+
+      <div class="quick-links">
+        <a href="plan.html">📍 Plan du site</a>
+        <a href="https://www.lestailleurs.be/horaires/" target="_blank" rel="noopener">🤡 Programme des spectacles</a>
+        <a href="whatsapp.html">💬 Groupes WhatsApp</a>
+        <a href="contacts.html">📞 Contacts utiles</a>
+      </div>
+
+      <div class="pickup">
+        <h3>🎁 Accueil des bénévoles</h3>
+        <p><strong>Viens récupérer ton pack bénévole !</strong></p>
+        <p>📍 Hall polyvalent d’Ecaussinnes — Rue Sacueni 1</p>
+        <p><strong>Heures d’ouverture :</strong></p>
+        <ul>
+          <li>Jeudi et vendredi : de 16h à 20h</li>
+          <li>Samedi : de 9h à 18h</li>
+          <li>Dimanche : de 9h à 16h</li>
+        </ul>
+      </div>
+    </section>
   </main>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="portal-auth.js"></script>
   <script>
-    (async()=>{const user=await window.PortalAuth.requireAuth();if(!user)return;
-    document.getElementById("logout-button").addEventListener("click",()=>window.PortalAuth.logout());})();
+    (async()=>{
+      const user=await window.PortalAuth.requireAuth();
+      if(!user)return;
+
+      const client=window.PortalAuth.client;
+      document.getElementById("logout-button").addEventListener("click",()=>window.PortalAuth.logout());
+
+      const {data:benevole,error:benevoleError}=await client
+        .from("benevoles").select("id").eq("user_id",user.id).maybeSingle();
+
+      if(benevoleError||!benevole){
+        document.getElementById("infos-loading").textContent="Impossible de déterminer ton profil.";
+        return;
+      }
+
+      const {data:participation}=await client
+        .from("participations")
+        .select("role, editions!inner(active)")
+        .eq("benevole_id",benevole.id)
+        .eq("actif",true)
+        .eq("editions.active",true)
+        .order("created_at",{ascending:false})
+        .limit(1)
+        .maybeSingle();
+
+      const role=participation?.role||"benevole";
+      const {data:managementRoles}=await client.rpc("get_my_management_roles");
+      const scopes=Array.isArray(managementRoles)?managementRoles:[];
+      const hasPostManagement=scopes.some(item=>item.kind==="responsable"||item.kind==="co_responsable");
+
+      // Un rôle technique "responsable" sans poste géré correspond notamment
+      // aux responsables d'unité : ils voient l'espace Responsable mais pas
+      // l'outil d'affectation de renfort propre aux responsables de poste.
+      const showManager=role==="admin"||role==="responsable"||hasPostManagement;
+      const canAssignReinforcement=role==="admin"||hasPostManagement;
+
+      let hasVolunteerSchedule=false;
+      const scheduleResult=await client.rpc("get_my_schedule");
+      if(!scheduleResult.error){
+        hasVolunteerSchedule=Array.isArray(scheduleResult.data)&&scheduleResult.data.length>0;
+      }
+
+      // Le bloc bénévole est toujours visible pour un bénévole simple.
+      // Pour un responsable/co-responsable/responsable d'unité, il n'apparaît
+      // que si cette personne assure elle-même au moins une plage horaire.
+      const showVolunteer=role==="benevole"||hasVolunteerSchedule;
+
+      document.getElementById("manager-info").hidden=!showManager;
+      document.getElementById("manager-reinforcement").hidden=!canAssignReinforcement;
+      document.getElementById("volunteer-info").hidden=!showVolunteer;
+      document.getElementById("infos-loading").hidden=true;
+    })();
   </script>
 </body>
 </html>
