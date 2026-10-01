@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Installer le Portail Bénévoles — Les Tailleurs</title>
+<link rel="icon" href="/assets/T26_Favicon_Portail.png?v=20261001-3">
+<link rel="apple-touch-icon" href="/assets/T26_Favicon_Portail.png?v=20261001-3">
+<link rel="manifest" href="/site.webmanifest?v=20261001-3">
+<meta name="theme-color" content="#1C2EAB">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f5fb;color:#17213c;font-family:"Titillium Web",sans-serif}.top{background:#1C2EAB;padding:22px;text-align:center}.top img{width:min(310px,80vw);max-height:120px;object-fit:contain}.wrap{max-width:650px;margin:28px auto;padding:0 16px}.card{background:#fff;border-radius:16px;padding:26px;box-shadow:0 8px 28px #17213c18}.icon{display:block;width:96px;height:96px;object-fit:contain;margin:0 auto 14px;border-radius:20px}h1{text-align:center;color:#1C2EAB;margin:0 0 8px;font-size:1.8rem}.lead{text-align:center;margin:0 0 24px}.btn{display:block;width:100%;border:0;border-radius:10px;padding:14px 18px;background:#1C2EAB;color:#fff;text-decoration:none;text-align:center;font:700 1.05rem "Titillium Web",sans-serif;cursor:pointer}.btn.green{background:#168344}.btn+ .btn{margin-top:10px}.instructions{margin-top:20px;padding:16px;border-radius:12px;background:#f4f5fb}.instructions h2{font-size:1.15rem;margin:0 0 8px;color:#1C2EAB}.instructions p{margin:7px 0}.hidden{display:none!important}.small{text-align:center;color:#5f6884;font-size:.94rem;margin-top:16px}
+</style>
+</head><body>
+<header class="top"><img src="/assets/T26_Logo_2000px_WHITE.png" alt="Les Tailleurs"></header>
+<main class="wrap"><section class="card">
+<img class="icon" src="/assets/T26_Favicon_Portail.png?v=20261001-3" alt="">
+<h1>Installer le Portail Bénévoles</h1>
+<p class="lead">Installe le Portail sur ton smartphone pour y accéder comme à une application.</p>
+<button id="install-button" class="btn green hidden" type="button">📱 Installer l'application</button>
+<div id="android-help" class="instructions hidden"><h2>Sur Android</h2><p>Ouvre le menu <strong>⋮</strong> de ton navigateur puis choisis <strong>Installer l'application</strong> ou <strong>Ajouter à l'écran d'accueil</strong>.</p></div>
+<div id="ios-help" class="instructions hidden"><h2>Sur iPhone / iPad</h2><p>Dans Safari, touche <strong>Partager</strong>, puis <strong>Sur l'écran d'accueil</strong> et confirme avec <strong>Ajouter</strong>.</p></div>
+<div id="desktop-help" class="instructions hidden"><h2>Sur ordinateur</h2><p>Tu peux continuer directement vers le Portail ou utiliser l'option d'installation proposée par ton navigateur.</p></div>
+<a class="btn" href="/index.html">Accéder au Portail Bénévoles</a>
+<p class="small">Après l'installation, ouvre l'application et connecte-toi avec l'adresse e-mail qui t'a été communiquée.</p>
+</section></main>
+<script>
+let deferredPrompt=null;const ua=navigator.userAgent||"";const ios=/iPad|iPhone|iPod/.test(ua)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);const android=/Android/i.test(ua);const btn=document.getElementById("install-button");
+if(ios)document.getElementById("ios-help").classList.remove("hidden");else if(android)document.getElementById("android-help").classList.remove("hidden");else document.getElementById("desktop-help").classList.remove("hidden");
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;btn.classList.remove("hidden");if(android)document.getElementById("android-help").classList.add("hidden")});
+btn.addEventListener("click",async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;btn.classList.add("hidden")});
+window.addEventListener("appinstalled",()=>{btn.classList.add("hidden")});
+</script></body></html>
