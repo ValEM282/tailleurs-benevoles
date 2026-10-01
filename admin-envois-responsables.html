@@ -4,11 +4,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css?v=20260921-2"><link rel="stylesheet" href="subpage-header.css?v=20260922-2"><link rel="stylesheet" href="admin.css?v=20260927-3">
 <style>
-.invite-list{display:grid;gap:10px}.invite-row{display:grid;grid-template-columns:minmax(160px,1.1fr) minmax(170px,1.3fr) minmax(135px,.8fr) minmax(150px,1fr) auto;gap:10px;align-items:center;padding:12px;border:1px solid #dde1ed;border-radius:10px;background:#fff}.invite-name{font-weight:700}.muted{color:#5f6884}.wa{border:0;border-radius:8px;padding:9px 12px;background:#168344;color:#fff;font:700 .95rem "Titillium Web",sans-serif;cursor:pointer;white-space:nowrap}.wa:disabled{background:#b8bdc9;cursor:not-allowed}.intro{padding:14px;border-radius:10px;background:#f4f5fb;margin-bottom:16px}.missing{color:#E40230;font-weight:700}@media(max-width:800px){.invite-row{grid-template-columns:1fr}.wa{width:100%}}
+.invite-list{display:grid;gap:10px}.invite-row{display:grid;grid-template-columns:minmax(160px,1.1fr) minmax(170px,1.3fr) minmax(135px,.8fr) minmax(150px,1fr) auto;gap:10px;align-items:center;padding:12px;border:1px solid #dde1ed;border-radius:10px;background:#fff}.invite-name{font-weight:700}.muted{color:#5f6884}.wa{border:0;border-radius:8px;padding:9px 12px;background:#168344;color:#fff;font:700 .95rem "Titillium Web",sans-serif;cursor:pointer;white-space:nowrap}.wa:disabled{background:#b8bdc9;cursor:not-allowed}.intro{padding:14px;border-radius:10px;background:#f4f5fb;margin-bottom:16px}.missing{color:#E40230;font-weight:700}.invite-filters{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:0 0 16px}.invite-filters input,.invite-filters select{width:100%;padding:11px 12px;border:1px solid #cbd1e6;border-radius:9px;background:#fff;font:inherit;color:#17213c}.invite-filters label{font-weight:700;color:#1C2EAB}.invite-filters label span{display:block;margin-bottom:4px}@media(max-width:800px){.invite-filters{grid-template-columns:1fr}.invite-row{grid-template-columns:1fr}.wa{width:100%}}
 </style></head><body class="dashboard-page"><header class="dashboard-header"><div class="subpage-header-inner"><a href="admin.html" class="back-button">← Accueil ADMIN</a><a href="dashboard.html" class="dashboard-title" style="color:#fff;text-decoration:none">🎪 PORTAIL BÉNÉVOLES 🎪</a><span></span></div></header>
 <main class="subpage-main admin-main"><section class="admin-card"><h1 style="color:#1C2EAB;margin-top:0">INVITATIONS VIA WHATSAPP</h1>
 <div class="intro">Chaque invitation est préparée individuellement avec le <strong>prénom</strong>, le <strong>numéro de GSM</strong> et l'<strong>e-mail de connexion</strong> enregistrés dans le Portail. WhatsApp s'ouvre avec le message prérempli : vérifie-le puis appuie sur <strong>Envoyer</strong>.</div>
-<div id="loading" class="admin-message">Chargement…</div><div id="list" class="invite-list"></div></section></main>
+<div class="invite-filters"><label><span>Prénom</span><input id="filter-firstname" type="search" placeholder="Rechercher un prénom"></label><label><span>Nom</span><input id="filter-lastname" type="search" placeholder="Rechercher un nom"></label><label><span>Rôle</span><select id="filter-role"><option value="">Tous les rôles</option></select></label></div><div id="loading" class="admin-message">Chargement…</div><div id="list" class="invite-list"></div></section></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="portal-auth.js"></script>
 <script>
 (async()=>{
@@ -22,6 +22,10 @@
  const normalizePhone=p=>{let s=String(p||"").replace(/[^0-9+]/g,"");if(s.startsWith("00"))s="+"+s.slice(2);if(s.startsWith("0"))s="+32"+s.slice(1);return s.replace("+","")};
  const isYouth=r=>/^(guide|patro|pionnier)\s*0*\d+$/i.test(String(r.prenom||"").trim());
  const rows=(data||[]).filter(r=>!isYouth(r)).sort((a,b)=>String(a.nom||"").localeCompare(String(b.nom||""),"fr",{sensitivity:"base"})||String(a.prenom||"").localeCompare(String(b.prenom||""),"fr",{sensitivity:"base"}));
+ const firstInput=document.getElementById("filter-firstname"),lastInput=document.getElementById("filter-lastname"),roleSelect=document.getElementById("filter-role");
+ const roleOf=r=>String(r.role_et_affectation||r.role_affectation||r.role||"Bénévole");
+ [...new Set(rows.map(roleOf).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr",{sensitivity:"base"})).forEach(role=>{const o=document.createElement("option");o.value=role;o.textContent=role;roleSelect.appendChild(o)});
+ const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLocaleLowerCase("fr").trim();
  const message=r=>`Bonjour ${r.prenom||""},
 
 Nous t'invitons à utiliser l'application Portail Bénévoles des Tailleurs pour prendre connaissance des horaires, et plus encore...
@@ -35,7 +39,7 @@ ${emailRaw(r)}
 Choisis ensuite ton mot de passe (que tu peux voir en cliquant sur les gros yeux 👀), et clique bien sûr "Première connexion"
  
 Et vive les Tailleurs  ! 🎪`;
- for(const r of rows){
+ const render=()=>{list.innerHTML="";const f=norm(firstInput.value),l=norm(lastInput.value),rr=roleSelect.value;const filtered=rows.filter(r=>(!f||norm(r.prenom).includes(f))&&(!l||norm(r.nom).includes(l))&&(!rr||roleOf(r)===rr));for(const r of filtered){
    const phone=phoneRaw(r),email=emailRaw(r),normalized=normalizePhone(phone);
    const role=r.role_et_affectation||r.role_affectation||r.role||"Bénévole";
    const ok=Boolean(normalized&&email);
@@ -43,7 +47,8 @@ Et vive les Tailleurs  ! 🎪`;
    row.innerHTML='<div class="invite-name">'+esc((r.prenom||"")+" "+(r.nom||""))+'</div><div>'+esc(email||"—")+'</div><div>'+esc(phone||"—")+'</div><div class="muted">'+esc(role)+'</div><button type="button" class="wa" '+(ok?"":"disabled")+'>'+(ok?"Inviter via WhatsApp":"Données manquantes")+'</button>';
    const btn=row.querySelector(".wa");if(ok)btn.addEventListener("click",()=>{const url="https://wa.me/"+normalized+"?text="+encodeURIComponent(message(r));window.open(url,"_blank","noopener")});
    list.appendChild(row);
- }
+ } loading.textContent=filtered.length?filtered.length+" personne"+(filtered.length>1?"s":"")+" affichée"+(filtered.length>1?"s":"")+".":"Aucune personne ne correspond aux filtres.";};
+ [firstInput,lastInput].forEach(el=>el.addEventListener("input",render));roleSelect.addEventListener("change",render);render();
  loading.textContent=rows.length?rows.length+" personne"+(rows.length>1?"s":"")+" disponible"+(rows.length>1?"s":"")+" pour une invitation.":"Aucun destinataire trouvé.";
 })();
 </script></body></html>
