@@ -8,23 +8,24 @@
 </style></head><body class="dashboard-page"><header class="dashboard-header"><div class="subpage-header-inner"><a href="admin.html" class="back-button">← Accueil ADMIN</a><a href="dashboard.html" class="dashboard-title" style="color:#fff;text-decoration:none">🎪 PORTAIL BÉNÉVOLES 🎪</a><span></span></div></header>
 <main class="subpage-main admin-main"><section class="admin-card"><h1 style="color:#1C2EAB;margin-top:0">INVITATIONS VIA WHATSAPP</h1>
 <div class="intro">Chaque invitation est préparée individuellement avec le <strong>prénom</strong>, le <strong>numéro de GSM</strong> et l'<strong>e-mail de connexion</strong> enregistrés dans le Portail. WhatsApp s'ouvre avec le message prérempli : vérifie-le puis appuie sur <strong>Envoyer</strong>.</div>
-<div class="invite-filters"><label><span>Prénom</span><input id="filter-firstname" type="search" placeholder="Rechercher un prénom"></label><label><span>Nom</span><input id="filter-lastname" type="search" placeholder="Rechercher un nom"></label><label><span>Rôle</span><select id="filter-role"><option value="">Tous les rôles</option></select></label></div><div id="loading" class="admin-message">Chargement…</div><div id="list" class="invite-list"></div></section></main>
+<div class="invite-filters"><label><span>Prénom</span><input id="filter-firstname" type="search" placeholder="Rechercher un prénom"></label><label><span>NOM</span><input id="filter-lastname" type="search" placeholder="Rechercher un nom"></label><label><span>Rôle</span><select id="filter-role"><option value="" selected disabled>Choisir un rôle</option><option value="__all">Tous les rôles</option></select></label></div><div id="loading" class="admin-message">Chargement…</div><div id="list" class="invite-list"></div></section></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="portal-auth.js"></script>
 <script>
 (async()=>{
  const loading=document.getElementById("loading"),list=document.getElementById("list");
  const user=await PortalAuth.requireAuth();if(!user)return;
  const {data:isAdmin,error:ae}=await PortalAuth.client.rpc("is_current_portal_admin");if(ae||!isAdmin){loading.textContent="Cette page est réservée aux administrateurs.";return}
- const {data,error}=await PortalAuth.client.rpc("admin_list_benevoles");if(error){console.error(error);loading.textContent="Impossible de charger les destinataires.";return}
+ const [{data:volData,error},{data:respData,error:respError}]=await Promise.all([PortalAuth.client.rpc("admin_list_benevoles"),PortalAuth.client.rpc("admin_list_responsables")]);if(error||respError){console.error(error||respError);loading.textContent="Impossible de charger les destinataires.";return}
  const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
  const phoneRaw=r=>r.telephone||r.phone||r.gsm||r.mobile||"";
  const emailRaw=r=>r.email||r.mail||"";
  const normalizePhone=p=>{let s=String(p||"").replace(/[^0-9+]/g,"");if(s.startsWith("00"))s="+"+s.slice(2);if(s.startsWith("0"))s="+32"+s.slice(1);return s.replace("+","")};
  const isYouth=r=>/^(guide|patro|pionnier)\s*0*\d+$/i.test(String(r.prenom||"").trim());
- const rows=(data||[]).filter(r=>!isYouth(r)).sort((a,b)=>String(a.nom||"").localeCompare(String(b.nom||""),"fr",{sensitivity:"base"})||String(a.prenom||"").localeCompare(String(b.prenom||""),"fr",{sensitivity:"base"}));
+ const respById=new Map((respData||[]).map(r=>[String(r.id),r]));
+ const rows=(volData||[]).filter(r=>!isYouth(r)).map(r=>{const rp=respById.get(String(r.id));const roles=[];if(rp){if(Array.isArray(rp.responsable_postes)&&rp.responsable_postes.length)roles.push("Responsable de poste");if(Array.isArray(rp.co_responsable_postes)&&rp.co_responsable_postes.length)roles.push("Co-responsable");}const base=String(r.role_et_affectation||r.role_affectation||r.role||"");if(/responsable.*unit|unité/i.test(base))roles.push("Responsable d'unité");if(!roles.length)roles.push("Bénévole");return {...r,_roles:[...new Set(roles)]}}).sort((a,b)=>String(a.nom||"").localeCompare(String(b.nom||""),"fr",{sensitivity:"base"})||String(a.prenom||"").localeCompare(String(b.prenom||""),"fr",{sensitivity:"base"}));
  const firstInput=document.getElementById("filter-firstname"),lastInput=document.getElementById("filter-lastname"),roleSelect=document.getElementById("filter-role");
- const roleOf=r=>String(r.role_et_affectation||r.role_affectation||r.role||"Bénévole");
- [...new Set(rows.map(roleOf).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr",{sensitivity:"base"})).forEach(role=>{const o=document.createElement("option");o.value=role;o.textContent=role;roleSelect.appendChild(o)});
+ const roleOf=r=>(r._roles||["Bénévole"]).join(" + ");
+ ["Bénévole","Responsable de poste","Co-responsable","Responsable d'unité"].forEach(role=>{const o=document.createElement("option");o.value=role;o.textContent=role;roleSelect.appendChild(o)});
  const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLocaleLowerCase("fr").trim();
  const message=r=>`Bonjour ${r.prenom||""},
 
@@ -39,7 +40,7 @@ ${emailRaw(r)}
 Choisis ensuite ton mot de passe (que tu peux voir en cliquant sur les gros yeux 👀), et clique bien sûr "Première connexion"
  
 Et vive les Tailleurs  ! 🎪`;
- const render=()=>{list.innerHTML="";const f=norm(firstInput.value),l=norm(lastInput.value),rr=roleSelect.value;const filtered=rows.filter(r=>(!f||norm(r.prenom).includes(f))&&(!l||norm(r.nom).includes(l))&&(!rr||roleOf(r)===rr));for(const r of filtered){
+ const render=()=>{list.innerHTML="";const f=norm(firstInput.value),l=norm(lastInput.value),rr=roleSelect.value;const filtered=rows.filter(r=>(!f||norm(r.prenom).includes(f))&&(!l||norm(r.nom).includes(l))&&(!rr||rr==="__all"||(r._roles||[]).includes(rr)));for(const r of filtered){
    const phone=phoneRaw(r),email=emailRaw(r),normalized=normalizePhone(phone);
    const role=r.role_et_affectation||r.role_affectation||r.role||"Bénévole";
    const ok=Boolean(normalized&&email);
