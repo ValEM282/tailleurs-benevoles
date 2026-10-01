@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Invitation groupe WhatsApp — Portail Bénévoles</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20260921-2">
+  <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
+  <link rel="stylesheet" href="admin.css?v=20260927-3">
+  <style>
+    .invite-list{display:grid;gap:10px}
+    .invite-row{display:grid;grid-template-columns:minmax(180px,1.1fr) minmax(150px,.8fr) minmax(240px,1.5fr) auto;gap:12px;align-items:center;padding:12px;border:1px solid #dde1ed;border-radius:10px;background:#fff}
+    .invite-name{font-weight:700;color:#17213c}
+    .invite-sent{font-size:.86rem;color:#5f6884;margin-top:3px;font-weight:400}
+    .invite-sent strong{color:#168344}
+    .muted{color:#5f6884}
+    .groups{display:flex;flex-wrap:wrap;gap:5px}
+    .group-pill{display:inline-flex;padding:4px 8px;border-radius:999px;background:#eef0fb;color:#1C2EAB;font-size:.84rem;font-weight:700}
+    .wa{border:0;border-radius:8px;padding:9px 12px;background:#168344;color:#fff;font:700 .95rem "Titillium Web",sans-serif;cursor:pointer;white-space:nowrap}
+    .wa:disabled{background:#b8bdc9;cursor:not-allowed}
+    .intro{padding:14px;border-radius:10px;background:#f4f5fb;margin-bottom:16px;line-height:1.45}
+    .invite-filters{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin:0 0 16px}
+    .invite-filters input,.invite-filters select{width:100%;padding:11px 12px;border:1px solid #cbd1e6;border-radius:9px;background:#fff;font:inherit;color:#17213c}
+    .invite-filters label{font-weight:700;color:#1C2EAB}
+    .invite-filters label span{display:block;margin-bottom:4px}
+    .summary{margin:8px 0 16px;color:#5f6884;font-weight:600}
+    @media(max-width:900px){.invite-filters{grid-template-columns:1fr 1fr}.invite-row{grid-template-columns:1fr 1fr}.wa{width:100%}}
+    @media(max-width:600px){.invite-filters,.invite-row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body class="dashboard-page">
+  <header class="dashboard-header">
+    <div class="subpage-header-inner">
+      <a href="admin.html" class="back-button">← Accueil ADMIN</a>
+      <a href="dashboard.html" class="dashboard-title" style="color:#fff;text-decoration:none">🎪 PORTAIL BÉNÉVOLES 🎪</a>
+      <span></span>
+    </div>
+  </header>
+
+  <main class="subpage-main admin-main">
+    <section class="admin-card">
+      <h1 style="color:#1C2EAB;margin-top:0">INVITATION GROUPE WHATSAPP</h1>
+      <div class="intro">
+        Chaque message est préparé individuellement. Il invite la personne à se connecter au <strong>Portail Bénévoles</strong>, puis à cliquer sur <strong>« 💬 WhatsApp »</strong> pour rejoindre uniquement les groupes qui la concernent. WhatsApp s’ouvre avec le message prérempli : vérifie-le puis appuie sur <strong>Envoyer</strong>.
+      </div>
+
+      <div class="invite-filters">
+        <label><span>Prénom</span><input id="filter-firstname" type="search" placeholder="Rechercher un prénom"></label>
+        <label><span>NOM</span><input id="filter-lastname" type="search" placeholder="Rechercher un nom"></label>
+        <label><span>Groupe</span><select id="filter-group"><option value="__all">Tous les groupes</option></select></label>
+        <label><span>Statut</span><select id="filter-status"><option value="__all">Tous</option><option value="pending">À envoyer</option><option value="sent">Déjà envoyé</option></select></label>
+      </div>
+
+      <div id="loading" class="admin-message">Chargement…</div>
+      <p id="summary" class="summary" hidden></p>
+      <div id="list" class="invite-list"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="portal-auth.js"></script>
+  <script>
+  (async()=>{
+    const loading=document.getElementById('loading');
+    const summary=document.getElementById('summary');
+    const list=document.getElementById('list');
+    const firstInput=document.getElementById('filter-firstname');
+    const lastInput=document.getElementById('filter-lastname');
+    const groupSelect=document.getElementById('filter-group');
+    const statusSelect=document.getElementById('filter-status');
+
+    const user=await PortalAuth.requireAuth();
+    if(!user)return;
+    const {data:isAdmin,error:adminError}=await PortalAuth.client.rpc('is_current_portal_admin');
+    if(adminError||!isAdmin){loading.textContent='Cette page est réservée aux administrateurs.';return;}
+
+    const [{data:people,error:peopleError},{data:logData,error:logError}]=await Promise.all([
+      PortalAuth.client.rpc('admin_list_whatsapp_group_invitation_candidates'),
+      PortalAuth.client.rpc('admin_list_whatsapp_group_invitation_logs')
+    ]);
+    if(peopleError||logError){console.error(peopleError||logError);loading.textContent='Impossible de charger les destinataires.';return;}
+
+    const rows=Array.isArray(people)?people:[];
+    const logs=new Map((logData||[]).map(x=>[String(x.benevole_id),x]));
+    const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+    const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('fr').trim();
+    const normalizePhone=p=>{let s=String(p||'').replace(/[^0-9+]/g,'');if(s.startsWith('00'))s='+'+s.slice(2);if(s.startsWith('0'))s='+32'+s.slice(1);return s.replace('+','');};
+    const fmtDate=v=>v?new Intl.DateTimeFormat('fr-BE',{dateStyle:'short',timeStyle:'short',timeZone:'Europe/Brussels'}).format(new Date(v)):'';
+
+    const allGroups=[...new Set(rows.flatMap(r=>Array.isArray(r.groupes)?r.groupes:[]))].sort((a,b)=>String(a).localeCompare(String(b),'fr',{sensitivity:'base'}));
+    allGroups.forEach(group=>{const option=document.createElement('option');option.value=group;option.textContent=group;groupSelect.appendChild(option);});
+
+    const params=new URLSearchParams(location.search);
+    if(params.get('statut')==='envoye')statusSelect.value='sent';
+
+    const message=r=>`Bonjour ${r.prenom||''},
+
+Pour faciliter la communication entre nous pendant le festival, je t’invite à consulter le Portail Bénévoles des Tailleurs :
+https://benevoles.lestailleurs.be/
+
+Une fois connecté·e, clique sur le bouton « 💬 WhatsApp » et rejoins le ou les groupes qui te concernent.
+
+Merci de contribuer ainsi à améliorer la communication entre tous les acteurs du festival Les Tailleurs. 🎪
+
+À très vite !`;
+
+    function filteredRows(){
+      const f=norm(firstInput.value),l=norm(lastInput.value),g=groupSelect.value,s=statusSelect.value;
+      return rows.filter(r=>{
+        const sent=logs.has(String(r.id));
+        const groups=Array.isArray(r.groupes)?r.groupes:[];
+        return (!f||norm(r.prenom).includes(f))
+          &&(!l||norm(r.nom).includes(l))
+          &&(g==='__all'||groups.includes(g))
+          &&(s==='__all'||(s==='sent'&&sent)||(s==='pending'&&!sent));
+      });
+    }
+
+    function render(){
+      const filtered=filteredRows();
+      list.innerHTML='';
+      filtered.forEach(r=>{
+        const phone=String(r.telephone||'').trim();
+        const normalized=normalizePhone(phone);
+        const log=logs.get(String(r.id));
+        const groups=Array.isArray(r.groupes)?r.groupes:[];
+        const row=document.createElement('div');
+        row.className='invite-row';
+        const sentInfo=log?`<div class="invite-sent"><strong>1er envoi :</strong> ${esc(fmtDate(log.premier_envoi_at))}${Number(log.nombre_envois)>1?` · ${Number(log.nombre_envois)} envois`:''}</div>`:'';
+        row.innerHTML=`
+          <div class="invite-name">${esc((r.prenom||'')+' '+(r.nom||''))}${sentInfo}</div>
+          <div>${esc(phone||'—')}</div>
+          <div class="groups">${groups.map(x=>`<span class="group-pill">${esc(x)}</span>`).join('')}</div>
+          <button type="button" class="wa" ${normalized?'':'disabled'}>${normalized?(log?'Renvoyer via WhatsApp':'Inviter via WhatsApp'):'Téléphone manquant'}</button>`;
+        const button=row.querySelector('.wa');
+        if(normalized)button.addEventListener('click',async()=>{
+          const popup=window.open('about:blank','_blank');
+          button.disabled=true;
+          try{
+            const {data:logged,error}=await PortalAuth.client.rpc('admin_log_whatsapp_group_invitation',{p_benevole_id:r.id});
+            if(error)throw error;
+            const x=Array.isArray(logged)?logged[0]:logged;
+            if(x)logs.set(String(r.id),{benevole_id:r.id,...x});
+            const url='https://wa.me/'+normalized+'?text='+encodeURIComponent(message(r));
+            if(popup)popup.location.href=url;else window.location.href=url;
+            render();
+          }catch(error){
+            console.error(error);
+            if(popup)popup.close();
+            window.alert('Impossible d’enregistrer l’envoi.');
+            button.disabled=false;
+          }
+        });
+        list.appendChild(row);
+      });
+      const totalSent=rows.filter(r=>logs.has(String(r.id))).length;
+      const totalPending=rows.length-totalSent;
+      loading.textContent=filtered.length?`${filtered.length} personne${filtered.length>1?'s':''} affichée${filtered.length>1?'s':''}.`:'Aucune personne ne correspond aux filtres.';
+      summary.hidden=false;
+      summary.textContent=`${rows.length} destinataire${rows.length>1?'s':''} · ${totalSent} déjà envoyé${totalSent>1?'s':''} · ${totalPending} à envoyer`;
+    }
+
+    [firstInput,lastInput].forEach(el=>el.addEventListener('input',render));
+    [groupSelect,statusSelect].forEach(el=>el.addEventListener('change',render));
+    render();
+  })();
+  </script>
+</body>
+</html>
