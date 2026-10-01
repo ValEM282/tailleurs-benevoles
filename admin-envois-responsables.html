@@ -45,7 +45,7 @@ Choisis ensuite ton mot de passe (que tu peux voir en cliquant sur les gros yeux
 Et vive les Tailleurs  ! 🎪`;
  const render=()=>{list.innerHTML="";const f=norm(firstInput.value),l=norm(lastInput.value),rr=roleSelect.value;const filtered=rows.filter(r=>(!f||norm(r.prenom).includes(f))&&(!l||norm(r.nom).includes(l))&&(!rr||rr==="__all"||(r._roles||[]).includes(rr)));for(const r of filtered){
    const phone=phoneRaw(r),email=emailRaw(r),normalized=normalizePhone(phone);
-   const role=r.role_et_affectation||r.role_affectation||r.role||"Bénévole";
+   const role=roleOf(r);
    const ok=Boolean(normalized&&email);
    const row=document.createElement("div");row.className="invite-row";
    row.innerHTML='<div class="invite-name">'+esc((r.prenom||"")+" "+(r.nom||""))+'</div><div>'+esc(email||"—")+'</div><div>'+esc(phone||"—")+'</div><div class="muted">'+esc(role)+'</div><button type="button" class="wa" '+(ok?"":"disabled")+'>'+(ok?"Inviter via WhatsApp":"Données manquantes")+'</button>';
