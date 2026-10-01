@@ -21,8 +21,11 @@
  const emailRaw=r=>r.email||r.mail||"";
  const normalizePhone=p=>{let s=String(p||"").replace(/[^0-9+]/g,"");if(s.startsWith("00"))s="+"+s.slice(2);if(s.startsWith("0"))s="+32"+s.slice(1);return s.replace("+","")};
  const isYouth=r=>/^(guide|patro|pionnier)\s*0*\d+$/i.test(String(r.prenom||"").trim());
- const respById=new Map((respData||[]).map(r=>[String(r.id),r]));
- const rows=(volData||[]).filter(r=>!isYouth(r)).map(r=>{const rp=respById.get(String(r.id));const roles=[];if(rp){if(Array.isArray(rp.responsable_postes)&&rp.responsable_postes.length)roles.push("Responsable de poste");if(Array.isArray(rp.co_responsable_postes)&&rp.co_responsable_postes.length)roles.push("Co-responsable");}const base=String(r.role_et_affectation||r.role_affectation||r.role||"");if(/responsable.*unit|unité/i.test(base))roles.push("Responsable d'unité");if(!roles.length)roles.push("Bénévole");return {...r,_roles:[...new Set(roles)]}}).sort((a,b)=>String(a.nom||"").localeCompare(String(b.nom||""),"fr",{sensitivity:"base"})||String(a.prenom||"").localeCompare(String(b.prenom||""),"fr",{sensitivity:"base"}));
+ const merged=new Map();
+ const keyOf=r=>String(r.id||r.benevole_id||r.personne_id||"");
+ for(const v of (volData||[])){if(isYouth(v))continue;const k=keyOf(v);if(k)merged.set(k,{...v,_roles:["Bénévole"]})}
+ for(const rp of (respData||[])){if(isYouth(rp))continue;const k=keyOf(rp);if(!k)continue;const current=merged.get(k)||{};const roles=new Set(current._roles||[]);if(Array.isArray(rp.responsable_postes)&&rp.responsable_postes.length)roles.add("Responsable de poste");if(Array.isArray(rp.co_responsable_postes)&&rp.co_responsable_postes.length)roles.add("Co-responsable");const base=String(rp.role_et_affectation||rp.role_affectation||rp.role||"");if(/responsable.*unit|unité/i.test(base))roles.add("Responsable d'unité");if(!roles.size)roles.add("Responsable de poste");merged.set(k,{...current,...rp,_roles:[...roles]})}
+ const rows=[...merged.values()].sort((a,b)=>String(a.nom||"").localeCompare(String(b.nom||""),"fr",{sensitivity:"base"})||String(a.prenom||"").localeCompare(String(b.prenom||""),"fr",{sensitivity:"base"}));
  const firstInput=document.getElementById("filter-firstname"),lastInput=document.getElementById("filter-lastname"),roleSelect=document.getElementById("filter-role");
  const roleOf=r=>(r._roles||["Bénévole"]).join(" + ");
  ["Bénévole","Responsable de poste","Co-responsable","Responsable d'unité"].forEach(role=>{const o=document.createElement("option");o.value=role;o.textContent=role;roleSelect.appendChild(o)});
