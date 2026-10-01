@@ -8,6 +8,7 @@
   const teamSection = document.getElementById("team-menu-section");
   const volunteerSection = document.getElementById("volunteer-next-shift-section");
   const role = document.getElementById("user-role");
+  const unitPlanningButton = document.getElementById("unit-planning-button");
 
   if (!personalized || !teamSection || !volunteerSection || !role) return;
 
@@ -44,6 +45,28 @@
 
   const expectedVolunteerHidden = unitOnly ? !hasVolunteerSchedule : volunteerSection.hidden;
 
+  function reportPlanningError(message) {
+    if (typeof showDashboardMessage === "function") {
+      showDashboardMessage(message, "error");
+    } else {
+      alert(message);
+    }
+  }
+
+  if (unitPlanningButton) {
+    unitPlanningButton.hidden = false;
+    unitPlanningButton.addEventListener("click", event => {
+      event.preventDefault();
+
+      if (!window.UnitPlanningPrinter || typeof window.UnitPlanningPrinter.print !== "function") {
+        reportPlanningError("Le planning de l’unité n’a pas pu être ouvert.");
+        return;
+      }
+
+      window.UnitPlanningPrinter.print(supabaseClient, reportPlanningError);
+    });
+  }
+
   function applyUnitDisplay() {
     if (personalized.hidden) personalized.hidden = false;
     if (teamSection.hidden) teamSection.hidden = false;
@@ -59,6 +82,10 @@
     const availableLink = teamSection.querySelector('a[href="benevoles-dispo.html"]');
     if (availableLink && unitOnly && !availableLink.hidden) {
       availableLink.hidden = true;
+    }
+
+    if (unitPlanningButton && unitPlanningButton.hidden) {
+      unitPlanningButton.hidden = false;
     }
 
     if (unitOnly) {
@@ -83,4 +110,7 @@
   observer.observe(teamSection, { attributes: true, attributeFilter: ["hidden"] });
   observer.observe(volunteerSection, { attributes: true, attributeFilter: ["hidden"] });
   observer.observe(role, { attributes: true, attributeFilter: ["hidden"] });
+  if (unitPlanningButton) {
+    observer.observe(unitPlanningButton, { attributes: true, attributeFilter: ["hidden"] });
+  }
 })();
