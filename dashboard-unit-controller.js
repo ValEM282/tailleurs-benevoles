@@ -1,6 +1,6 @@
-/* Contrôle d'affichage des responsables d'unité.
+/* Contrôle d'affichage des responsables de poste, co-responsables et responsables d'unité.
    Réutilise le client Supabase créé par dashboard.js et garantit que
-   l'ancien affichage ne peut pas remasquer l'espace Responsable. */
+   l'affichage final respecte les responsabilités réelles de l'utilisateur. */
 (async function () {
   if (typeof supabaseClient === "undefined") return;
 
@@ -14,7 +14,7 @@
 
   const { data: scopes, error: scopesError } = await supabaseClient.rpc("get_my_management_roles");
   if (scopesError) {
-    console.error("Impossible de charger les responsabilités d’unité :", scopesError);
+    console.error("Impossible de charger les responsabilités :", scopesError);
     return;
   }
 
@@ -26,12 +26,14 @@
       .filter(Boolean)
   )];
 
-  if (!units.length) return;
+  const hasResponsiblePost = allScopes.some(item => item.kind === "responsable");
+  const hasCoResponsiblePost = allScopes.some(item => item.kind === "co_responsable");
+  const hasPostManagement = hasResponsiblePost || hasCoResponsiblePost;
+  const hasUnitManagement = units.length > 0;
 
-  const hasPostManagement = allScopes.some(item =>
-    item.kind === "responsable" || item.kind === "co_responsable"
-  );
-  const unitOnly = !hasPostManagement;
+  if (!hasPostManagement && !hasUnitManagement) return;
+
+  const unitOnly = hasUnitManagement && !hasPostManagement;
 
   let hasVolunteerSchedule = false;
   if (unitOnly) {
@@ -53,7 +55,7 @@
     }
   }
 
-  if (unitPlanningButton) {
+  if (hasUnitManagement && unitPlanningButton) {
     unitPlanningButton.hidden = false;
     unitPlanningButton.addEventListener("click", event => {
       event.preventDefault();
@@ -67,50 +69,68 @@
     });
   }
 
-  function applyUnitDisplay() {
-    if (personalized.hidden) personalized.hidden = false;
-    if (teamSection.hidden) teamSection.hidden = false;
+  function placeManagerSectionFirst() {
+    const parent = teamSection.parentNode;
+    if (!parent) return;
 
-    role.textContent = `Responsable d’unité : ${units.join(" · ")}`;
-    if (role.hidden) role.hidden = false;
-
-    const heading = teamSection.querySelector(".section-heading h2");
-    if (heading && unitOnly) {
-      heading.textContent = `Mes animé·e·s · ${units.join(" · ")}`;
-    }
-
-    const availableLink = teamSection.querySelector('a[href="benevoles-dispo.html"]');
-    if (availableLink && unitOnly && !availableLink.hidden) {
-      availableLink.hidden = true;
-    }
-
-    if (unitPlanningButton && unitPlanningButton.hidden) {
-      unitPlanningButton.hidden = false;
-    }
-
-    if (unitOnly) {
-      if (volunteerSection.hidden !== expectedVolunteerHidden) {
-        volunteerSection.hidden = expectedVolunteerHidden;
-      }
-
-      const parent = teamSection.parentNode;
-      if (parent && teamSection.nextElementSibling !== volunteerSection) {
-        parent.insertBefore(teamSection, volunteerSection);
-      }
+    // Responsable et co-responsable ont exactement la même priorité d'affichage.
+    // Si l'espace bénévole existe aussi, RESPONSABLE reste toujours au-dessus.
+    if (!volunteerSection.hidden && teamSection.nextElementSibling !== volunteerSection) {
+      parent.insertBefore(teamSection, volunteerSection);
     }
   }
 
-  applyUnitDisplay();
+  function applyManagementDisplay() {
+    if (personalized.hidden) personalized.hidden = false;
+    if (teamSection.hidden) teamSection.hidden = false;
+
+    // Les responsables d'unité ont leur libellé et leur vue spécifiques.
+    if (hasUnitManagement) {
+      role.textContent = `Responsable d’unité : ${units.join(" · ")}`;
+      if (role.hidden) role.hidden = false;
+
+      const heading = teamSection.querySelector(".section-heading h2");
+      if (heading && unitOnly) {
+        heading.textContent = `Mes animé·e·s · ${units.join(" · ")}`;
+      }
+
+      const availableLink = teamSection.querySelector('a[href="benevoles-dispo.html"]');
+      if (availableLink && unitOnly && !availableLink.hidden) {
+        availableLink.hidden = true;
+      }
+
+      if (unitPlanningButton && unitPlanningButton.hidden) {
+        unitPlanningButton.hidden = false;
+      }
+
+      if (unitOnly && volunteerSection.hidden !== expectedVolunteerHidden) {
+        volunteerSection.hidden = expectedVolunteerHidden;
+      }
+    }
+
+    // Pour un poste, aucune différence de dashboard entre responsable et co-responsable.
+    if (hasPostManagement) {
+      placeManagerSectionFirst();
+    } else if (unitOnly) {
+      placeManagerSectionFirst();
+    }
+  }
+
+  applyManagementDisplay();
 
   // dashboard.js est asynchrone et peut terminer après ce contrôleur.
-  // On surveille uniquement les attributs concernés et on rétablit l'état correct
-  // si un ancien traitement tente de le modifier ensuite.
-  const observer = new MutationObserver(() => applyUnitDisplay());
+  // On rétablit donc l'état final si un ancien traitement modifie l'affichage ensuite.
+  const observer = new MutationObserver(() => applyManagementDisplay());
   observer.observe(personalized, { attributes: true, attributeFilter: ["hidden"] });
   observer.observe(teamSection, { attributes: true, attributeFilter: ["hidden"] });
   observer.observe(volunteerSection, { attributes: true, attributeFilter: ["hidden"] });
   observer.observe(role, { attributes: true, attributeFilter: ["hidden"] });
   if (unitPlanningButton) {
     observer.observe(unitPlanningButton, { attributes: true, attributeFilter: ["hidden"] });
+  }
+
+  const parent = teamSection.parentNode;
+  if (parent) {
+    observer.observe(parent, { childList: true });
   }
 })();
