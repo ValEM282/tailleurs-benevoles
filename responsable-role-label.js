@@ -1,4 +1,4 @@
-/* Affiche uniquement les postes réellement gérés sous le prénom. */
+/* Affiche les responsabilités réellement gérées sous le prénom. */
 (async function () {
   const roleElement = document.getElementById("user-role");
   if (!roleElement || typeof supabase === "undefined") return;
@@ -39,12 +39,33 @@
   }
 
   const names = [...new Set((posts || []).map(row => row.poste_nom).filter(Boolean))];
-  if (!names.length) {
-    roleElement.hidden = true;
+  let label = names.join(" · ");
+
+  // Un responsable d'unité n'est pas forcément responsable d'un poste.
+  // Dans ce cas, on affiche son unité (Guides, Patro, Pionniers) au lieu
+  // de masquer son rôle.
+  if (!label && participation.role !== "admin") {
+    const { data: scopes, error: scopesError } = await client.rpc("get_my_management_roles");
+    if (scopesError) {
+      console.error("Impossible de charger les responsabilités d'unité :", scopesError);
+      return;
+    }
+
+    const units = [...new Set((scopes || [])
+      .filter(row => row.kind === "responsable_unite")
+      .map(row => row.poste_nom)
+      .filter(Boolean))];
+
+    if (units.length) {
+      label = `Responsable d’unité : ${units.join(" · ")}`;
+    }
+  }
+
+  if (!label) {
+    if (participation.role !== "admin") roleElement.hidden = true;
     return;
   }
 
-  const label = names.join(" · ");
   const applyLabel = () => {
     roleElement.hidden = false;
     if (roleElement.textContent !== label) roleElement.textContent = label;
