@@ -1,24 +1,49 @@
 <!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Envois responsables — Portail Bénévoles</title>
+<title>Invitations WhatsApp — Portail Bénévoles</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css?v=20260921-2"><link rel="stylesheet" href="subpage-header.css?v=20260922-2"><link rel="stylesheet" href="admin.css?v=20260927-3">
 <style>
-.mail-status-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 18px}.mail-status-box{padding:12px;border-radius:10px;background:#f4f5fb;text-align:center}.mail-status-box strong{display:block;font-size:1.5rem;color:#1C2EAB}.mail-status-list{display:grid;gap:8px}.mail-status-row{display:grid;grid-template-columns:34px minmax(150px,1.1fr) minmax(190px,1.4fr) minmax(170px,1.2fr) minmax(150px,1fr);gap:10px;align-items:center;padding:11px 12px;border:1px solid #dde1ed;border-radius:10px;background:#fff}.mail-status-name{font-weight:700}.mail-select{width:18px;height:18px;accent-color:#168344}.mail-selection-actions{margin-top:18px;padding-top:16px;border-top:1px solid #dfe3f5;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.mail-selection-count{font-weight:700;color:#1C2EAB}.mail-send-selected{border:0;border-radius:8px;padding:11px 18px;background:#168344;color:#fff;font:700 1rem "Titillium Web",sans-serif;cursor:pointer}.mail-send-selected:disabled{opacity:.45;cursor:not-allowed}.mail-status-email{overflow-wrap:anywhere}.mail-status-pill{font-weight:700}.mail-status-pill.envoye{color:#168344}.mail-status-pill.a_envoyer{color:#1C2EAB}.mail-status-pill.deja_connecte,.mail-status-pill.horaires{color:#5f6884}.mail-status-pill.erreur{color:#E40230}@media(max-width:760px){.mail-status-summary{grid-template-columns:1fr 1fr}.mail-status-row{grid-template-columns:1fr}.mail-status-date{color:#5f6884}}
+.invite-list{display:grid;gap:10px}.invite-row{display:grid;grid-template-columns:minmax(160px,1.1fr) minmax(170px,1.3fr) minmax(135px,.8fr) minmax(150px,1fr) auto;gap:10px;align-items:center;padding:12px;border:1px solid #dde1ed;border-radius:10px;background:#fff}.invite-name{font-weight:700}.muted{color:#5f6884}.wa{border:0;border-radius:8px;padding:9px 12px;background:#168344;color:#fff;font:700 .95rem "Titillium Web",sans-serif;cursor:pointer;white-space:nowrap}.wa:disabled{background:#b8bdc9;cursor:not-allowed}.intro{padding:14px;border-radius:10px;background:#f4f5fb;margin-bottom:16px}.missing{color:#E40230;font-weight:700}@media(max-width:800px){.invite-row{grid-template-columns:1fr}.wa{width:100%}}
 </style></head><body class="dashboard-page"><header class="dashboard-header"><div class="subpage-header-inner"><a href="admin.html" class="back-button">← Accueil ADMIN</a><a href="dashboard.html" class="dashboard-title" style="color:#fff;text-decoration:none">🎪 PORTAIL BÉNÉVOLES 🎪</a><span></span></div></header>
-<main class="subpage-main admin-main"><section class="admin-card"><h1 style="color:#1C2EAB;margin-top:0">SUIVI DES INVITATIONS RESPONSABLES</h1>
-<div id="mail-loading" class="admin-message">Chargement…</div><div id="mail-content" hidden><div class="mail-status-summary">
-<div class="mail-status-box"><strong id="count-sent">0</strong>Envoyées</div><div class="mail-status-box"><strong id="count-pending">0</strong>À envoyer</div><div class="mail-status-box"><strong id="count-connected">0</strong>Déjà connecté·e·s</div><div class="mail-status-box"><strong id="count-schedules">0</strong>Invitation et horaires déjà envoyés</div>
-</div><div id="mail-list" class="mail-status-list"></div><div class="mail-selection-actions"><span id="selection-count" class="mail-selection-count">0 invitation sélectionnée</span><button id="send-selected" type="button" class="mail-send-selected" disabled>Envoyer les invitations sélectionnées</button></div></div></section></main>
+<main class="subpage-main admin-main"><section class="admin-card"><h1 style="color:#1C2EAB;margin-top:0">INVITATIONS VIA WHATSAPP</h1>
+<div class="intro">Chaque invitation est préparée individuellement avec le <strong>prénom</strong>, le <strong>numéro de GSM</strong> et l'<strong>e-mail de connexion</strong> enregistrés dans le Portail. WhatsApp s'ouvre avec le message prérempli : vérifie-le puis appuie sur <strong>Envoyer</strong>.</div>
+<div id="loading" class="admin-message">Chargement…</div><div id="list" class="invite-list"></div></section></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="portal-auth.js"></script>
 <script>
-(async()=>{const loading=document.getElementById("mail-loading"),content=document.getElementById("mail-content"),list=document.getElementById("mail-list");const user=await PortalAuth.requireAuth();if(!user)return;const {data:isAdmin,error:ae}=await PortalAuth.client.rpc("is_current_portal_admin");if(ae||!isAdmin){loading.textContent="Cette page est réservée aux administrateurs.";return}
-const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));const fmt=d=>d?new Intl.DateTimeFormat("fr-BE",{timeZone:"Europe/Brussels",day:"2-digit",month:"2-digit",year:"2-digit",hour:"2-digit",minute:"2-digit"}).format(new Date(d)).replace(",",""):"—";
-const {data,error}=await PortalAuth.client.rpc("admin_mailing_responsables_status");if(error){console.error(error);loading.textContent="Le suivi sera disponible dès l’activation de l’envoi des invitations.";return}
-const rows=data||[];const selected=new Set();const countEl=document.getElementById("selection-count"),sendBtn=document.getElementById("send-selected");const updateSelection=()=>{const n=selected.size;countEl.textContent=n+" invitation"+(n>1?"s":"")+" sélectionnée"+(n>1?"s":"");sendBtn.disabled=n===0};const val=(x,...k)=>k.map(y=>x[y]).find(y=>y!==undefined&&y!==null);let sent=0,pending=0,connected=0,schedules=0;list.innerHTML="";
-for(const r of rows){let s=String(val(r,"statut","status")||"a_envoyer");if(s==="envoye")sent++;else if(s==="deja_connecte")connected++;else if(s==="invitation_horaires_envoyes")schedules++;else pending++;
-let label=s==="envoye"?"Envoyée":s==="deja_connecte"?"Déjà connecté·e":s==="invitation_horaires_envoyes"?"Invitation et horaires déjà envoyés":s==="erreur"?"Erreur":"À envoyer";
-let row=document.createElement("div");row.className="mail-status-row";const selectable=s==="a_envoyer";if(selectable)selected.add(r.benevole_id);const resend=s==="envoye"?'<button type="button" class="mail-resend" style="margin-top:6px;padding:5px 9px;border:0;border-radius:7px;background:#1C2EAB;color:#fff;font-weight:700;cursor:pointer">Renvoyer</button>':"";row.innerHTML='<div><input class="mail-select" type="checkbox" '+(selectable?'checked':'disabled')+' aria-label="Sélectionner '+esc((r.prenom||"")+" "+(r.nom||""))+'"></div><div class="mail-status-name">'+esc(val(r,"prenom")||"")+" "+esc(val(r,"nom")||"")+'</div><div class="mail-status-email">'+esc(val(r,"email")||"")+'</div><div>'+esc(val(r,"role_et_affectation","role_affectation","role")||"")+'</div><div><span class="mail-status-pill '+esc(s)+'">'+label+'</span><div class="mail-status-date">'+fmt(val(r,"envoye_at","sent_at"))+'</div>'+resend+'</div>';const cb=row.querySelector(".mail-select");if(selectable)cb.addEventListener("change",()=>{if(cb.checked)selected.add(r.benevole_id);else selected.delete(r.benevole_id);updateSelection()});const rb=row.querySelector(".mail-resend");if(rb)rb.addEventListener("click",async()=>{if(!window.confirm("Renvoyer l’invitation à "+esc((r.prenom||"")+" "+(r.nom||""))+" ?"))return;rb.disabled=true;rb.textContent="Envoi…";try{const {data:sessionData}=await PortalAuth.client.auth.getSession();const token=sessionData?.session?.access_token;if(!token)throw new Error("Session expirée.");const response=await fetch("https://ftfhtyohyjezoibmumum.supabase.co/functions/v1/mailing-responsables-test",{method:"POST",headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify({benevole_ids:[r.benevole_id]})});const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||"Erreur lors du renvoi.");window.alert("Invitation renvoyée.");window.location.reload();}catch(e){window.alert("Renvoi impossible : "+(e?.message||e));rb.disabled=false;rb.textContent="Renvoyer";}});list.appendChild(row)}
-updateSelection();sendBtn.addEventListener("click",async()=>{const ids=[...selected],n=ids.length;if(!n)return;if(!window.confirm("Envoyer "+n+" invitation"+(n>1?"s":"")+" maintenant ?"))return;sendBtn.disabled=true;sendBtn.textContent="Envoi en cours…";try{const {data:sessionData}=await PortalAuth.client.auth.getSession();const token=sessionData?.session?.access_token;if(!token)throw new Error("Session expirée.");const response=await fetch("https://ftfhtyohyjezoibmumum.supabase.co/functions/v1/mailing-responsables-test",{method:"POST",headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify({benevole_ids:ids})});const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||"Erreur lors de l’envoi.");window.alert(result.sent+" invitation"+(result.sent>1?"s":"")+" envoyée"+(result.sent>1?"s":"")+(result.failed?" · "+result.failed+" échec"+(result.failed>1?"s":""):"")+".");window.location.reload();}catch(e){console.error(e);window.alert("Envoi impossible : "+(e?.message||e));sendBtn.disabled=false;sendBtn.textContent="Envoyer les invitations sélectionnées";}});
-document.getElementById("count-sent").textContent=sent;document.getElementById("count-pending").textContent=pending;document.getElementById("count-connected").textContent=connected;document.getElementById("count-schedules").textContent=schedules;loading.hidden=true;content.hidden=false;
-})();</script></body></html>
+(async()=>{
+ const loading=document.getElementById("loading"),list=document.getElementById("list");
+ const user=await PortalAuth.requireAuth();if(!user)return;
+ const {data:isAdmin,error:ae}=await PortalAuth.client.rpc("is_current_portal_admin");if(ae||!isAdmin){loading.textContent="Cette page est réservée aux administrateurs.";return}
+ const {data,error}=await PortalAuth.client.rpc("admin_list_benevoles");if(error){console.error(error);loading.textContent="Impossible de charger les destinataires.";return}
+ const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+ const phoneRaw=r=>r.telephone||r.phone||r.gsm||r.mobile||"";
+ const emailRaw=r=>r.email||r.mail||"";
+ const normalizePhone=p=>{let s=String(p||"").replace(/[^0-9+]/g,"");if(s.startsWith("00"))s="+"+s.slice(2);if(s.startsWith("0"))s="+32"+s.slice(1);return s.replace("+","")};
+ const isYouth=r=>/^(guide|patro|pionnier)\s*0*\d+$/i.test(String(r.prenom||"").trim());
+ const rows=(data||[]).filter(r=>!isYouth(r)).sort((a,b)=>String(a.nom||"").localeCompare(String(b.nom||""),"fr",{sensitivity:"base"})||String(a.prenom||"").localeCompare(String(b.prenom||""),"fr",{sensitivity:"base"}));
+ const message=r=>`Bonjour ${r.prenom||""},
+
+Nous t'invitons à utiliser l'application Portail Bénévoles des Tailleurs pour prendre connaissance des horaires, et plus encore...
+
+📱 Installer le Portail :
+https://benevoles.lestailleurs.be/installer.html
+
+Pour te connecter, utilise uniquement l'email suivante :
+${emailRaw(r)}
+
+Choisis ensuite ton mot de passe (que tu peux voir en cliquant sur les gros yeux 👀), et clique bien sûr "Première connexion"
+ 
+Et vive les Tailleurs  ! 🎪`;
+ for(const r of rows){
+   const phone=phoneRaw(r),email=emailRaw(r),normalized=normalizePhone(phone);
+   const role=r.role_et_affectation||r.role_affectation||r.role||"Bénévole";
+   const ok=Boolean(normalized&&email);
+   const row=document.createElement("div");row.className="invite-row";
+   row.innerHTML='<div class="invite-name">'+esc((r.prenom||"")+" "+(r.nom||""))+'</div><div>'+esc(email||"—")+'</div><div>'+esc(phone||"—")+'</div><div class="muted">'+esc(role)+'</div><button type="button" class="wa" '+(ok?"":"disabled")+'>'+(ok?"Inviter via WhatsApp":"Données manquantes")+'</button>';
+   const btn=row.querySelector(".wa");if(ok)btn.addEventListener("click",()=>{const url="https://wa.me/"+normalized+"?text="+encodeURIComponent(message(r));window.open(url,"_blank","noopener")});
+   list.appendChild(row);
+ }
+ loading.textContent=rows.length?rows.length+" personne"+(rows.length>1?"s":"")+" disponible"+(rows.length>1?"s":"")+" pour une invitation.":"Aucun destinataire trouvé.";
+})();
+</script></body></html>
