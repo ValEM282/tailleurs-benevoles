@@ -77,6 +77,32 @@ function createAdminPresenceControl(shift) {
     }
   }
 
+  function appendSimpleStatusOption(key, label) {
+    const option = document.createElement("button");
+    option.type = "button";
+
+    const swatch = document.createElement("span");
+    swatch.className = `schedule-presence-swatch schedule-presence-${key}`;
+    swatch.setAttribute("aria-hidden", "true");
+
+    const caption = document.createElement("span");
+    caption.textContent = label;
+
+    option.append(swatch, caption);
+    option.addEventListener("click", async event => {
+      event.stopPropagation();
+      await applyStatus(key, null);
+    });
+
+    menu.appendChild(option);
+  }
+
+  [
+    ["present", "Présent·e"],
+    ["en_pause", "En pause"],
+    ["disponible", "Disponible"]
+  ].forEach(([key, label]) => appendSimpleStatusOption(key, label));
+
   const delayBlock = document.createElement("div");
   delayBlock.className = "schedule-delay-block";
 
@@ -124,30 +150,9 @@ function createAdminPresenceControl(shift) {
   menu.appendChild(delayBlock);
 
   [
-    ["present", "Présent·e"],
-    ["en_pause", "En pause"],
-    ["disponible", "Disponible"],
     ["absent", "Absent·e"],
     ["inconnu", "Aucun"]
-  ].forEach(([key, label]) => {
-    const option = document.createElement("button");
-    option.type = "button";
-
-    const swatch = document.createElement("span");
-    swatch.className = `schedule-presence-swatch schedule-presence-${key}`;
-    swatch.setAttribute("aria-hidden", "true");
-
-    const caption = document.createElement("span");
-    caption.textContent = label;
-
-    option.append(swatch, caption);
-    option.addEventListener("click", async event => {
-      event.stopPropagation();
-      await applyStatus(key, null);
-    });
-
-    menu.appendChild(option);
-  });
+  ].forEach(([key, label]) => appendSimpleStatusOption(key, label));
 
   dot.addEventListener("click", event => {
     event.stopPropagation();
