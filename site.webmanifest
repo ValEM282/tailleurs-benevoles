@@ -5,9 +5,10 @@
   "scope": "/",
   "icons": [
     {
-      "src": "/android-chrome-192x192.png?v=20260926-2",
-      "sizes": "192x192",
-      "type": "image/png"
+      "src": "/assets/T26_Favicon_Portail.png?v=20261001-1",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
   "theme_color": "#1C2EAB",
