@@ -400,15 +400,26 @@ async function loadStats(selectedDay = "") {
     selectedDay
   );
 
-  // Ces indicateurs sont temps réel : les appliquer après renderStats,
-  // qui renseigne encore l'ancien compteur "présents".
+  // Présence = bilan de la journée sélectionnée (pas une photo à l'instant T).
+  // Le dénominateur correspond aux bénévoles distincts ayant au moins un horaire
+  // sur la journée festival (04:00 -> 03:59). Pour "Toute l'édition", on utilise
+  // le nombre de bénévoles distincts ayant un horaire sur l'édition.
   const presentElement = document.getElementById("stat-present");
   const lateElement = document.getElementById("stat-late");
+  const selectedPeopleRow = (Array.isArray(peopleResult.data) ? peopleResult.data : [])
+    .find(row => row.jour === selectedDay);
+  const plannedForPeriod = selectedDay
+    ? numberValue(selectedPeopleRow?.benevoles)
+    : scheduledVolunteers;
+
   if (presentElement) {
-    presentElement.textContent = String(realtimePresence.presents || 0) + " / " + String(realtimePresence.prevus || 0);
+    presentElement.textContent = String(numberValue(presentResult.data)) + " / " + String(plannedForPeriod);
   }
+
+  // Les retards restent issus du suivi de présence, mais le dénominateur suit
+  // désormais la même logique de journée/édition que la carte des présents.
   if (lateElement) {
-    lateElement.textContent = String(realtimePresence.retards || 0) + " / " + String(realtimePresence.prevus || 0);
+    lateElement.textContent = String(numberValue(realtimePresence.retards)) + " / " + String(plannedForPeriod);
   }
 }
 
