@@ -52,28 +52,36 @@
 }
 
 @media print {
+  /* L'impression doit tenir sur une seule largeur de page.
+     La colonne de sélection est masquée par benevoles-liste.css ; les 6 colonnes
+     restantes sont dimensionnées par le navigateur selon leur contenu le plus long. */
   .responsables-table {
-    min-width: 0;
-    font-size: 8pt;
+    width: 100% !important;
+    min-width: 0 !important;
+    table-layout: auto !important;
+    font-size: 6.8pt;
   }
 
-  .responsables-table th:nth-child(1),
-  .responsables-table td:nth-child(1) { width: 11%; }
+  .responsables-table th,
+  .responsables-table td {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    white-space: nowrap !important;
+    padding-left: 0.8mm !important;
+    padding-right: 0.8mm !important;
+  }
 
-  .responsables-table th:nth-child(2),
-  .responsables-table td:nth-child(2) { width: 13%; }
+  /* Empêche une colonne de récupérer artificiellement tout l'espace disponible :
+     chacune reste au plus près de la largeur requise par son contenu. */
+  .responsables-table th:nth-child(n+2),
+  .responsables-table td:nth-child(n+2) {
+    width: 1% !important;
+  }
 
-  .responsables-table th:nth-child(3),
-  .responsables-table td:nth-child(3) { width: 15%; }
-
-  .responsables-table th:nth-child(4),
-  .responsables-table td:nth-child(4) { width: 23%; }
-
-  .responsables-table th:nth-child(5),
-  .responsables-table td:nth-child(5) { width: 19%; }
-
-  .responsables-table th:nth-child(6),
-  .responsables-table td:nth-child(6) { width: 19%; }
+  .responsables-table th {
+    font-size: 7pt;
+  }
 }
 
 .responsibility-display{display:flex;align-items:flex-start;gap:8px}
