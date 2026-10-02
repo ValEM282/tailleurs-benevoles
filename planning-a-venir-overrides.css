@@ -101,3 +101,46 @@
     font-size: 0.82rem;
   }
 }
+
+/* Mobile: keep every planning card inside the white A VENIR panel. */
+@media (max-width: 760px) {
+  .now-section,
+  .now-groups,
+  .now-group,
+  .volunteer-list,
+  .volunteer-row {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .now-section {
+    overflow: hidden;
+  }
+
+  .now-group {
+    width: 100%;
+  }
+
+  .volunteer-row {
+    grid-template-columns: 22px minmax(0, 1fr) minmax(58px, auto);
+  }
+
+  .volunteer-name,
+  .volunteer-meta {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .volunteer-phone {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .volunteer-end {
+    max-width: 92px;
+    white-space: normal;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+}
