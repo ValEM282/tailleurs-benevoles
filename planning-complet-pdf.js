@@ -66,12 +66,22 @@
       th.querySelector(".complete-column-count")?.textContent?.trim() || ""
     );
 
-    const cells = [...table.querySelectorAll("tbody td")].map(td => {
-      const names = [...td.querySelectorAll(".complete-volunteer-name")].map(el => el.textContent.trim());
-      return names.length ? names.join("\n") : "—";
-    });
+    const cellPeople = [...table.querySelectorAll("tbody td")].map(td =>
+      [...td.querySelectorAll(".complete-volunteer-name")].map(el => ({
+        text: el.textContent.trim(),
+        status: el.classList.contains("complete-volunteer-absent")
+          ? "absent"
+          : el.classList.contains("complete-volunteer-retard")
+            ? "retard"
+            : "normal"
+      }))
+    );
 
-    return { times, counts, cells };
+    const cells = cellPeople.map(people =>
+      people.length ? people.map(person => person.text).join("\n") : "—"
+    );
+
+    return { times, counts, cells, cellPeople };
   }
 
   function splitTableDataForReadability(doc, data, pageWidth, margin) {
@@ -101,12 +111,14 @@
       {
         times: data.times.slice(0, splitAt),
         counts: data.counts.slice(0, splitAt),
-        cells: data.cells.slice(0, splitAt)
+        cells: data.cells.slice(0, splitAt),
+        cellPeople: data.cellPeople.slice(0, splitAt)
       },
       {
         times: data.times.slice(splitAt),
         counts: data.counts.slice(splitAt),
-        cells: data.cells.slice(splitAt)
+        cells: data.cells.slice(splitAt),
+        cellPeople: data.cellPeople.slice(splitAt)
       }
     ].filter(part => part.times.length);
   }
@@ -234,20 +246,76 @@
               valign: "top",
               cellPadding: { top: 2.5, right: 3, bottom: 3, left: 3 }
             },
+            didParseCell: hookData => {
+              if (hookData.section !== "body") return;
+              const people = part.cellPeople?.[hookData.column.index] || [];
+              if (people.length) {
+                // Le texte natif sert encore au calcul de hauteur, mais il est
+                // rendu invisible : chaque nom est redessiné ci-dessous avec
+                // son statut (absent/retard).
+                hookData.cell.styles.textColor = [255, 255, 255];
+              }
+            },
             didDrawCell: hookData => {
-              if (hookData.section !== "head") return;
-              const count = part.counts[hookData.column.index];
-              if (!count) return;
+              if (hookData.section === "head") {
+                const count = part.counts[hookData.column.index];
+                if (!count) return;
 
-              doc.setTextColor(28, 46, 171);
-              doc.setFont("helvetica", "normal");
+                doc.setTextColor(28, 46, 171);
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(8.5);
+                doc.text(
+                  count,
+                  hookData.cell.x + hookData.cell.width / 2,
+                  hookData.cell.y + hookData.cell.height - 2.2,
+                  { align: "center" }
+                );
+                return;
+              }
+
+              if (hookData.section !== "body") return;
+
+              const people = part.cellPeople?.[hookData.column.index] || [];
+              if (!people.length) return;
+
+              const centerX = hookData.cell.x + hookData.cell.width / 2;
+              const maxTextWidth = Math.max(1, hookData.cell.width - 6);
+              const lineHeight = 3.7;
+              let cursorY = hookData.cell.y + 5.3;
+
               doc.setFontSize(8.5);
-              doc.text(
-                count,
-                hookData.cell.x + hookData.cell.width / 2,
-                hookData.cell.y + hookData.cell.height - 2.2,
-                { align: "center" }
-              );
+
+              people.forEach(person => {
+                const emphasized = person.status === "absent" || person.status === "retard";
+                doc.setFont("helvetica", emphasized ? "bold" : "normal");
+
+                if (person.status === "absent") {
+                  doc.setTextColor(228, 2, 48);
+                } else if (person.status === "retard") {
+                  doc.setTextColor(200, 116, 0);
+                } else {
+                  doc.setTextColor(20, 20, 20);
+                }
+
+                const lines = doc.splitTextToSize(person.text, maxTextWidth);
+                lines.forEach(line => {
+                  doc.text(line, centerX, cursorY, { align: "center" });
+
+                  if (person.status === "absent") {
+                    const textWidth = doc.getTextWidth(line);
+                    doc.setDrawColor(17, 17, 17);
+                    doc.setLineWidth(0.2);
+                    doc.line(
+                      centerX - textWidth / 2,
+                      cursorY - 1.05,
+                      centerX + textWidth / 2,
+                      cursorY - 1.05
+                    );
+                  }
+
+                  cursorY += lineHeight;
+                });
+              });
             },
             didDrawPage: () => {
               drawStamp(doc, stamp, pageWidth);
