@@ -364,10 +364,10 @@ async function loadDashboard() {
 
   const role = participation.role;
 
-  // Pendant la construction des fiches de poste, elles sont réservées aux admins.
+  // Les fiches de poste sont disponibles pour tous les utilisateurs du portail.
   const jobSheetsLink = document.getElementById("job-sheets-link");
   if (jobSheetsLink) {
-    jobSheetsLink.hidden = role !== "admin";
+    jobSheetsLink.hidden = false;
   }
 
 
