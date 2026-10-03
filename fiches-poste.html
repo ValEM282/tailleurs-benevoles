@@ -85,6 +85,23 @@
     #sheet-accadmin .opening-hours p{
       margin:4px 0 10px;
     }
+
+    #sheet-caisse .opening-hours{
+      background:rgba(228,2,48,.08);
+      border-left:5px solid var(--red);
+      border-right:5px solid var(--red);
+      border-radius:16px;
+      padding:18px 20px;
+      margin:18px 0 24px;
+    }
+    #sheet-caisse .opening-hours h3{
+      color:var(--red);
+      font-weight:700;
+      margin-bottom:8px;
+    }
+    #sheet-caisse .opening-hours p{
+      margin:4px 0 10px;
+    }
   </style>
 </head>
 <body class="dashboard-page">
@@ -249,12 +266,45 @@
     </div></details>
   </div></section>
 
-  <section class="sheet" id="sheet-caisse"><div class="sheet-head"><h2>💰 CAISSE</h2><p>Tailloux, cautions et paiements</p></div><div class="sheet-body"><button class="back-list">← Toutes les fiches</button>
-    <div class="responsibles"><h3>Groupe WhatsApp</h3><p><strong>T26 – Caisse</strong></p></div>
-    <div class="section"><h3>Tailloux</h3><p>Les <strong>Tailloux bruns valent 1,50 €</strong> et servent à payer les boissons et certains articles de nourriture : pains saucisse, croque-monsieur du Rotary et gaufres.</p><div class="alert">Les Tailloux ne sont pas remboursables.</div></div>
-    <div class="section"><h3>Cautions gobelets</h3><p>Les <strong>jetons bleus valent 1 €</strong> et sont remboursables à ce stand. Pour rembourser une caution, récupérer le jeton bleu et rendre 1 € par jeton.</p></div>
-    <div class="section"><h3>Paiements</h3><ul><li>SumUp/Payconiq : faire la transaction avec le mobile et <strong>toujours créer la vente dans Loyverse POS</strong>.</li><li>Cash : toujours créer la vente dans Loyverse POS puis donner les Tailloux et cautions éventuelles.</li></ul></div>
-    <div class="section"><h3>Organisation</h3><p>Préparer à l'avance des tas de <strong>5 Tailloux</strong>.</p><div class="alert">Seuls Nicolas et Mélanie sont habilités à vider les caisses. S'il y a trop d'argent dans ta caisse, appelle un responsable du poste.</div></div>
+  <section class="sheet" id="sheet-caisse"><div class="sheet-head"><h2>💰 CAISSE</h2></div><div class="sheet-body"><button class="back-list">← Toutes les fiches</button>
+    <div class="opening-hours">
+      <h3>Lieu</h3>
+      <p>Place des Comtes</p>
+      <h3 style="margin-top:14px">Heures d’ouverture au public</h3>
+      <p>Samedi : 13h – 1h</p>
+      <p>Dimanche : 12h – 21h</p>
+
+      <h3 style="margin-top:20px">Lieu</h3>
+      <p>Grand’ Place</p>
+      <h3 style="margin-top:14px">Heures d’ouverture au public</h3>
+      <p>Samedi : 12h30 – 19h</p>
+      <p>Dimanche : 12h – 19h</p>
+    </div>
+
+    <details><summary>▸ Tailloux</summary><div class="detail-body">
+      <p>On vend des TAILLOUX bruns (1,5 € pièce) pour consommer des :</p>
+      <ul>
+        <li>Boissons</li>
+        <li>Pains Saucisse – Croque-Monsieur – Gaufre</li>
+      </ul>
+      <p>ATTENTION LES TAILLOUX NE SONT PAS REMBOURSABLES !</p>
+    </div></details>
+
+    <details><summary>▸ Caution</summary><div class="detail-body">
+      <p>On vend aussi des CAUTIONS (1 € pièce) pour les gobelets et ils sont remboursables à ce stand.</p>
+      <p>Pour le remboursement de la caution, il faut récupérer le jeton caution et rembourser 1 € par jeton.</p>
+    </div></details>
+
+    <details><summary>▸ Paiement</summary><div class="detail-body">
+      <p>Pour les paiements Sumup et Payconiq, faire la transaction avec le mobile, TOUJOURS créer une vente dans Loyverse POS et donner les places achetées</p>
+      <p>Pour les paiements en cash, TOUJOURS créer une vente dans Loyverse POS et donner les Tailloux (et cautions éventuelles)</p>
+    </div></details>
+
+    <details><summary>▸ Organisation</summary><div class="detail-body">
+      <p>Il est conseillé de préparer à l’avance des tas de 5 Tailloux.</p>
+      <p>Seuls Nicolas MASSART et Mélanie DUMOULIN sont autorisés à vider les caisses.</p>
+      <p>Si vous avez trop d’argent en caisse, appelez les responsables du poste !</p>
+    </div></details>
   </div></section>
 
   <section class="sheet" id="sheet-canards"><div class="sheet-head"><h2>🦆 COURSE AUX CANARDS</h2><p>Préparation, vente et récupération</p></div><div class="sheet-body"><button class="back-list">← Toutes les fiches</button>
