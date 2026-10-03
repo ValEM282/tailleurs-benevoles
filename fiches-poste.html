@@ -47,6 +47,23 @@
     #sheet-billetterie .opening-hours p{
       margin:4px 0 10px;
     }
+
+    #sheet-bar .opening-hours{
+      background:rgba(228,2,48,.08);
+      border-left:5px solid var(--red);
+      border-right:5px solid var(--red);
+      border-radius:16px;
+      padding:18px 20px;
+      margin:18px 0 24px;
+    }
+    #sheet-bar .opening-hours h3{
+      color:var(--red);
+      font-weight:700;
+      margin-bottom:8px;
+    }
+    #sheet-bar .opening-hours p{
+      margin:4px 0 10px;
+    }
   </style>
 </head>
 <body class="dashboard-page">
@@ -73,12 +90,82 @@
     </div>
   </section>
 
-  <section class="sheet" id="sheet-bar"><div class="sheet-head"><h2>🍺 BAR</h2><p>Fiche pratique du poste</p></div><div class="sheet-body"><button class="back-list">← Toutes les fiches</button>
-    <div class="responsibles"><h3>Groupe WhatsApp</h3><p><strong>T26 – Bar</strong></p></div>
-    <div class="section"><h3>À retenir</h3><ul><li><strong>Jeton bleu</strong> = caution pour 1 gobelet, disponible à la caisse centrale.</li><li>Une caisse fermée pour les <strong>Tailloux</strong> et une autre pour les <strong>cautions</strong>.</li><li>Prévoir un récipient pour le retour des cautions.</li><li>Carte bénévoles/artistes : <strong>1 poinçon = 1 Taillou</strong>. Une carte pleine va dans la boîte en plastique.</li></ul><div class="alert">La carte bénévoles/artistes n'est pas valable sur les cocktails/mocktails du stand WILD DRINKZ.</div></div>
-    <div class="section"><h3>Organisation du bar</h3><ul><li>On essaie de tourner entre pompe, service et vaisselle. Si tout le monde se sent bien à son poste, on peut garder l'organisation en place.</li><li>Si tu n'es pas à l'aise dans ton poste, dis-le.</li><li>Pendant les temps morts : nettoyer les surfaces et ranger la réserve.</li><li>Préparer des « lignes » de softs et de vin pour faciliter le service, en adaptant les quantités à l'affluence.</li></ul><div class="tip"><strong>Principe :</strong> s'amuser tout en gardant un service efficace.</div></div>
-    <div class="section"><h3>Points importants</h3><div class="alert">Le bar est quasiment la seule source de revenus du festival. Pas de verre offert aux copains : pense aussi à poinçonner ta propre carte conso.</div><ul><li>Si un festivalier trouve la bière chère, tu peux rappeler que les spectacles proposés sont gratuits pour le public mais ont évidemment un coût.</li><li><strong>Si un festivalier semble trop alcoolisé, refuse de le servir.</strong></li><li>Surveille également ta propre consommation d'alcool.</li></ul></div>
-    <div class="section"><h3>Bon à savoir</h3><p>Bières : <strong>Brasserie de Silly</strong><br>Jus de pommes : pommes d'Écaussinnes pressées à Écaussinnes, vendues par le Rotary.</p></div>
+  <section class="sheet" id="sheet-bar"><div class="sheet-head"><h2>🍺 BAR</h2></div><div class="sheet-body"><button class="back-list">← Toutes les fiches</button>
+    <div class="opening-hours">
+      <h3>Lieu</h3>
+      <p>Place des Comtes</p>
+      <h3 style="margin-top:14px">Heures d’ouverture au public</h3>
+      <p>Samedi : 13h – 1h</p>
+      <p>Dimanche : 11h – 20h</p>
+
+      <h3 style="margin-top:20px">Lieu</h3>
+      <p>Grand’ Place</p>
+      <h3 style="margin-top:14px">Heures d’ouverture au public</h3>
+      <p>Samedi : 13h – 18h</p>
+      <p>Dimanche : 13h – 17h</p>
+    </div>
+
+    <details><summary>▸ Gobelets et cautions</summary><div class="detail-body">
+      <p>Le jeton bleu correspond à la caution d’un gobelet. Les jetons sont disponibles à la caisse centrale.</p>
+      <p>Au bar, tu trouveras :</p>
+      <ul>
+        <li>une caisse fermée pour les Tailloux</li>
+        <li>une caisse fermée pour les cautions / jetons bleus</li>
+        <li>un récipient prévu pour le retour des cautions</li>
+      </ul>
+      <p>Veille à toujours respecter ce fonctionnement afin d’éviter les erreurs de caisse.</p>
+    </div></details>
+
+    <details><summary>▸ Cartes bénévoles et artistes</summary><div class="detail-body">
+      <p>Les bénévoles, les techniciens, et les artistes disposent d’une carte de tailloux.</p>
+      <p>1 poinçon = 1 Taillou</p>
+      <p>Lorsque tu sers une consommation, n’oublie pas de poinçonner la carte. Une fois la carte complète, dépose-la dans la boîte en plastique prévue à cet effet.</p>
+      <p>Si on te pose la question : la carte n’est pas valable pour les cocktails et mocktails vendus au stand WILD DRINKZ.</p>
+    </div></details>
+
+    <details><summary>▸ Organisation derrière le bar</summary><div class="detail-body">
+      <p>Dans la mesure du possible, tu peux tourner entre les différents postes : pompe, service et vaisselle, afin que chacun puisse varier les tâches.</p>
+      <p>Mais si tout le monde est bien à son poste, inutile de changer pour changer !</p>
+      <p>Si tu ne te sens pas à l’aise avec une tâche, dis-le simplement au responsable du bar. Le but est que chacun trouve sa place et passe aussi un bon moment.</p>
+    </div></details>
+
+    <details><summary>▸ Service et gestion des affluences</summary><div class="detail-body">
+      <p>Pour faciliter le travail des personnes qui servent à l’avant, tu peux préparer des lignes de softs et de vins.</p>
+      <p>Adapte toujours la quantité préparée à l’affluence :</p>
+      <ul>
+        <li>beaucoup de monde → anticipe davantage</li>
+        <li>période calme → évite de préparer inutilement trop de boissons</li>
+      </ul>
+      <p>L’objectif est d’être efficace tout en limitant les pertes.</p>
+    </div></details>
+
+    <details><summary>▸ Quand le bar est plus calme</summary><div class="detail-body">
+      <p>Profite des temps morts pour :</p>
+      <ul>
+        <li>nettoyer les surfaces</li>
+        <li>ranger ton espace de travail</li>
+        <li>remettre la réserve en ordre</li>
+        <li>préparer ce qui peut l’être pour le prochain afflux</li>
+      </ul>
+      <p>Un bar propre et rangé facilite énormément le travail de toute l’équipe.</p>
+    </div></details>
+
+    <details><summary>▸ Nos produits et fournisseurs</summary><div class="detail-body">
+      <p>Quelques informations utiles si un festivalier te pose la question :</p>
+      <ul>
+        <li>Bières : Brasserie de Silly</li>
+        <li>Jus de pommes : fabriqué à partir de pommes d’Ecaussinnes, pressées à Ecaussinnes et vendu par le Rotary.</li>
+      </ul>
+      <p>N’hésite pas à mettre en valeur ces produits locaux auprès du public.</p>
+    </div></details>
+
+    <details><summary>▸ Quelques règles importantes !</summary><div class="detail-body">
+      <p>Le bar est l’une des principales sources de revenus du festival. Ces recettes permettent notamment aux Tailleurs de proposer une majorité de spectacles gratuits au public.</p>
+      <p>Tu ne sers donc pas gratuitement un verre à un ami ou une connaissance. Tu utilises ta propre carte de Tailloux, et tu n’oublies pas de la poinçonner.</p>
+      <p>Si un festivalier trouve le prix d’une boisson élevé, tu peux lui rappeler avec le sourire que l’accès aux spectacles est gratuit, mais que leur organisation a évidemment un coût.</p>
+      <p>Si une personne te semble trop alcoolisée, ne la sers pas et, si nécessaire, fais appel au responsable du bar.</p>
+      <p>Enfin, reste également attentif·ve à ta propre consommation d’alcool pendant ton service.</p>
+    </div></details>
   </div></section>
 
   <section class="sheet" id="sheet-foodtruck"><div class="sheet-head"><h2>🌭 FOODTRUCK</h2><p>Pain saucisse, hamburger et gaufre</p></div><div class="sheet-body"><button class="back-list">← Toutes les fiches</button>
