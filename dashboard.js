@@ -26,7 +26,7 @@ function showDashboardMessage(message, type = "info") {
 
 function getRoleLabel(role) {
   switch (role) {
-    case "admin": return "Administration · Coordination bénévoles";
+    case "admin": return "Coordination bénévoles";
     case "responsable": return "Responsable de poste";
     case "benevole": return "Bénévole";
     default: return "Bénévole";
