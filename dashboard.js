@@ -413,14 +413,12 @@ async function loadDashboard() {
 
   const showVolunteer = !showManager || hasVolunteerSchedule;
 
-  if (isAdmin) {
-    roleElement.textContent = getRoleLabel(role);
-  } else {
-    const labels = [];
-    if (responsiblePosts.length) labels.push(`Responsable : ${responsiblePosts.join(", ")}`);
-    if (coResponsiblePosts.length) labels.push(`Co-responsable : ${coResponsiblePosts.join(", ")}`);
-    roleElement.textContent = labels.join(" · ") || "Bénévole";
-  }
+  // Le rôle administrateur se cumule avec les responsabilités de poste.
+  const labels = [];
+  if (isAdmin) labels.push(getRoleLabel(role));
+  if (responsiblePosts.length) labels.push(`Responsable : ${[...new Set(responsiblePosts)].join(", ")}`);
+  if (coResponsiblePosts.length) labels.push(`Co-responsable : ${[...new Set(coResponsiblePosts)].join(", ")}`);
+  roleElement.textContent = labels.join(" · ") || "Bénévole";
 
   volunteerNextShiftSection.hidden = !showVolunteer;
   teamMenuSection.hidden = !showManager;
