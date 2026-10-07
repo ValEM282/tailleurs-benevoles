@@ -413,12 +413,15 @@ async function loadDashboard() {
 
   const showVolunteer = !showManager || hasVolunteerSchedule;
 
-  // Le rôle administrateur se cumule avec les responsabilités de poste.
-  const labels = [];
-  if (isAdmin) labels.push(getRoleLabel(role));
-  if (responsiblePosts.length) labels.push(`Responsable : ${[...new Set(responsiblePosts)].join(", ")}`);
-  if (coResponsiblePosts.length) labels.push(`Co-responsable : ${[...new Set(coResponsiblePosts)].join(", ")}`);
-  roleElement.textContent = labels.join(" · ") || "Bénévole";
+  // Sous le nom, afficher uniquement les postes/équipes réellement gérés.
+  // Pas de rôle technique (admin/coordination) ni de préfixe Responsable/Co-responsable.
+  // get_my_management_roles couvre les responsabilités de poste et d'équipe/unité.
+  const managementNames = scopes
+    .map(item => item.poste_nom || item.unite_nom || item.equipe_nom || item.nom)
+    .filter(Boolean);
+  const uniqueManagementNames = [...new Set(managementNames)];
+  roleElement.textContent = uniqueManagementNames.join(" · ");
+  roleElement.hidden = uniqueManagementNames.length === 0;
 
   volunteerNextShiftSection.hidden = !showVolunteer;
   teamMenuSection.hidden = !showManager;
