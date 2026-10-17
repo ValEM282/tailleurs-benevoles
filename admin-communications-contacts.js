@@ -14,7 +14,7 @@ const queries=await Promise.all([
 const failure=queries.find(x=>x.error);
 if(failure){message.textContent="Impossible de charger les contacts : "+failure.error.message;message.className="contacts-error";return;}
 const [contacts,history,roles,posts]=queries.map(x=>x.data||[]);
-const roleLabels={benevole:"Bénévole",responsable_poste:"Responsable de poste",responsable_equipe:"Responsable d'équipe",autre:"—"};
+const roleLabels={benevole:"Bénévole",responsable_poste:"Responsable de poste",responsable_equipe:"Responsable d'équipe",orga:"Orga",autre:"—"};
 const statusLabels={a_verifier:"À vérifier",autorise:"Autorisé",opposition:"Opposition",invalide:"Invalide"};
 const roleById=new Map(roles.map(x=>[x.contact_id,x.role_contact]));
 const years=new Map(),postById=new Map();
