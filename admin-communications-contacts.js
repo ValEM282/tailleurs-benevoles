@@ -28,7 +28,11 @@ const options={
  status:Object.entries(statusLabels)
 };
 const selectedFilters={};
-let selected=[];
+let selected=[];let sortColumn=null,sortDirection=1;
+const collator=new Intl.Collator('fr',{sensitivity:'base',numeric:true});
+function rowValues(x){return [x.nom||'—',x.prenom||'—',x.email,roleLabels[roleById.get(x.id)]||roleLabels.autre,[...(postById.get(x.id)||[])].sort((a,b)=>collator.compare(a,b)).join(' · ')||'—',[...(years.get(x.id)||[])].sort((a,b)=>Number(a)-Number(b)).join(' · ')||'—',statusLabels[x.statut_envoi]||x.statut_envoi];}
+function sortRows(){if(sortColumn===null)return;selected.sort((a,b)=>{const va=rowValues(a)[sortColumn],vb=rowValues(b)[sortColumn];const emptyA=va==='—',emptyB=vb==='—';if(emptyA!==emptyB)return emptyA?1:-1;return sortDirection*collator.compare(va,vb)||collator.compare(a.email,b.email);});}
+
 function setupFilter(key){const holder=$("options-"+key),detail=$("filter-"+key);const choices=options[key]||[];selectedFilters[key]=new Set();
 const all=document.createElement("label"),allBox=document.createElement("input");allBox.type="checkbox";allBox.checked=true;allBox.value="";all.append(allBox,document.createTextNode("Tout"));holder.append(all);
 const checks=[];
@@ -50,12 +54,14 @@ selected=contacts.filter(x=>{
  &&(!selectedFilters.post.size||[...ps].some(p=>selectedFilters.post.has(p)))
  &&matches("status",x.statut_envoi);
 });
+sortRows();
 $("contacts-count").textContent=selected.length+" contact(s) affiché(s) sur "+contacts.length;
 const body=$("contacts-body");body.replaceChildren();
-selected.forEach(x=>{const tr=document.createElement("tr"),values=[x.nom||"—",x.prenom||"—",x.email,roleLabels[roleById.get(x.id)]||roleLabels.autre,[...(postById.get(x.id)||[])].sort((a,b)=>a.localeCompare(b,"fr")).join(" · ")||"—",[...(years.get(x.id)||[])].sort().join(" · ")||"—",statusLabels[x.statut_envoi]||x.statut_envoi];
+selected.forEach(x=>{const tr=document.createElement("tr"),values=rowValues(x);
 values.forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.append(td);});body.append(tr);});
 }
 $("contact-search").addEventListener("input",render);
+document.querySelectorAll(".contacts-sort").forEach(button=>button.addEventListener("click",()=>{const index=Number(button.dataset.sort);sortDirection=sortColumn===index?-sortDirection:1;sortColumn=index;document.querySelectorAll(".contacts-sort").forEach(b=>{const active=Number(b.dataset.sort)===sortColumn;const th=b.closest("th");th.setAttribute("aria-sort",active?(sortDirection===1?"ascending":"descending"):"none");b.querySelector(".sort-indicator").textContent=active?(sortDirection===1?"▲":"▼"):"↕";b.setAttribute("aria-label","Trier "+b.textContent.replace(/[▲▼↕]/g,"").trim()+(active&&sortDirection===1?" de Z à A":" de A à Z"));});render();}));
 $("contacts-export").addEventListener("click",()=>{const quote=x=>'"'+String(x??"").replaceAll('"','""')+'"';
 const header=["Nom","Prénom","Email","Rôle","Poste","Année","Statut"];
 const lines=[header,...selected.map(x=>[x.nom||"",x.prenom||"",x.email,roleLabels[roleById.get(x.id)]||roleLabels.autre,[...(postById.get(x.id)||[])].sort().join(" | "),[...(years.get(x.id)||[])].sort().join(" | "),statusLabels[x.statut_envoi]||x.statut_envoi])];
