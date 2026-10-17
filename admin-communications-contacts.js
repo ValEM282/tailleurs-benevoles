@@ -14,7 +14,7 @@ const queries=await Promise.all([
 const failure=queries.find(x=>x.error);
 if(failure){message.textContent="Impossible de charger les contacts : "+failure.error.message;message.className="contacts-error";return;}
 const [contacts,history,roles,posts]=queries.map(x=>x.data||[]);
-const roleLabels={benevole:"Bénévole",responsable_poste:"Responsable de poste",responsable_equipe:"Responsable d'équipe",orga:"Orga",autre:"—"};
+const roleLabels={benevole:"Bénévole",responsable_poste:"Responsable de poste",responsable_poste_orga:"Responsable de poste · Orga",responsable_equipe:"Responsable d'équipe",orga:"Orga",autre:"—"};
 const statusLabels={a_verifier:"À vérifier",autorise:"Autorisé",opposition:"Opposition",invalide:"Invalide"};
 const roleById=new Map(roles.map(x=>[x.contact_id,x.role_contact]));
 const years=new Map(),postById=new Map();
@@ -23,7 +23,7 @@ posts.forEach(x=>{if(!postById.has(x.contact_id))postById.set(x.contact_id,new S
 const options={
  source:[["linked","Portail (fiche)"],["historical","Historique"]],
  edition:[...new Set(["2026","2025","2024","2023","2022",...history.filter(x=>x.inscrit).map(x=>String(x.annee))])].sort((a,b)=>b.localeCompare(a)).map(x=>[x,x]),
- role:Object.entries(roleLabels).map(([value,label])=>[value,value==="autre"?"Aucun":label]),
+ role:Object.entries(roleLabels).filter(([value])=>value!=="responsable_poste_orga").map(([value,label])=>[value,value==="autre"?"Aucun":label]),
  post:[...new Set(posts.map(x=>x.poste))].sort((a,b)=>a.localeCompare(b,"fr")).map(x=>[x,x]),
  status:Object.entries(statusLabels)
 };
@@ -46,7 +46,7 @@ selected=contacts.filter(x=>{
  return (!term||name.includes(term))
  &&matches("source",x.benevole_id?"linked":"historical")
  &&(!selectedFilters.edition.size||[...ys].some(y=>selectedFilters.edition.has(y)))
- &&matches("role",roleById.get(x.id)||"autre")
+ &&(!selectedFilters.role.size||selectedFilters.role.has(roleById.get(x.id)||"autre")||(roleById.get(x.id)==="responsable_poste_orga"&&(selectedFilters.role.has("responsable_poste")||selectedFilters.role.has("orga"))))
  &&(!selectedFilters.post.size||[...ps].some(p=>selectedFilters.post.has(p)))
  &&matches("status",x.statut_envoi);
 });
