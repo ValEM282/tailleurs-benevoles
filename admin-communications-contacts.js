@@ -22,7 +22,7 @@ history.forEach(x=>{if(!x.inscrit)return;if(!years.has(x.contact_id))years.set(x
 posts.forEach(x=>{if(!postById.has(x.contact_id))postById.set(x.contact_id,new Set());postById.get(x.contact_id).add(x.poste);});
 const options={
  source:[["linked","Portail (fiche)"],["historical","Historique"]],
- edition:[...new Set(history.filter(x=>x.inscrit).map(x=>String(x.annee)))].sort((a,b)=>b.localeCompare(a)).map(x=>[x,x]),
+ edition:[...new Set(["2026","2025","2024","2023","2022",...history.filter(x=>x.inscrit).map(x=>String(x.annee))])].sort((a,b)=>b.localeCompare(a)).map(x=>[x,x]),
  role:Object.entries(roleLabels),
  post:[...new Set(posts.map(x=>x.poste))].sort((a,b)=>a.localeCompare(b,"fr")).map(x=>[x,x]),
  status:Object.entries(statusLabels)
@@ -59,7 +59,7 @@ $("contact-search").addEventListener("input",render);
 $("contacts-export").addEventListener("click",()=>{const quote=x=>'"'+String(x??"").replaceAll('"','""')+'"';
 const header=["Nom","Prénom","Email","Rôle","Poste(s) et sous-postes","Année","Statut"];
 const lines=[header,...selected.map(x=>[x.nom||"",x.prenom||"",x.email,roleLabels[roleById.get(x.id)]||roleLabels.autre,[...(postById.get(x.id)||[])].sort().join(" | "),[...(years.get(x.id)||[])].sort().join(" | "),statusLabels[x.statut_envoi]||x.statut_envoi])];
-const blob=new Blob(["\\ufeff"+lines.map(a=>a.map(quote).join(";")).join("\\r\\n")],{type:"text/csv;charset=utf-8"});
+const blob=new Blob(["\ufeff"+lines.map(a=>a.map(quote).join(";")).join("\r\n")],{type:"text/csv;charset=utf-8"});
 const link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download="tailleurs-contacts-selection.csv";link.click();setTimeout(()=>URL.revokeObjectURL(link.href),1000);});
 message.hidden=true;content.hidden=false;render();
 })();
