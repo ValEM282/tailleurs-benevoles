@@ -52,12 +52,12 @@ selected=contacts.filter(x=>{
 });
 $("contacts-count").textContent=selected.length+" contact(s) affiché(s) sur "+contacts.length;
 const body=$("contacts-body");body.replaceChildren();
-selected.forEach(x=>{const tr=document.createElement("tr"),values=[x.nom||"—",x.prenom||"—",x.email,roleLabels[roleById.get(x.id)]||roleLabels.autre,[...(postById.get(x.id)||[])].sort((a,b)=>a.localeCompare(b,"fr")).join(", ")||"—",[...(years.get(x.id)||[])].sort().join(", ")||"Non renseignée",statusLabels[x.statut_envoi]||x.statut_envoi];
+selected.forEach(x=>{const tr=document.createElement("tr"),values=[x.nom||"—",x.prenom||"—",x.email,roleLabels[roleById.get(x.id)]||roleLabels.autre,[...(postById.get(x.id)||[])].sort((a,b)=>a.localeCompare(b,"fr")).join(" · ")||"—",[...(years.get(x.id)||[])].sort().join(" · ")||"Non renseignée",statusLabels[x.statut_envoi]||x.statut_envoi];
 values.forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.append(td);});body.append(tr);});
 }
 $("contact-search").addEventListener("input",render);
 $("contacts-export").addEventListener("click",()=>{const quote=x=>'"'+String(x??"").replaceAll('"','""')+'"';
-const header=["Nom","Prénom","Email","Rôle","Poste(s) et sous-postes","Année","Statut"];
+const header=["Nom","Prénom","Email","Rôle","Poste","Année","Statut"];
 const lines=[header,...selected.map(x=>[x.nom||"",x.prenom||"",x.email,roleLabels[roleById.get(x.id)]||roleLabels.autre,[...(postById.get(x.id)||[])].sort().join(" | "),[...(years.get(x.id)||[])].sort().join(" | "),statusLabels[x.statut_envoi]||x.statut_envoi])];
 const blob=new Blob(["\ufeff"+lines.map(a=>a.map(quote).join(";")).join("\r\n")],{type:"text/csv;charset=utf-8"});
 const link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download="tailleurs-contacts-selection.csv";link.click();setTimeout(()=>URL.revokeObjectURL(link.href),1000);});
