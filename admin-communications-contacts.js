@@ -1,1 +1,65 @@
-(async()=>{"use strict";const $=id=>document.getElementById(id);const message=$("contacts-message");const content=$("contacts-content");$("logout-button").addEventListener("click",()=>PortalAuth.logout());const user=await PortalAuth.requireAuth();if(!user)return;const {data:isAdmin,error:roleError}=await PortalAuth.client.rpc("is_current_portal_admin");if(roleError||!isAdmin){message.textContent="Accès réservé aux administrateurs du portail.";message.className="contacts-error";return;}const {data:contacts,error}=await PortalAuth.client.from("mailing_contacts").select("id,email,prenom,nom,origine,statut_envoi,benevole_id").order("email").range(0,999);if(error){message.textContent="Impossible de lire le répertoire : "+error.message;message.className="contacts-error";return;}const {data:history,error:historyError}=await PortalAuth.client.from("mailing_contact_editions").select("contact_id,annee,inscrit").range(0,999);if(historyError){message.textContent="Impossible de lire les inscriptions : "+historyError.message;message.className="contacts-error";return;}const {data:roles,error:rolesError}=await PortalAuth.client.rpc("admin_mailing_contact_roles",{p_edition_id:1});if(rolesError){message.textContent="Impossible de lire les rôles : "+rolesError.message;message.className="contacts-error";return;}const roleById=new Map((roles||[]).map(x=>[x.contact_id,x.role_contact]));const roleLabels={benevole:"Bénévole",responsable_poste:"Responsable de poste",responsable_equipe:"Responsable d'équipe",autre:"Autre / non renseigné"};const years=new Map();(history||[]).forEach(row=>{if(!row.inscrit)return;if(!years.has(row.contact_id))years.set(row.contact_id,new Set());years.get(row.contact_id).add(String(row.annee));});const rows=contacts||[];message.hidden=true;content.hidden=false;let selected=[];function render(){const term=$("contact-search").value.trim().toLocaleLowerCase("fr"),source=$("contact-source").value,edition=$("contact-edition").value,status=$("contact-status").value,role=$("contact-role").value;selected=rows.filter(x=>{const text=[x.email,x.prenom,x.nom].join(" ").toLocaleLowerCase("fr");const ys=years.get(x.id)||new Set();return(!term||text.includes(term))&&(!source||(source==="linked"?!!x.benevole_id:!x.benevole_id))&&(!status||x.statut_envoi===status)&&(!role||roleById.get(x.id)===role)&&(!edition||ys.has(edition));});$("contacts-count").textContent=selected.length+" contact(s) affiché(s) sur "+rows.length;const tbody=$("contacts-body");tbody.replaceChildren();selected.forEach(x=>{const tr=document.createElement("tr");const values=[([x.prenom,x.nom].filter(Boolean).join(" ")||"—"),x.email,x.benevole_id?"Fiche liée":"Historique seul",roleLabels[roleById.get(x.id)]||"Autre / non renseigné",Array.from(years.get(x.id)||[]).sort().join(", ")||"Non renseigné",({a_verifier:"À vérifier",autorise:"Autorisé",opposition:"Opposition",invalide:"Invalide"}[x.statut_envoi]||x.statut_envoi)];values.forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.append(td);});tbody.append(tr);});}["contact-search","contact-source","contact-edition","contact-status","contact-role"].forEach(id=>$(id).addEventListener(id==="contact-search"?"input":"change",render));$("contacts-export").addEventListener("click",()=>{const quote=x=>'"'+String(x??"").replaceAll('"','""')+'"';const header=["Prénom","Nom","Email","Origine","Rôle 2026","Éditions connues","Statut"];const lines=[header,...selected.map(x=>[x.prenom||"",x.nom||"",x.email,x.origine,roleLabels[roleById.get(x.id)]||"Autre / non renseigné",Array.from(years.get(x.id)||[]).sort().join(" "),x.statut_envoi])];const blob=new Blob(["\ufeff"+lines.map(a=>a.map(quote).join(";")).join("\r\n")],{type:"text/csv;charset=utf-8"});const link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download="tailleurs-contacts-selection.csv";link.click();setTimeout(()=>URL.revokeObjectURL(link.href),1000);});render();})();
+(async()=>{"use strict";
+const $=id=>document.getElementById(id);
+const message=$("contacts-message"),content=$("contacts-content");
+$("logout-button").addEventListener("click",()=>PortalAuth.logout());
+const user=await PortalAuth.requireAuth();if(!user)return;
+const auth=await PortalAuth.client.rpc("is_current_portal_admin");
+if(auth.error||!auth.data){message.textContent="Accès réservé aux administrateurs du portail.";message.className="contacts-error";return;}
+const queries=await Promise.all([
+ PortalAuth.client.from("mailing_contacts").select("id,email,prenom,nom,origine,statut_envoi,benevole_id").order("email").range(0,999),
+ PortalAuth.client.from("mailing_contact_editions").select("contact_id,annee,inscrit").range(0,999),
+ PortalAuth.client.rpc("admin_mailing_contact_roles",{p_edition_id:1}),
+ PortalAuth.client.rpc("admin_mailing_contact_posts")
+]);
+const failure=queries.find(x=>x.error);
+if(failure){message.textContent="Impossible de charger les contacts : "+failure.error.message;message.className="contacts-error";return;}
+const [contacts,history,roles,posts]=queries.map(x=>x.data||[]);
+const roleLabels={benevole:"Bénévole",responsable_poste:"Responsable de poste",responsable_equipe:"Responsable d'équipe",autre:"Autre / non renseigné"};
+const statusLabels={a_verifier:"À vérifier",autorise:"Autorisé",opposition:"Opposition",invalide:"Invalide"};
+const roleById=new Map(roles.map(x=>[x.contact_id,x.role_contact]));
+const years=new Map(),postById=new Map();
+history.forEach(x=>{if(!x.inscrit)return;if(!years.has(x.contact_id))years.set(x.contact_id,new Set());years.get(x.contact_id).add(String(x.annee));});
+posts.forEach(x=>{if(!postById.has(x.contact_id))postById.set(x.contact_id,new Set());postById.get(x.contact_id).add(x.poste);});
+const options={
+ source:[["linked","Portail (fiche)"],["historical","Historique"]],
+ edition:[...new Set(history.filter(x=>x.inscrit).map(x=>String(x.annee)))].sort((a,b)=>b.localeCompare(a)).map(x=>[x,x]),
+ role:Object.entries(roleLabels),
+ post:[...new Set(posts.map(x=>x.poste))].sort((a,b)=>a.localeCompare(b,"fr")).map(x=>[x,x]),
+ status:Object.entries(statusLabels)
+};
+const selectedFilters={};
+let selected=[];
+function setupFilter(key){const holder=$("options-"+key),detail=$("filter-"+key);const choices=options[key]||[];selectedFilters[key]=new Set();
+const all=document.createElement("label"),allBox=document.createElement("input");allBox.type="checkbox";allBox.checked=true;allBox.value="";all.append(allBox,document.createTextNode("Tout"));holder.append(all);
+const checks=[];
+choices.forEach(([value,label])=>{const row=document.createElement("label"),cb=document.createElement("input");cb.type="checkbox";cb.value=value;row.append(cb,document.createTextNode(label));holder.append(row);checks.push(cb);cb.addEventListener("change",()=>{selectedFilters[key]=new Set(checks.filter(x=>x.checked).map(x=>x.value));allBox.checked=selectedFilters[key].size===0;updateSummary();render();});});
+allBox.addEventListener("change",()=>{checks.forEach(x=>x.checked=false);selectedFilters[key].clear();allBox.checked=true;updateSummary();render();});
+function updateSummary(){const active=selectedFilters[key];const names=choices.filter(([v])=>active.has(v)).map(([,n])=>n);detail.querySelector("summary").textContent=names.length?names.length===1?names[0]:names.length+" sélectionnés":"Tout";}
+}
+Object.keys(options).forEach(setupFilter);
+document.addEventListener("click",e=>{document.querySelectorAll(".multi-filter[open]").forEach(d=>{if(!d.contains(e.target))d.open=false;});});
+function matches(key,value){return !selectedFilters[key].size||selectedFilters[key].has(value);}
+function render(){const term=$("contact-search").value.trim().toLocaleLowerCase("fr");
+selected=contacts.filter(x=>{
+ const ys=years.get(x.id)||new Set(),ps=postById.get(x.id)||new Set();
+ const name=[x.nom,x.prenom,x.email].join(" ").toLocaleLowerCase("fr");
+ return (!term||name.includes(term))
+ &&matches("source",x.benevole_id?"linked":"historical")
+ &&(!selectedFilters.edition.size||[...ys].some(y=>selectedFilters.edition.has(y)))
+ &&matches("role",roleById.get(x.id)||"autre")
+ &&(!selectedFilters.post.size||[...ps].some(p=>selectedFilters.post.has(p)))
+ &&matches("status",x.statut_envoi);
+});
+$("contacts-count").textContent=selected.length+" contact(s) affiché(s) sur "+contacts.length;
+const body=$("contacts-body");body.replaceChildren();
+selected.forEach(x=>{const tr=document.createElement("tr"),values=[x.nom||"—",x.prenom||"—",x.email,roleLabels[roleById.get(x.id)]||roleLabels.autre,[...(postById.get(x.id)||[])].sort((a,b)=>a.localeCompare(b,"fr")).join(", ")||"—",[...(years.get(x.id)||[])].sort().join(", ")||"Non renseignée",statusLabels[x.statut_envoi]||x.statut_envoi];
+values.forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.append(td);});body.append(tr);});
+}
+$("contact-search").addEventListener("input",render);
+$("contacts-export").addEventListener("click",()=>{const quote=x=>'"'+String(x??"").replaceAll('"','""')+'"';
+const header=["Nom","Prénom","Email","Rôle","Poste(s) et sous-postes","Année","Statut"];
+const lines=[header,...selected.map(x=>[x.nom||"",x.prenom||"",x.email,roleLabels[roleById.get(x.id)]||roleLabels.autre,[...(postById.get(x.id)||[])].sort().join(" | "),[...(years.get(x.id)||[])].sort().join(" | "),statusLabels[x.statut_envoi]||x.statut_envoi])];
+const blob=new Blob(["\\ufeff"+lines.map(a=>a.map(quote).join(";")).join("\\r\\n")],{type:"text/csv;charset=utf-8"});
+const link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download="tailleurs-contacts-selection.csv";link.click();setTimeout(()=>URL.revokeObjectURL(link.href),1000);});
+message.hidden=true;content.hidden=false;render();
+})();
