@@ -23,7 +23,7 @@ posts.forEach(x=>{if(!postById.has(x.contact_id))postById.set(x.contact_id,new S
 const options={
  source:[["linked","Portail (fiche)"],["historical","Historique"]],
  edition:[...new Set(["2026","2025","2024","2023","2022",...history.filter(x=>x.inscrit).map(x=>String(x.annee))])].sort((a,b)=>b.localeCompare(a)).map(x=>[x,x]),
- role:Object.entries(roleLabels),
+ role:Object.entries(roleLabels).map(([value,label])=>[value,value==="autre"?"Aucun":label]),
  post:[...new Set(posts.map(x=>x.poste))].sort((a,b)=>a.localeCompare(b,"fr")).map(x=>[x,x]),
  status:Object.entries(statusLabels)
 };
@@ -52,7 +52,7 @@ selected=contacts.filter(x=>{
 });
 $("contacts-count").textContent=selected.length+" contact(s) affiché(s) sur "+contacts.length;
 const body=$("contacts-body");body.replaceChildren();
-selected.forEach(x=>{const tr=document.createElement("tr"),values=[x.nom||"—",x.prenom||"—",x.email,roleLabels[roleById.get(x.id)]||roleLabels.autre,[...(postById.get(x.id)||[])].sort((a,b)=>a.localeCompare(b,"fr")).join(" · ")||"—",[...(years.get(x.id)||[])].sort().join(" · ")||"Non renseignée",statusLabels[x.statut_envoi]||x.statut_envoi];
+selected.forEach(x=>{const tr=document.createElement("tr"),values=[x.nom||"—",x.prenom||"—",x.email,roleLabels[roleById.get(x.id)]||roleLabels.autre,[...(postById.get(x.id)||[])].sort((a,b)=>a.localeCompare(b,"fr")).join(" · ")||"—",[...(years.get(x.id)||[])].sort().join(" · ")||"—",statusLabels[x.statut_envoi]||x.statut_envoi];
 values.forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.append(td);});body.append(tr);});
 }
 $("contact-search").addEventListener("input",render);
