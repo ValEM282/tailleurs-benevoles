@@ -28,7 +28,7 @@ const options={
  status:Object.entries(statusLabels)
 };
 const selectedFilters={};
-let selected=[];let sortColumn=null,sortDirection=1;
+let selected=[];const checkedContacts=new Set(JSON.parse(sessionStorage.getItem("tailleurs-mail-recipients")||"[]").map(String));let sortColumn=null,sortDirection=1;
 const collator=new Intl.Collator('fr',{sensitivity:'base',numeric:true});
 function rowValues(x){return [x.nom||'—',x.prenom||'—',x.email,roleLabels[roleById.get(x.id)]||roleLabels.autre,[...(postById.get(x.id)||[])].sort((a,b)=>collator.compare(a,b)).join(' · ')||'—',[...(years.get(x.id)||[])].sort((a,b)=>Number(a)-Number(b)).join(' · ')||'—',statusLabels[x.statut_envoi]||x.statut_envoi];}
 function sortRows(){if(sortColumn===null)return;selected.sort((a,b)=>{const va=rowValues(a)[sortColumn],vb=rowValues(b)[sortColumn];const emptyA=va==='—',emptyB=vb==='—';if(emptyA!==emptyB)return emptyA?1:-1;return sortDirection*collator.compare(va,vb)||collator.compare(a.email,b.email);});}
@@ -55,11 +55,15 @@ selected=contacts.filter(x=>{
  &&matches("status",x.statut_envoi);
 });
 sortRows();
+const visibleIds=new Set(selected.map(x=>String(x.id)));const selectedVisible=selected.filter(x=>checkedContacts.has(String(x.id))).length;const selectAll=$("contacts-select-all");selectAll.checked=selected.length>0&&selectedVisible===selected.length;selectAll.indeterminate=selectedVisible>0&&selectedVisible<selected.length;$("contacts-create-list").textContent="Créer une liste ("+checkedContacts.size+")";
 $("contacts-count").textContent=selected.length+" contact(s) affiché(s) sur "+contacts.length;
 const body=$("contacts-body");body.replaceChildren();
-selected.forEach(x=>{const tr=document.createElement("tr"),values=rowValues(x);
+selected.forEach(x=>{const tr=document.createElement("tr"),values=rowValues(x);const tdCheck=document.createElement("td"),check=document.createElement("input");check.type="checkbox";check.checked=checkedContacts.has(String(x.id));check.setAttribute("aria-label","Sélectionner "+[x.prenom,x.nom].filter(Boolean).join(" "));check.addEventListener("change",()=>{if(check.checked)checkedContacts.add(String(x.id));else checkedContacts.delete(String(x.id));saveChecked();render();});tdCheck.className="contacts-select-cell";tdCheck.append(check);tr.append(tdCheck);
 values.forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.append(td);});body.append(tr);});
 }
+function saveChecked(){sessionStorage.setItem("tailleurs-mail-recipients",JSON.stringify([...checkedContacts]));}
+$("contacts-select-all").addEventListener("change",e=>{selected.forEach(x=>{if(e.target.checked)checkedContacts.add(String(x.id));else checkedContacts.delete(String(x.id));});saveChecked();render();});
+$("contacts-create-list").addEventListener("click",()=>{saveChecked();sessionStorage.setItem("tailleurs-mail-recipients-details",JSON.stringify(contacts.filter(x=>checkedContacts.has(String(x.id))).map(x=>({id:x.id,email:x.email,prenom:x.prenom,nom:x.nom,statut_envoi:x.statut_envoi}))));window.location.href="admin-communications-editor.html?destinataires=1";});
 $("contact-search").addEventListener("input",render);
 document.querySelectorAll(".contacts-sort").forEach(button=>button.addEventListener("click",()=>{const index=Number(button.dataset.sort);sortDirection=sortColumn===index?-sortDirection:1;sortColumn=index;document.querySelectorAll(".contacts-sort").forEach(b=>{const active=Number(b.dataset.sort)===sortColumn;const th=b.closest("th");th.setAttribute("aria-sort",active?(sortDirection===1?"ascending":"descending"):"none");b.querySelector(".sort-indicator").textContent=active?(sortDirection===1?"▲":"▼"):"↕";b.setAttribute("aria-label","Trier "+b.textContent.replace(/[▲▼↕]/g,"").trim()+(active&&sortDirection===1?" de Z à A":" de A à Z"));});render();}));
 $("contacts-export").addEventListener("click",()=>{const quote=x=>'"'+String(x??"").replaceAll('"','""')+'"';
