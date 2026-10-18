@@ -46,6 +46,13 @@
         grid-template-columns: 1fr;
       }
     }
+    #admin-communications-title + *{margin-top:0}
+    .admin-communications-contacts{display:flex;align-items:center;justify-content:center;text-decoration:none;width:100%;box-sizing:border-box;margin:0 0 18px}
+    #admin-communications-title{margin-bottom:14px}
+    [aria-labelledby="admin-communications-title"] .admin-mailing-group{padding-top:14px;border-top:1px solid #dfe3f5}
+    [aria-labelledby="admin-communications-title"] .admin-mailing-group + .admin-mailing-group{margin-top:18px}
+    [aria-labelledby="admin-communications-title"] .admin-mailing-actions button{font:inherit;font-weight:700}
+    [aria-labelledby="admin-communications-title"] .admin-mailing-actions button:disabled{opacity:.55;cursor:not-allowed}
   </style>
 </head>
 <body class="dashboard-page">
@@ -390,7 +397,10 @@
 
         <section class="admin-management-section" aria-labelledby="admin-communications-title">
           <div class="admin-section-heading"><h2 id="admin-communications-title">COMMUNICATIONS</h2></div>
-          <div class="admin-mailing-actions"><a href="admin-communications-contacts.html" class="admin-search-button">Mailing list</a><a href="admin-communications-editor.html" class="admin-search-button">Créer un mail</a><a href="admin-communications-mailings.html" class="admin-search-button">Mailing</a></div>
+          <a href="admin-communications-contacts.html" class="admin-search-button admin-communications-contacts">Contacts</a>
+          <div class="admin-mailing-group"><h3>PAR MAIL</h3><div class="admin-mailing-actions"><a href="admin-communications-mailings.html" class="admin-search-button">Mail</a><a href="admin-communications-editor.html" class="admin-search-button">Créer un mail</a></div></div>
+          <div class="admin-mailing-group"><h3>PAR WHATSAPP</h3><div class="admin-mailing-actions"><button type="button" class="admin-search-button" disabled title="À définir ensemble">Message</button><button type="button" class="admin-search-button" disabled title="À définir ensemble">Créer un message</button></div></div>
+          <div class="admin-mailing-group"><h3>PAR APPEL</h3><div class="admin-mailing-actions"><button type="button" class="admin-search-button" disabled title="À définir ensemble">Appel</button><button type="button" class="admin-search-button" disabled title="À définir ensemble">Créer un appel</button></div></div>
         </section>
 
         <section class="admin-management-section" aria-labelledby="admin-whatsapp-title">
