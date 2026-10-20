@@ -190,7 +190,9 @@ function getFilteredVolunteerHourRows() {
   const secondaryKey = key === "prenom" ? "nom" : "prenom";
 
   filtered.sort((a, b) => {
-    const primary = volunteerHoursCollator.compare(a[key] || "", b[key] || "");
+    const primary = key === "total"
+      ? numberValue(a.total) - numberValue(b.total)
+      : volunteerHoursCollator.compare(a[key] || "", b[key] || "");
     if (primary !== 0) return primary * direction;
     return volunteerHoursCollator.compare(a[secondaryKey] || "", b[secondaryKey] || "");
   });
@@ -223,7 +225,7 @@ function renderVolunteerHoursTable() {
           NOM <span aria-hidden="true">${volunteerHoursSortIndicator("nom")}</span>
         </button>
       </th>
-      <th scope="col" class="volunteer-hours-number volunteer-hours-total">Total</th>
+      <th scope="col" class="volunteer-hours-number volunteer-hours-total"><button type="button" class="volunteer-hours-sort-button" data-sort-key="total" aria-label="Trier par total d’heures">Total <span aria-hidden="true">${volunteerHoursSortIndicator("total")}</span></button></th>
       ${days.map(day => `<th scope="col" class="volunteer-hours-number">${escapeHtml(formatDayMonth(day))}</th>`).join("")}
     </tr>
   `;
@@ -483,12 +485,12 @@ volunteerHoursHead.addEventListener("click", event => {
   if (!button) return;
 
   const key = button.dataset.sortKey;
-  if (!key || !["prenom", "nom"].includes(key)) return;
+  if (!key || !["prenom", "nom", "total"].includes(key)) return;
 
   if (volunteerHoursSort.key === key) {
     volunteerHoursSort.direction = volunteerHoursSort.direction === "asc" ? "desc" : "asc";
   } else {
-    volunteerHoursSort = { key, direction: "asc" };
+    volunteerHoursSort = { key, direction: key === "total" ? "desc" : "asc" };
   }
 
   renderVolunteerHoursTable();
