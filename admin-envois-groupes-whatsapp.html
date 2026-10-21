@@ -134,7 +134,7 @@ Merci de contribuer ainsi à améliorer la communication entre tous les acteurs 
           <div class="invite-name">${esc((r.prenom||'')+' '+(r.nom||''))}</div>
           <div>${esc(phone||'—')}</div>
           <div class="groups">${groups.map(x=>`<span class="group-pill">${esc(x)}</span>`).join('')}</div>
-          <div class="invite-send-cell"><span class="invite-status ${log?'sent':''}">${log?'Envoyé':'À envoyer'}</span>${log?`<span class="invite-date" title="Date du premier envoi">${esc(fmtDate(log.premier_envoi_at))} (${count===1?'1er':count+'e'})</span>`:''}<button type="button" class="wa ${log?'wa-resend':'wa-send'}" title="${log?'Renvoyer via WhatsApp':'Envoyer via WhatsApp'}" aria-label="${log?'Renvoyer via WhatsApp':'Envoyer via WhatsApp'}" ${normalized?'':'disabled'}>${normalized?(log?'↻':'Envoyer'):'Indisponible'}</button></div>`;
+          <div class="invite-send-cell"><span class="invite-status ${log?'sent':''}">${log?'Envoyé':'À envoyer'}</span>${log?`<span class="invite-date" title="Date du premier envoi">${esc(fmtDate(log.premier_envoi_at))} (1er)${count>1?' · '+count+' envois':''}</span>`:''}<button type="button" class="wa ${log?'wa-resend':'wa-send'}" title="${log?'Renvoyer via WhatsApp':'Envoyer via WhatsApp'}" aria-label="${log?'Renvoyer via WhatsApp':'Envoyer via WhatsApp'}" ${normalized?'':'disabled'}>${normalized?(log?'↻':'Envoyer'):'Indisponible'}</button></div>`;
         const button=row.querySelector('.wa');
         if(normalized)button.addEventListener('click',async()=>{
           const popup=window.open('about:blank','_blank');
