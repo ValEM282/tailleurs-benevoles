@@ -915,7 +915,6 @@ input:focus-visible {
   padding: 0 !important;
   font-size: 0 !important;
   line-height: 0 !important;
-  color: #2e9d57;
 }
 :is(.admin-add-button, .open-add-button, .schedule-add-button) > span {
   font-size: 0 !important;
