@@ -28,6 +28,7 @@ const options={
  status:Object.entries(statusLabels)
 };
 const selectedFilters={};
+const filterControls={};
 let selected=[];const checkedContacts=new Set(JSON.parse(sessionStorage.getItem("tailleurs-mail-recipients")||"[]").map(String));let sortColumn=null,sortDirection=1;
 const collator=new Intl.Collator('fr',{sensitivity:'base',numeric:true});
 function rowValues(x){return [x.nom||'—',x.prenom||'—',x.email,roleLabels[roleById.get(x.id)]||roleLabels.autre,[...(postById.get(x.id)||[])].sort((a,b)=>collator.compare(a,b)).join(' · ')||'—',[...(years.get(x.id)||[])].sort((a,b)=>Number(a)-Number(b)).join(' · ')||'—',statusLabels[x.statut_envoi]||x.statut_envoi];}
@@ -39,6 +40,7 @@ const checks=[];
 choices.forEach(([value,label])=>{const row=document.createElement("label"),cb=document.createElement("input");cb.type="checkbox";cb.value=value;row.append(cb,document.createTextNode(label));holder.append(row);checks.push(cb);cb.addEventListener("change",()=>{selectedFilters[key]=new Set(checks.filter(x=>x.checked).map(x=>x.value));allBox.checked=selectedFilters[key].size===0;updateSummary();render();});});
 allBox.addEventListener("change",()=>{checks.forEach(x=>x.checked=false);selectedFilters[key].clear();allBox.checked=true;updateSummary();render();});
 function updateSummary(){const active=selectedFilters[key];const names=choices.filter(([v])=>active.has(v)).map(([,n])=>n);detail.querySelector("summary").textContent=names.length?names.length===1?names[0]:names.length+" sélectionnés":"Tout";}
+filterControls[key]={apply(values){selectedFilters[key]=new Set(values);checks.forEach(cb=>cb.checked=selectedFilters[key].has(cb.value));allBox.checked=selectedFilters[key].size===0;updateSummary();render();}};
 }
 Object.keys(options).forEach(setupFilter);
 document.addEventListener("click",e=>{document.querySelectorAll(".multi-filter[open]").forEach(d=>{if(!d.contains(e.target))d.open=false;});});
@@ -72,4 +74,22 @@ const lines=[header,...selected.map(x=>[x.nom||"",x.prenom||"",x.email,roleLabel
 const blob=new Blob(["\ufeff"+lines.map(a=>a.map(quote).join(";")).join("\r\n")],{type:"text/csv;charset=utf-8"});
 const link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download="tailleurs-contacts-selection.csv";link.click();setTimeout(()=>URL.revokeObjectURL(link.href),1000);});
 message.hidden=true;content.hidden=false;render();
+// Le dialogue modal bloque toute interaction avec la liste jusqu'à validation du périmètre.
+const yearDialog=$("contacts-year-dialog"),yearChoices=$("contacts-year-options");
+const yearAllLabel=document.createElement("label"),yearAll=document.createElement("input");
+yearAll.type="checkbox";yearAll.checked=true;yearAllLabel.append(yearAll,document.createTextNode("Tout"));yearChoices.append(yearAllLabel);
+const yearChecks=[];
+for(const [value,label] of options.edition){
+ const line=document.createElement("label"),cb=document.createElement("input");
+ cb.type="checkbox";cb.value=value;line.append(cb,document.createTextNode(label));yearChoices.append(line);yearChecks.push(cb);
+ cb.addEventListener("change",()=>{yearAll.checked=!yearChecks.some(x=>x.checked);});
+}
+yearAll.addEventListener("change",()=>{yearChecks.forEach(cb=>cb.checked=false);yearAll.checked=true;});
+$("contacts-year-confirm").addEventListener("click",()=>{
+ const picked=yearChecks.filter(cb=>cb.checked).map(cb=>cb.value);
+ filterControls.edition.apply(picked);
+ yearDialog.close();
+});
+yearDialog.addEventListener("cancel",e=>e.preventDefault());
+yearDialog.showModal();
 })();
