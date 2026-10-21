@@ -43,9 +43,7 @@
   <main class="subpage-main admin-main">
     <section class="admin-card">
       <h1 style="color:#1C2EAB;margin-top:0">Invitation groupe WhatsApp</h1>
-      <div class="intro">
-        Chaque message est préparé individuellement. Il invite la personne à se connecter au <strong>Portail Bénévoles</strong>, puis à cliquer sur <strong>« 💬 WhatsApp »</strong> pour rejoindre uniquement les groupes qui la concernent. WhatsApp s’ouvre avec le message prérempli : vérifie-le puis appuie sur <strong>Envoyer</strong>.
-      </div>
+      
 
       <div class="invite-filters">
         <label><span>Prénom</span><input id="filter-firstname" type="search" placeholder="Rechercher un prénom"></label>
@@ -158,7 +156,7 @@ Merci de contribuer ainsi à améliorer la communication entre tous les acteurs 
       });
       const totalSent=rows.filter(r=>logs.has(String(r.id))).length;
       const totalPending=rows.length-totalSent;
-      loading.textContent=filtered.length?`${filtered.length} personne${filtered.length>1?'s':''} affichée${filtered.length>1?'s':''}.`:'Aucune personne ne correspond aux filtres.';
+      loading.textContent=filtered.length?'':'Aucune personne ne correspond aux filtres.';
       summary.hidden=false;
       summary.textContent=`${rows.length} destinataire${rows.length>1?'s':''} · ${totalSent} déjà envoyé${totalSent>1?'s':''} · ${totalPending} à envoyer`;
     }
