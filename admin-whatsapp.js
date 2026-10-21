@@ -12,7 +12,11 @@ async function loadEditions(preferred){
  if(error)throw error;editions=data||[];
  selector.innerHTML="";
  editions.forEach(e=>{const opt=new Option(String(e.annee),String(e.id));selector.add(opt);});
- const chosen=editions.find(e=>e.id===preferred)||editions.find(e=>e.active)||editions[0];
+ // Ouvrir par défaut la prochaine édition en préparation, indépendamment des liens configurés.
+ const current=editions.find(e=>e.active);
+ const upcoming=editions.filter(e=>e.statut==="preparation" && (!current || e.annee>current.annee))
+  .sort((a,b)=>a.annee-b.annee)[0];
+ const chosen=editions.find(e=>e.id===preferred)||(upcoming||current||editions[0]);
  if(chosen)selector.value=String(chosen.id);
  await render();
 }
