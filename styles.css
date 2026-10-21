@@ -899,3 +899,89 @@ input:focus-visible {
     padding: 17px;
   }
 }
+
+
+/* =========================================================
+   BOUTONS D'ACTION COMPACTS — centrage commun, tous écrans
+   Conserver dimensions, formes, couleurs et comportements.
+   ========================================================= */
+:is(.admin-add-button, .open-add-button, .schedule-add-button) {
+  position: relative;
+  display: inline-grid !important;
+  place-items: center !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+
+/* Les métriques de Macho/Titillium déplacent visuellement le +.
+   Un seul glyphe Arial, positionné par rapport au centre géométrique. */
+:is(.admin-add-button, .open-add-button, .schedule-add-button) > span {
+  font-size: 0 !important;
+  line-height: 0 !important;
+  transform: none !important;
+}
+:is(.admin-add-button, .open-add-button, .schedule-add-button)::before {
+  content: none !important;
+}
+:is(.admin-add-button, .open-add-button, .schedule-add-button)::after {
+  content: "+";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -54%);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 23px;
+  font-weight: 600;
+  line-height: 1;
+  pointer-events: none;
+}
+@media (max-width: 700px) {
+  :is(.admin-add-button, .open-add-button)::after { font-size: 21px; }
+  .schedule-add-button::after { font-size: 23px; }
+}
+
+/* Actions carrées ou arrondies avec une icône unique.
+   Les boutons « Ajouter … » et autres boutons textuels ne sont pas ciblés. */
+:is(
+  .open-delete-button,
+  .open-assign-button,
+  .schedule-remove-location-button,
+  .schedule-remove-slot-button,
+  .schedule-edit-button,
+  .schedule-edit-confirm,
+  .schedule-edit-cancel,
+  .contact-edit-button,
+  .logistics-edit-button,
+  .place-edit-button,
+  .post-edit-button,
+  .responsibility-edit-button
+) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+:is(
+  .open-delete-button,
+  .open-assign-button,
+  .schedule-remove-location-button,
+  .schedule-remove-slot-button,
+  .schedule-edit-confirm,
+  .schedule-edit-cancel
+) {
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+:is(
+  .open-delete-button,
+  .open-assign-button,
+  .schedule-remove-location-button,
+  .schedule-remove-slot-button,
+  .schedule-edit-confirm,
+  .schedule-edit-cancel
+) > :is(span, svg, i) {
+  flex-shrink: 0;
+  margin: 0;
+  line-height: 1;
+}
