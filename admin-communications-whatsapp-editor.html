@@ -20,11 +20,20 @@
 .template-line #copy:not(:disabled):hover,
 .template-line #copy:not(:disabled):focus-visible{background:rgba(28,46,171,.08);}
 .template-line .icon-btn:disabled{opacity:.35;cursor:not-allowed;}
+
+/* Éditeur WhatsApp : harmonisation avec les champs de l'éditeur Mail. */
+#body:focus-visible{outline:3px solid rgba(228,2,48,.45);outline-offset:3px}
+.toolbar .variable-button{
+ border:0;border-radius:7px;background:#1c2eab;color:#fff;
+ padding:9px;font:700 13px "Titillium Web",Arial,sans-serif;cursor:pointer
+}
+.toolbar .variable-button:hover{background:#152480}
+.toolbar .variable-button:focus-visible{outline:3px solid rgba(228,2,48,.45);outline-offset:3px}
 </style></head><body class="dashboard-page"><header class="dashboard-header"><div class="subpage-header-inner"><a class="back-button" href="admin.html">← Accueil ADMIN</a><a class="dashboard-title" href="dashboard.html" style="color:#fff;text-decoration:none">🎪 PORTAIL BÉNÉVOLES 🎪</a><button id="logout-button" class="logout-button">Se déconnecter</button></div></header><main class="main"><section class="panel"><h1>WhatsApp</h1>
 <div class="field"><div class="template-line"><select id="templates" aria-label="Template"><option value="">Nouveau template</option></select><button id="new" type="button" class="icon-btn add" title="Nouveau template" aria-label="Nouveau template"><span aria-hidden="true">+</span></button><button id="copy" type="button" class="icon-btn" title="Copier le template" aria-label="Copier le template"><svg class="copy-symbol" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="14" height="14" rx="0.6"/><rect x="9" y="9" width="14" height="14" rx="0.6"/></svg></button><button id="delete" type="button" class="icon-btn delete" title="Supprimer le template" aria-label="Supprimer le template"><span aria-hidden="true">×</span></button></div></div>
 <div class="field"><label for="name">Nom</label><input id="name"></div>
 <div class="field"><label for="date">Date</label><input id="date" type="date"></div>
-<div class="field"><label for="body">Contenu</label><textarea id="body" rows="9"></textarea><div class="toolbar"><button data-insert="*">B</button><button data-insert="_"><i>I</i></button><button data-value="{prenom}">{prenom}</button><button data-value="{nom}">{nom}</button><button data-value="{email}">{email}</button><button data-value="{poste}">{poste}</button></div></div>
+<div class="field"><label for="body">Contenu</label><textarea id="body" rows="9"></textarea><div class="toolbar"><button type="button" data-insert="*" aria-label="Mettre en gras" title="Gras"><strong>B</strong></button><button type="button" data-insert="_" aria-label="Mettre en italique" title="Italique"><i>I</i></button><button type="button" class="variable-button" data-value="{prenom}">+ Prénom</button><button type="button" class="variable-button" data-value="{nom}">+ Nom</button><button type="button" class="variable-button" data-value="{email}">+ Email</button><button type="button" class="variable-button" data-value="{poste}">+ Poste</button></div></div>
 <h2 style="color:#1c2eab">Aperçu</h2><div class="preview"><div id="preview" class="bubble"></div></div>
 <div class="actions" style="margin-top:20px"><button id="save" class="btn">Enregistrer</button><button id="test" class="btn purple">Envoyer un test</button><button id="campaign" class="btn red">Créer les envois</button></div><div id="notice" class="notice" role="status"></div></section></main>
 <dialog id="test-modal" class="modal"><h2>Envoyer un test WhatsApp</h2><label for="test-phone">Numéro de téléphone</label><input id="test-phone" type="tel" inputmode="tel" placeholder="0400 00 00 00"><menu><button id="test-cancel" class="btn" type="button">Annuler</button><button id="test-send" class="btn purple" type="button">Ouvrir WhatsApp</button></menu></dialog>
@@ -32,8 +41,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="portal-auth.js"></script><script>(async()=>{document.getElementById('logout-button').onclick=()=>PortalAuth.logout();const user=await PortalAuth.requireAuth();if(!user)return;const {data:isAdmin,error:accessError}=await PortalAuth.client.rpc('is_current_portal_admin');if(accessError||!isAdmin){document.querySelector('main').textContent='Accès réservé aux administrateurs.';return;}const db=PortalAuth.client;
 const $=id=>document.getElementById(id),notice=t=>{$('notice').textContent=t},today=()=>new Date().toLocaleDateString('en-CA',{timeZone:'Europe/Brussels'});
 let templates=[],current=null,people=[],selected=new Set();
-$('date').value=today();
-function fresh(){current=null;$('templates').value='';$('name').value='';$('date').value=today();$('body').value='';preview()}
+$('date').value='';
+function fresh(){current=null;$('templates').value='';$('name').value='';$('date').value='';$('body').value='';preview()}
 function read(){return {name:$('name').value.trim(),template_date:$('date').value,body:$('body').value}}
 function preview(){$('preview').textContent=$('body').value||'Le message apparaîtra ici.'}
 $('body').addEventListener('input',preview);
