@@ -48,6 +48,21 @@ if(id){
  if(!error&&data?.length){
   const draft=data.find(d=>String(d.name||'').includes('27/09'))||data[0];
   if(draft.canva_html){mail={subject:draft.subject,html:draft.canva_html};}
+  else {
+   const doc=document.implementation.createHTMLDocument('Aperçu du modèle');
+   const style=doc.createElement('style');
+   style.textContent='body{font:16px/1.65 "Titillium Web",Arial,sans-serif;color:#111;margin:0;padding:25px;background:#fff}.body{white-space:pre-wrap;overflow-wrap:anywhere}.signature{margin-top:30px}.links{margin-top:20px;display:flex;gap:12px;flex-wrap:wrap}a{color:#1c2eab}';
+   doc.head.append(style);
+   const main=doc.createElement('main');
+   const body=doc.createElement('div');body.className='body';body.textContent=[draft.greeting,draft.body].filter(Boolean).join('\\n\\n');main.append(body);
+   const sig=doc.createElement('div');sig.className='signature';sig.textContent=[draft.signature,draft.role_label].filter(Boolean).join(' — ');main.append(sig);
+   const links=doc.createElement('div');links.className='links';
+   for(const [name,url] of [['Site web',draft.website_url],['Facebook',draft.facebook_url],['Instagram',draft.instagram_url]]){
+    try{const u=new URL(url);if(u.protocol!=='https:'&&u.protocol!=='http:')continue;const a=doc.createElement('a');a.href=u.href;a.textContent=name;a.target='_blank';a.rel='noopener noreferrer';links.append(a)}catch{}
+   }
+   main.append(links);doc.body.append(main);
+   mail={subject:draft.subject,html:'<!doctype html>'+doc.documentElement.outerHTML};
+  }
  }
  if(!mail){status.textContent="Le contenu HTML du mailing historique « Horaires 2026 - 27/09/26 » n’est pas archivé dans les campagnes disponibles. Un aperçu fidèle ne peut pas être affiché sans retrouver le modèle original.";return;}
 }else{status.textContent='Mailing non précisé.';return;}
