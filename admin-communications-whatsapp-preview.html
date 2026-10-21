@@ -1,0 +1,22 @@
+<!doctype html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Aperçu du message — Les Tailleurs</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="subpage-header.css"><link rel="stylesheet" href="admin.css"><style>body{font-family:"Titillium Web",Arial,sans-serif}.preview-main{max-width:850px;margin:25px auto;padding:0 16px}.preview-panel{background:#fff;border:1px solid #dce0ef;border-radius:16px;padding:24px}.preview-panel h1{color:#1c2eab;margin-top:0}.preview-text{font:inherit;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;border:1px solid #dce0ef;background:#f8f9fd;border-radius:12px;padding:22px}.preview-back{color:#1c2eab;text-decoration:none;font-weight:700;display:inline-block;margin-bottom:15px}</style></head><body class="dashboard-page"><header class="dashboard-header"><div class="subpage-header-inner"><a href="admin-communications-whatsapp-messages.html" class="back-button">← Messages WhatsApp</a><a href="dashboard.html" class="dashboard-title" style="color:#fff;text-decoration:none">🎪 PORTAIL BÉNÉVOLES 🎪</a><button type="button" id="logout-button" class="logout-button">Se déconnecter</button></div></header><main class="preview-main"><section class="preview-panel"><a href="admin-communications-whatsapp-messages.html" class="preview-back">← Messages WhatsApp</a><h1 id="title">Aperçu du message</h1><p id="loading">Vérification des accès…</p><div id="preview" class="preview-text" hidden></div></section></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="portal-auth.js"></script><script>(async()=>{document.getElementById('logout-button').onclick=()=>PortalAuth.logout();const user=await PortalAuth.requireAuth();if(!user)return;const {data,error}=await PortalAuth.client.rpc('is_current_portal_admin');if(error||!data){document.getElementById('loading').textContent='Accès réservé aux administrateurs.';return;}const type=new URLSearchParams(location.search).get('type');const messages={responsable:{title:'Invitation responsable',body:`Bonjour {{prenom}},
+
+Nous t'invitons à utiliser l'application Portail Bénévoles des Tailleurs pour prendre connaissance des horaires, et plus encore...
+
+📱 Installer le Portail :
+https://benevoles.lestailleurs.be/installer.html
+
+Pour te connecter, utilise uniquement l'email suivante :
+{{email}}
+
+Choisis ensuite ton mot de passe (que tu peux voir en cliquant sur les gros yeux 👀), et clique bien sûr "Première connexion"
+ 
+Et vive les Tailleurs  ! 🎪`},groupe:{title:'Invitation groupe WhatsApp',body:`Bonjour {{prenom}},
+
+Pour faciliter la communication entre nous pendant le festival, je t’invite à consulter le Portail Bénévoles des Tailleurs :
+https://benevoles.lestailleurs.be/
+
+Une fois connecté·e, clique sur le bouton « 💬 WhatsApp » et rejoins le ou les groupes qui te concernent.
+
+Merci de contribuer ainsi à améliorer la communication entre tous les acteurs du festival Les Tailleurs. 🎪
+
+À très vite !`}};const item=messages[type];document.getElementById('loading').hidden=true;if(!item){document.getElementById('title').textContent='Message introuvable';return;}document.getElementById('title').textContent=item.title;document.getElementById('preview').textContent=item.body;document.getElementById('preview').hidden=false;})();</script></body></html>
