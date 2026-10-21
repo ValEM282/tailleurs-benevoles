@@ -7,3 +7,6 @@
 /* Statut de configuration des liens */
 .wa-status.is-configured{color:#258443;font-weight:600}
 .wa-status.is-missing{color:#e40230;font-weight:600}
+
+/* Gestion par édition */
+.wa-edition-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:0 0 16px}.wa-edition-toolbar label{font-weight:700;color:#1c2eab}.wa-edition-toolbar select{padding:8px 12px;border:1px solid #b9c2e7;border-radius:8px;font:inherit;background:#fff}.wa-edition-toolbar button[hidden]{display:none}.wa-edition-toolbar #wa-edition-status{color:#45527d;font-weight:600}.wa-url:disabled{background:#f2f3f8;color:#555}.wa-save:disabled{opacity:.5;cursor:not-allowed}
