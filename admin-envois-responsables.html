@@ -1,35 +1,50 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Invitations WhatsApp — Portail Bénévoles</title>
+<!doctype html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Invitation responsable — Messages WhatsApp — Les Tailleurs</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css?v=20260921-2"><link rel="stylesheet" href="subpage-header.css?v=20260922-2"><link rel="stylesheet" href="admin.css?v=20260927-3">
 <style>
-.invite-list{display:grid;gap:10px}.invite-row{display:grid;grid-template-columns:minmax(160px,1.1fr) minmax(170px,1.3fr) minmax(135px,.8fr) minmax(150px,1fr) auto;gap:10px;align-items:center;padding:12px;border:1px solid #dde1ed;border-radius:10px;background:#fff}.invite-name{font-weight:700}.invite-sent{font-size:.86rem;color:#5f6884;margin-top:3px}.invite-sent strong{color:#168344}.muted{color:#5f6884}.wa{border:0;border-radius:8px;padding:9px 12px;background:#168344;color:#fff;font:700 .95rem "Titillium Web",sans-serif;cursor:pointer;white-space:nowrap}.wa:disabled{background:#b8bdc9;cursor:not-allowed}.intro{padding:14px;border-radius:10px;background:#f4f5fb;margin-bottom:16px}.missing{color:#E40230;font-weight:700}.invite-filters{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin:0 0 16px}.invite-filters input,.invite-filters select{width:100%;padding:11px 12px;border:1px solid #cbd1e6;border-radius:9px;background:#fff;font:inherit;color:#17213c}.invite-filters label{font-weight:700;color:#1C2EAB}.invite-filters label span{display:block;margin-bottom:4px}@media(max-width:800px){.invite-filters{grid-template-columns:1fr}.invite-row{grid-template-columns:1fr}.wa{width:100%}}
-.wa-send{min-width:100px}.wa-resend{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;padding:0;font-family:Arial,sans-serif;font-size:26px;line-height:1}.wa:hover:not(:disabled){background:#106e39}.invite-send-cell{display:flex;justify-content:flex-end;align-items:center;gap:10px}.invite-date{color:#168344;font-weight:700;font-size:.9rem;white-space:nowrap}.invite-status{font-weight:700;color:#1c2eab}.invite-status.sent{color:#168344}.invite-row{min-width:0}.invite-row>div{min-width:0;overflow-wrap:anywhere}@media(max-width:800px){.invite-send-cell{justify-content:flex-start}.wa-resend{width:42px}.wa-send{width:auto}}@media(max-width:600px){.invite-send-cell{justify-content:flex-start}} .invite-summary{margin:8px 0 16px;color:#5f6884;font-weight:600}</style></head><body class="dashboard-page"><header class="dashboard-header"><div class="subpage-header-inner"><a href="admin.html" class="back-button">← Accueil ADMIN</a><a href="dashboard.html" class="dashboard-title" style="color:#fff;text-decoration:none">🎪 PORTAIL BÉNÉVOLES 🎪</a><span></span></div></header>
-<main class="subpage-main admin-main"><section class="admin-card"><a href="admin-communications-whatsapp-messages.html" style="display:inline-block;margin-bottom:12px;color:#1c2eab;text-decoration:none;font-weight:700">← Messages WhatsApp</a><h1 style="color:#1C2EAB;margin-top:0">Invitation responsable</h1>
+.mail-status-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 18px}.mail-status-box{padding:12px;border-radius:10px;background:#f4f5fb;text-align:center}.mail-status-box strong{display:block;font-size:1.5rem;color:#1C2EAB}.mail-status-list{display:grid;gap:8px}.mail-status-row{display:grid;grid-template-columns:minmax(115px,1fr) minmax(120px,1fr) minmax(180px,1.5fr) minmax(100px,.75fr) minmax(155px,1.1fr) 44px;gap:10px;align-items:center;padding:11px 12px;border:1px solid #dde1ed;border-radius:10px;background:#fff}.mail-status-name{font-weight:700}.mail-status-header{display:grid;grid-template-columns:minmax(115px,1fr) minmax(120px,1fr) minmax(180px,1.5fr) minmax(100px,.75fr) minmax(155px,1.1fr) 44px;gap:10px;align-items:center;padding:0 12px 8px;color:#1c2eab;font-weight:700}.mail-status-sort{background:none;border:0;padding:0;text-align:left;font:inherit;color:inherit;font-weight:700;cursor:pointer}.mail-status-sort:hover{text-decoration:underline}.mail-status-sort:focus-visible{outline:2px solid #891e82;outline-offset:3px}.mail-status-sort .sort-indicator{margin-left:5px;font-weight:400}.mail-status-header .mail-status-date-title{white-space:nowrap}.mail-status-email{overflow-wrap:anywhere}.mail-status-pill{font-weight:700}.mail-status-pill.envoye{color:#168344}.mail-status-pill.a_envoyer{color:#1C2EAB}.mail-status-pill.erreur{color:#E40230}.mail-resend{width:38px;height:38px;border:2px solid #168344;border-radius:50%;background:#168344;color:#fff;font-size:23px;line-height:1;display:grid;place-items:center;cursor:pointer;font-family:Arial,sans-serif}.mail-resend:hover{filter:brightness(.92)}.mail-resend:disabled{opacity:.55;cursor:wait}.mail-status-feedback{grid-column:1/-1;color:#168344;font-weight:600;font-size:.95rem}.mail-status-feedback.error{color:#E40230}.mail-last-error{grid-column:1/-1;color:#E40230;font-weight:700;font-size:.95rem;padding-top:2px}@media(max-width:700px){.mail-status-summary{grid-template-columns:1fr}.mail-status-row{grid-template-columns:1fr auto;gap:3px 8px}.mail-status-name,.mail-status-firstname,.mail-status-email,.mail-status-pill,.mail-status-date{grid-column:1}.mail-resend{grid-column:2;grid-row:1/5;align-self:center}.mail-status-date{color:#5f6884}.mail-status-header{grid-template-columns:1fr 1fr;gap:4px 10px;padding:8px 12px}.mail-status-header .mail-status-sort,.mail-status-header .mail-status-date-title{grid-column:auto}.mail-status-header .mail-status-date-title{grid-column:1/-1}.mail-status-header .mail-status-sort{font-size:.9rem}.mail-status-header .mail-status-sort:nth-child(3){grid-column:1}.mail-status-header .mail-status-sort:nth-child(4){grid-column:2}}
 
-<div class="invite-filters"><label><span>Prénom</span><input id="filter-firstname" type="search" placeholder="Rechercher un prénom"></label><label><span>NOM</span><input id="filter-lastname" type="search" placeholder="Rechercher un nom"></label><label><span>Rôle</span><select id="filter-role"><option value="" selected disabled>Choisir un rôle</option><option value="__all">Tous les rôles</option></select></label><label><span>Statut</span><select id="filter-status"><option value="__all">Tous</option><option value="pending">À envoyer</option><option value="sent">Envoyé</option></select></label></div><div id="loading" class="admin-message">Chargement…</div><p id="summary" class="invite-summary" hidden></p><div id="list" class="invite-list"></div></section></main>
+.mail-status-sort[aria-sort="ascending"],.mail-status-sort[aria-sort="descending"]{text-decoration:none}
+.mail-status-date{white-space:nowrap}.mail-status-row .mail-resend:disabled{background:#aeb3be;border-color:#aeb3be;opacity:.85;cursor:not-allowed}
+.mail-status-row .mail-status-email{min-width:0}
+@media(max-width:700px){.mail-status-date{white-space:normal}.mail-status-row .mail-resend{grid-row:1/6}}
+</style></head><body class="dashboard-page"><header class="dashboard-header"><div class="subpage-header-inner"><a href="admin.html" class="back-button">← Accueil ADMIN</a><a href="dashboard.html" class="dashboard-title" style="color:#fff;text-decoration:none">🎪 PORTAIL BÉNÉVOLES 🎪</a><span></span></div></header>
+<main class="subpage-main admin-main"><section class="admin-card">
+<a href="admin-communications-whatsapp-messages.html" style="display:inline-block;margin-bottom:12px;color:#1c2eab;text-decoration:none;font-weight:700">← Messages WhatsApp</a><h1 style="color:#1C2EAB;margin-top:0">Invitation responsable</h1>
+<div id="mail-loading" class="admin-message">Chargement…</div>
+<div id="mail-content" hidden><div class="mail-status-summary"><div class="mail-status-box"><strong id="count-sent">0</strong>Envoyés</div><div class="mail-status-box"><strong id="count-pending">0</strong>À envoyer</div><div class="mail-status-box"><strong id="count-errors">0</strong>Erreurs</div></div>
+<div class="mail-status-header" aria-label="Colonnes et tri des envois"><button class="mail-status-sort" data-sort="prenom" type="button">Prénom<span class="sort-indicator"></span></button><button class="mail-status-sort" data-sort="nom" type="button">NOM<span class="sort-indicator"></span></button><button class="mail-status-sort" data-sort="email" type="button">Email<span class="sort-indicator"></span></button><button class="mail-status-sort" data-sort="statut" type="button">Statut<span class="sort-indicator"></span></button><button class="mail-status-sort mail-status-date-title" data-sort="date" type="button">Date d’envoi<span class="sort-indicator"></span></button><span></span></div>
+<div id="mail-list" class="mail-status-list"></div></div></section></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="portal-auth.js"></script>
-<script>
-(async()=>{
- const loading=document.getElementById("loading"),list=document.getElementById("list");
+<script>(async()=>{
+ const loading=document.getElementById("mail-loading"),content=document.getElementById("mail-content"),list=document.getElementById("mail-list");
  const user=await PortalAuth.requireAuth();if(!user)return;
- const {data:isAdmin,error:ae}=await PortalAuth.client.rpc("is_current_portal_admin");if(ae||!isAdmin){loading.textContent="Cette page est réservée aux administrateurs.";return}
- const [{data:volData,error},{data:respData,error:respError},{data:logData,error:logError}]=await Promise.all([PortalAuth.client.rpc("admin_list_benevoles"),PortalAuth.client.rpc("admin_list_responsables"),PortalAuth.client.rpc("admin_list_whatsapp_responsable_logs")]);if(error||respError||logError){console.error(error||respError||logError);loading.textContent="Impossible de charger les destinataires.";return}
+ const {data:isAdmin,error:adminError}=await PortalAuth.client.rpc("is_current_portal_admin");
+ if(adminError||!isAdmin){loading.textContent="Cette page est réservée aux administrateurs.";return}
  const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
- const phoneRaw=r=>r.telephone||r.phone||r.gsm||r.mobile||"";
- const emailRaw=r=>r.email||r.mail||"";
+ const fmt=d=>d?new Intl.DateTimeFormat("fr-BE",{timeZone:"Europe/Brussels",day:"2-digit",month:"2-digit",year:"2-digit",hour:"2-digit",minute:"2-digit"}).format(new Date(d)).replace(",",""):"—";
  const normalizePhone=p=>{let s=String(p||"").replace(/[^0-9+]/g,"");if(s.startsWith("00"))s="+"+s.slice(2);if(s.startsWith("0"))s="+32"+s.slice(1);return s.replace("+","")};
- const isYouth=r=>/^(guide|patro|pionnier)\s*0*\d+$/i.test(String(r.prenom||"").trim());
- const logs=new Map((logData||[]).map(x=>[String(x.benevole_id),x]));const merged=new Map();
+ const collator=new Intl.Collator("fr",{sensitivity:"base",numeric:true});
+ let sortKey=null,sortDirection=1;
+ try{
+ 
+ const [{data:volData,error:volError},{data:respData,error:respError},{data:logData,error:logError}]=await Promise.all([
+  PortalAuth.client.rpc("admin_list_benevoles"),
+  PortalAuth.client.rpc("admin_list_responsables"),
+  PortalAuth.client.rpc("admin_list_whatsapp_responsable_logs")
+ ]);
+ if(volError||respError||logError)throw volError||respError||logError;
  const keyOf=r=>String(r.id||r.benevole_id||r.personne_id||"");
- for(const v of (volData||[])){if(isYouth(v))continue;const k=keyOf(v);if(k)merged.set(k,{...v,_roles:["Bénévole"]})}
- for(const rp of (respData||[])){if(isYouth(rp))continue;const k=keyOf(rp);if(!k)continue;const current=merged.get(k)||{};const roles=new Set(current._roles||[]);if(Array.isArray(rp.responsable_postes)&&rp.responsable_postes.length)roles.add("Responsable de poste");if(Array.isArray(rp.co_responsable_postes)&&rp.co_responsable_postes.length)roles.add("Co-responsable");const base=String(rp.role_et_affectation||rp.role_affectation||rp.role||"");if(/responsable.*unit|unité/i.test(base))roles.add("Responsable d'unité");if(!roles.size)roles.add("Responsable organisation");merged.set(k,{...current,...rp,_roles:[...roles]})}
- const rows=[...merged.values()].sort((a,b)=>String(a.nom||"").localeCompare(String(b.nom||""),"fr",{sensitivity:"base"})||String(a.prenom||"").localeCompare(String(b.prenom||""),"fr",{sensitivity:"base"}));
- const firstInput=document.getElementById("filter-firstname"),lastInput=document.getElementById("filter-lastname"),roleSelect=document.getElementById("filter-role");
- const statusSelect=document.getElementById("filter-status");const roleOf=r=>(r._roles||["Bénévole"]).join(" + ");
- ["Bénévole","Responsable de poste","Co-responsable","Responsable d'unité","Responsable organisation"].forEach(role=>{const o=document.createElement("option");o.value=role;o.textContent=role;roleSelect.appendChild(o)});
- const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLocaleLowerCase("fr").trim();
+ const isYouth=r=>/^(guide|patro|pionnier)\s*0*\d+$/i.test(String(r.prenom||"").trim());
+ const merged=new Map();
+ for(const v of volData||[]){if(isYouth(v))continue;const k=keyOf(v);if(k)merged.set(k,{...v})}
+ for(const rp of respData||[]){if(isYouth(rp))continue;const k=keyOf(rp);if(k)merged.set(k,{...(merged.get(k)||{}),...rp})}
+ const rows=[...merged.values()];
+ const logs=new Map((logData||[]).map(x=>[String(x.benevole_id),x]));
+ const emailOf=r=>r.email||r.mail||"";
+ const phoneOf=r=>r.telephone||r.phone||r.gsm||r.mobile||"";
  const message=r=>`Bonjour ${r.prenom||""},
 
 Nous t'invitons à utiliser l'application Portail Bénévoles des Tailleurs pour prendre connaissance des horaires, et plus encore...
@@ -38,20 +53,61 @@ Nous t'invitons à utiliser l'application Portail Bénévoles des Tailleurs pour
 https://benevoles.lestailleurs.be/installer.html
 
 Pour te connecter, utilise uniquement l'email suivante :
-${emailRaw(r)}
+${emailOf(r)}
 
 Choisis ensuite ton mot de passe (que tu peux voir en cliquant sur les gros yeux 👀), et clique bien sûr "Première connexion"
  
 Et vive les Tailleurs  ! 🎪`;
- const fmtDate=v=>v?new Intl.DateTimeFormat("fr-BE",{dateStyle:"short",timeStyle:"short"}).format(new Date(v)):"";const render=()=>{list.innerHTML="";const f=norm(firstInput.value),l=norm(lastInput.value),rr=roleSelect.value,ss=statusSelect.value;const filtered=rows.filter(r=>(!f||norm(r.prenom).includes(f))&&(!l||norm(r.nom).includes(l))&&(!rr||rr==="__all"||(r._roles||[]).includes(rr))&&(ss==="__all"||(ss==="sent"&&logs.has(keyOf(r)))||(ss==="pending"&&!logs.has(keyOf(r)))));for(const r of filtered){
-   const phone=phoneRaw(r),email=emailRaw(r),normalized=normalizePhone(phone);
-   const role=roleOf(r);
-   const ok=Boolean(normalized&&email);
-   const row=document.createElement("div");row.className="invite-row";
-   const log=logs.get(keyOf(r));const sentInfo=log?'<div class="invite-sent"><strong>1er envoi :</strong> '+esc(fmtDate(log.premier_envoi_at))+(Number(log.nombre_envois)>1?' · '+Number(log.nombre_envois)+' envois':"")+'</div>':"";const count=Number(log?.nombre_envois||0);row.innerHTML='<div class="invite-name">'+esc((r.prenom||"")+" "+(r.nom||""))+'</div><div>'+esc(email||"—")+'</div><div>'+esc(phone||"—")+'<div class="muted">'+esc(role)+'</div></div><div class="invite-status '+(log?'sent':'')+'">'+(log?'Envoyé':'À envoyer')+'</div><div class="invite-send-cell">'+(log?'<span class="invite-date" title="Date du premier envoi">'+esc(fmtDate(log.premier_envoi_at))+' (1er)'+(count>1?' · '+count+' envois':'')+'</span>':'')+'<button type="button" class="wa '+(log?'wa-resend':'wa-send')+'" title="'+(log?'Renvoyer via WhatsApp':'Envoyer via WhatsApp')+'" aria-label="'+(log?'Renvoyer via WhatsApp':'Envoyer via WhatsApp')+'" '+(ok?'':'disabled')+'>'+(ok?(log?'↻':'Envoyer'):'Indisponible')+'</button></div>';const btn=row.querySelector(".wa");if(ok)btn.addEventListener("click",async()=>{btn.disabled=true;try{const {data:logged,error:le}=await PortalAuth.client.rpc("admin_log_whatsapp_responsable_invitation",{p_benevole_id:keyOf(r)});if(le)throw le;const x=Array.isArray(logged)?logged[0]:logged;if(x)logs.set(keyOf(r),{benevole_id:keyOf(r),...x});const url="https://wa.me/"+normalized+"?text="+encodeURIComponent(message(r));window.open(url,"_blank","noopener");render()}catch(e){console.error(e);window.alert("Impossible d’enregistrer l’envoi.");btn.disabled=false}});
-   list.appendChild(row);
- } loading.textContent=filtered.length?"":"Aucune personne ne correspond aux filtres.";const sent=rows.filter(r=>logs.has(keyOf(r))).length;const summary=document.getElementById("summary");summary.hidden=false;summary.textContent=rows.length+" destinataire"+(rows.length>1?"s":"")+" · "+sent+" déjà envoyé"+(sent>1?"s":"")+" · "+(rows.length-sent)+" à envoyer";};
- [firstInput,lastInput].forEach(el=>el.addEventListener("input",render));roleSelect.addEventListener("change",render);statusSelect.addEventListener("change",render);render();
+ const logFunction="admin_log_whatsapp_responsable_invitation";
  
-})();
-</script></body></html>
+ const rowStatus=r=>logs.has(keyOf(r))?"envoye":"a_envoyer";
+ const comparator=(a,b)=>{
+  const value=r=>sortKey==="statut"?rowStatus(r):sortKey==="date"?(logs.get(keyOf(r))?.premier_envoi_at||""):sortKey==="email"?emailOf(r):r[sortKey]||"";
+  return collator.compare(String(value(a)),String(value(b)))*sortDirection;
+ };
+ document.querySelectorAll(".mail-status-sort").forEach(button=>button.addEventListener("click",()=>{
+   const key=button.dataset.sort;
+   if(sortKey===key)sortDirection*=-1;else{sortKey=key;sortDirection=1}
+   document.querySelectorAll(".mail-status-sort").forEach(b=>{
+    const active=b.dataset.sort===sortKey;b.querySelector(".sort-indicator").textContent=active?(sortDirection===1?" ↑":" ↓"):"";
+    b.setAttribute("aria-sort",active?(sortDirection===1?"ascending":"descending"):"none");
+   });
+   render();
+ }));
+ function render(){
+  const sent=rows.filter(r=>logs.has(keyOf(r))).length;
+  document.getElementById("count-sent").textContent=sent;
+  document.getElementById("count-pending").textContent=rows.length-sent;
+  document.getElementById("count-errors").textContent="0";
+  list.replaceChildren();
+  const sorted=sortKey?[...rows].sort(comparator):rows;
+  for(const r of sorted){
+   const key=keyOf(r),log=logs.get(key),count=Number(log?.nombre_envois||0),phone=normalizePhone(phoneOf(r)),email=emailOf(r);
+   const row=document.createElement("div");row.className="mail-status-row";
+   row.innerHTML='<div class="mail-status-firstname">'+esc(r.prenom)+'</div><div class="mail-status-name">'+esc(r.nom)+'</div><div class="mail-status-email">'+esc(email||"—")+'</div><div class="mail-status-pill '+(log?"envoye":"a_envoyer")+'">'+(log?"Envoyé":"À envoyer")+'</div><div class="mail-status-date">'+(log?esc(fmt(log.premier_envoi_at))+' (1er)'+(count>1?' · '+count+' envois':''):"—")+'</div><button type="button" class="mail-resend" title="'+(log?"Renvoyer via WhatsApp":"Envoyer via WhatsApp")+'" aria-label="'+(log?"Renvoyer via WhatsApp":"Envoyer via WhatsApp")+'" '+(phone?'':'disabled')+'>↻</button>';
+   const button=row.querySelector(".mail-resend");
+   if(phone)button.addEventListener("click",async()=>{
+    if(!confirm((log?"Renvoyer":"Envoyer")+" l’invitation WhatsApp à "+(r.prenom||"")+" "+(r.nom||"")+" ?"))return;
+    // Open synchronously to avoid popup blocking after Supabase RPC.
+    const popup=window.open("about:blank","_blank");
+    button.disabled=true;
+    try{
+      const {data:logged,error}=await PortalAuth.client.rpc(logFunction,{p_benevole_id:key});
+      if(error)throw error;
+      const updated=Array.isArray(logged)?logged[0]:logged;
+      if(updated)logs.set(key,{benevole_id:key,...updated});
+      const url="https://wa.me/"+phone+"?text="+encodeURIComponent(message(r));
+      if(popup)popup.location.href=url;else window.location.href=url;
+      render();
+    }catch(error){
+      console.error(error);if(popup)popup.close();button.disabled=false;
+      alert("Impossible d’enregistrer l’envoi WhatsApp.");
+    }
+   });
+   list.appendChild(row);
+  }
+  loading.hidden=true;content.hidden=false;
+ }
+ render();
+ }catch(error){console.error(error);loading.textContent="Impossible de charger les destinataires WhatsApp.";}
+})();</script></body></html>
