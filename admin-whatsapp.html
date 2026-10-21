@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260921-2">
   <link rel="stylesheet" href="subpage-header.css?v=20260922-2">
-  <link rel="stylesheet" href="admin-whatsapp.css?v=20260930-9">
+  <link rel="stylesheet" href="admin-whatsapp.css?v=20261021-1">
 </head>
 <body class="dashboard-page">
   <header class="dashboard-header">
@@ -22,12 +22,12 @@
   <main class="dashboard-main">
     <section class="wa-admin">
       <div class="wa-admin-heading"><h1>Groupes WhatsApp</h1><button type="button" id="wa-export-all" class="wa-export wa-export-all">Exporter tous les contacts (.vcf)</button></div>
-      <div id="wa-admin-message"></div>
+      <div class="wa-edition-toolbar"><label for="wa-edition">Édition :</label><select id="wa-edition" aria-label="Édition WhatsApp"></select><span id="wa-edition-status"></span><button type="button" id="wa-prepare" class="wa-export" hidden>Préparer l'édition suivante</button><button type="button" id="wa-activate" class="wa-export" hidden>Activer cette édition</button></div><div id="wa-admin-message" role="status" aria-live="polite"></div>
       <div id="wa-admin-list">Chargement…</div>
     </section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="portal-auth.js"></script>
-  <script src="admin-whatsapp.js?v=20260930-9"></script>
+  <script src="admin-whatsapp.js?v=20261021-1"></script>
 </body>
 </html>
