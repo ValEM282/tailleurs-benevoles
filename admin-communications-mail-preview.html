@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aperçu du mail — Les Tailleurs</title>
+<link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="subpage-header.css"><link rel="stylesheet" href="admin.css">
+<link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body{font-family:"Titillium Web",Arial,sans-serif}
+.preview-main{max-width:1060px;margin:25px auto;padding:0 12px;box-sizing:border-box}
+.preview-panel{background:#fff;border:1px solid #dce0ef;border-radius:16px;padding:22px;min-width:0}
+.preview-panel h1{color:#1c2eab;margin:12px 0}
+.preview-back{display:inline-block;color:#1c2eab;font-weight:700;text-decoration:none}
+.preview-subject{margin:8px 0 20px;overflow-wrap:anywhere}
+.preview-frame{display:block;width:100%;height:850px;box-sizing:border-box;border:1px solid #dce0ef;border-radius:12px;background:white}
+.preview-note{font-size:14px;color:#626879}
+@media(max-width:650px){.preview-main{padding:0 10px}.preview-panel{padding:14px}.preview-frame{height:700px}}
+</style></head><body class="dashboard-page">
+<header class="dashboard-header"><div class="subpage-header-inner">
+<a href="admin.html" class="back-button">← Accueil ADMIN</a>
+<a href="dashboard.html" class="dashboard-title" style="color:white;text-decoration:none">🎪 PORTAIL BÉNÉVOLES 🎪</a>
+<button id="logout-button" type="button" class="logout-button">Se déconnecter</button>
+</div></header>
+<main class="preview-main"><section class="preview-panel">
+<a href="admin-communications-mailings.html" class="preview-back">← Mailing</a>
+<h1>Aperçu du mail</h1>
+<p id="preview-status" role="status">Chargement de l’aperçu…</p>
+<div id="preview-view" hidden><div id="preview-subject" class="preview-subject"></div>
+<p class="preview-note">Aperçu générique en lecture seule : les variables sont affichées telles qu'enregistrées, sans personnalisation.</p>
+<iframe id="preview-frame" class="preview-frame" title="Contenu du mail" sandbox="allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer"></iframe>
+</div></section></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="portal-auth.js"></script>
+<script>
+(async()=>{
+const $=id=>document.getElementById(id),status=$('preview-status');
+$('logout-button').onclick=()=>PortalAuth.logout();
+const user=await PortalAuth.requireAuth();if(!user)return;
+const check=await PortalAuth.client.rpc('is_current_portal_admin');
+if(check.error||!check.data){status.textContent='Accès réservé aux administrateurs.';return;}
+const params=new URLSearchParams(location.search),id=params.get('id'),legacy=params.get('legacy');
+let mail=null;
+if(id){
+ const {data,error}=await PortalAuth.client.from('mailing_campaigns').select('name,subject,html').eq('id',id).single();
+ if(error||!data){status.textContent='Impossible de retrouver ce mailing.';return;}
+ mail=data;
+}else if(legacy==='horaires-2026'){
+ // L'ancien mailing est indépendant des campagnes : rechercher un modèle archivé
+ // plutôt que reconstituer un email susceptible de différer de celui envoyé.
+ const {data,error}=await PortalAuth.client.from('mailing_drafts').select('*').ilike('name','%Horaires%2026%').limit(10);
+ if(!error&&data?.length){
+  const draft=data.find(d=>String(d.name||'').includes('27/09'))||data[0];
+  if(draft.canva_html){mail={subject:draft.subject,html:draft.canva_html};}
+ }
+ if(!mail){status.textContent="Le contenu HTML du mailing historique « Horaires 2026 - 27/09/26 » n’est pas archivé dans les campagnes disponibles. Un aperçu fidèle ne peut pas être affiché sans retrouver le modèle original.";return;}
+}else{status.textContent='Mailing non précisé.';return;}
+$('preview-subject').textContent='Objet : '+(mail.subject||'—');
+if(!mail.html){status.textContent="Ce mailing ne contient pas d’aperçu HTML enregistré.";return;}
+// Ne jamais exécuter les scripts éventuels présents dans un HTML archivé.
+const doc=new DOMParser().parseFromString(mail.html,'text/html');
+doc.querySelectorAll('script,object,embed,base,form,meta[http-equiv="refresh"]').forEach(el=>el.remove());
+doc.querySelectorAll('*').forEach(el=>{for(const attr of [...el.attributes]){if(/^on/i.test(attr.name))el.removeAttribute(attr.name);}});
+$('preview-frame').srcdoc='<!doctype html>\n'+doc.documentElement.outerHTML;
+$('preview-view').hidden=false;status.hidden=true;
+})();
+</script></body></html>
